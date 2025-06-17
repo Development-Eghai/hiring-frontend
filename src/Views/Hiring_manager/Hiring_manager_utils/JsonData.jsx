@@ -6,7 +6,78 @@ const JsonData = () => {
     const { } = useCommonState();
 
     const jsonOnly = {
-
+        sidebar_data: [
+            {
+                name: 'Reporting',
+                route: 'reporting',
+                icon: ''
+            },
+            {
+                name: 'Planning',
+                route: 'planning',
+                icon: '',
+                show_sub_routes: window.location.pathname.includes('planning'),
+                sub_routes: [
+                    {
+                        name: 'Hiring planning form',
+                        route: 'planning/hiring_planning_form',
+                        icon: ''
+                    },
+                    {
+                        name: 'Interview Design Screen',
+                        route: 'planning/interview_design_screen',
+                        icon: ''
+                    },
+                    {
+                        name: 'Interviewer Bandwidth',
+                        route: 'planning/interviewer_bandwidth',
+                        icon: ''
+                    },
+                    {
+                        name: 'Stage alert and responsibility settings',
+                        route: 'planning/stage_alert_and_responsibility_settings',
+                        icon: ''
+                    },
+                    {
+                        name: 'Customised column and settings',
+                        route: 'planning/customised_column_and_settings',
+                        icon: ''
+                    }
+                ]
+            },
+            {
+                name: 'Create Job Requisition',
+                route: 'create_job_requisition',
+                icon: ''
+            },
+        ],
+        home_cards: [
+            {
+                icon: '',
+                count: 17,
+                name: 'Candidates Forwarded'
+            },
+            {
+                icon: '',
+                count: 20,
+                name: 'New Candidates'
+            },
+            {
+                icon: '',
+                count: 20,
+                name: 'Current External Requisitions'
+            },
+            {
+                icon:'',
+                count:20,
+                name:'Current Internal Requisitions'
+            },
+            {
+                icon:'',
+                count:20,
+                name:'Current Internal Requisitions'
+            }
+        ]
     }
 
     const jsxJson = {

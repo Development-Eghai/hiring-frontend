@@ -5,7 +5,7 @@ import Img from '../Img/Img'
 import ButtonComponent from '../Button/Button';
 import Image from '../../Utils/Image'
 import Icons from '../../Utils/Icons';
-import { handleLogout } from '../../Redux/Actions/Common_actions/Common_action';
+// import { handleLogout } from '../../Redux/Actions/Common_actions/Common_action';
 
 const MainPagesHeader = () => {
   const dispatch = useDispatch();
@@ -26,7 +26,7 @@ const MainPagesHeader = () => {
             <ButtonComponent
               type="button"
               className="px-3 me-xl-2"
-              clickFunction={() => dispatch(handleLogout())}
+              // clickFunction={() => dispatch(handleLogout())}
               buttonName={
                 <span>
                   {Icons.logoutLocon}

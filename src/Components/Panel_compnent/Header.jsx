@@ -3,7 +3,6 @@ import ButtonComponent from 'Components/Button/Button';
 import Icons from 'Utils/Icons';
 import { useCommonState, useDispatch } from 'Components/CustomHooks';
 import HeaderCard from 'Components/Card/HeaderCard';
-import { handleLogout } from 'Actions/Common_actions/Common_action';
 
 const Header = ({
   offcanvasOn,
@@ -26,7 +25,7 @@ const Header = ({
             <ButtonComponent
               type="button"
               className="px-3 me-xl-2"
-              clickFunction={() => dispatch(handleLogout())}
+              // clickFunction={() => dispatch(handleLogout())}
               buttonName={
                 <span>
                   {Icons.logoutLocon}

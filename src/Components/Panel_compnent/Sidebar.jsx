@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react'
-import Image from 'Utils/Image';
 import OffCanvas from 'Components/Offcanvas/OffCanvas';
 import { useCustomNavigate } from 'Components/CustomHooks';
 import Img from 'Components/Img/Img';
@@ -18,35 +17,35 @@ const Sidebar = ({
 
     footer,
     footerClickFunction
-}) => { 
+}) => {
     const navigate = useCustomNavigate();
 
-    useEffect(() => {
-        if (window.location.pathname === "/dashboard" || window.location.pathname === "/dashboard/") {
-            switch (user_role) {
-                case "Super Admin":
-                    navigate("/dashboard/home")
-                    break;
+    // useEffect(() => {
+    //     if (window.location.pathname === "/dashboard" || window.location.pathname === "/dashboard/") {
+    //         switch (user_role) {
+    //             case "Super Admin":
+    //                 navigate("/dashboard/home")
+    //                 break;
 
-                case "admin":
-                case "Admin":
-                    navigate("/dashboard/home")
-                    break;
+    //             case "admin":
+    //             case "Admin":
+    //                 navigate("/dashboard/home")
+    //                 break;
 
-                case "Employee":
-                    navigate("/dashboard/services/insurance")
-                    break;
+    //             case "Employee":
+    //                 navigate("/dashboard/services/insurance")
+    //                 break;
 
-                case "SEO Specialist":
-                    navigate("/dashboard/blog")
-                    break;
+    //             case "SEO Specialist":
+    //                 navigate("/dashboard/blog")
+    //                 break;
 
-                default:
-                    break;
-            }
-        }
+    //             default:
+    //                 break;
+    //         }
+    //     }
 
-    }, [])
+    // }, [])
 
     const hanldeButton = (v) => {
         return <>
@@ -59,20 +58,19 @@ const Sidebar = ({
         </>
     }
 
-    const headerFun = (width, height, image) => {
-        return <Img
-            src={image}
-            alt='company logo'
-            width={width}
-            height={height}
-        />
+    const headerFun = () => {
+        return <React.Fragment>
+            <div className='w-100'>
+                <h5>Pixel Advant</h5>
+            </div>
+        </React.Fragment>
     }
 
     const bodyContent = () => {
         return <nav className='navmenu w-100 pe-3'>
             <ul className='w-100 px-1 '>
                 {menuOptions?.map((v, i) => (
-                    v?.type === "link" ?
+                    !v?.sub_routes ?
                         <li className="list-unstyled w-100" key={i}>
                             <NavLinkComp
                                 componentFrom="sidebar menus"
@@ -85,14 +83,14 @@ const Sidebar = ({
                         <li className="list-unstyled w-100" key={i}>
                             <NavLinkComp
                                 componentFrom="sidebar menus"
-                                className=' w-100 d-flex flex-wrap align-items-center mb-1 navlink-sidebar rounded px-2 py-2 text-decoration-none pe-none'
+                                className='navlink-sidebar'
                                 title={hanldeButton(v)}
                                 to={v?.route}
                             />
 
-                            <ul className='h-100 w-100 px-1 ms-4'>
+                            <ul className={`h-100 w-100 px-1 ms-4 accordion_animation_sub_menu ${v?.show_sub_routes ? 'open' : ''}`}>
                                 {
-                                    v?.options?.map((v, i) => (
+                                    v?.sub_routes?.map((v, i) => (
                                         <li className="list-unstyled w-100 " key={i}>
                                             <NavLinkComp
                                                 componentFrom="sidebar menus"
@@ -116,37 +114,18 @@ const Sidebar = ({
             <div className={`sidebar d-none ${responsiveOn !== '' ? `d-${responsiveOn}-block` : 'd-block'}`}>
                 <div className="container-fluid">
                     {/* header */}
-                    {
-                        header ?
-                            <>
-                                <div className="sidebar-header position-relative">
-                                    <div className="row h-100 align-items-center justify-content-center sidebar-header-underline">
-                                        <div className="col text-center">
-                                            {headerFun('198px', '30px', companyLogo)}
-                                        </div>
-                                    </div>
-                                </div>
-                            </>
-                            :
-                            null
-                    }
+                    <div className="sidebar-header position-relative">
+                        <div className="row h-100 align-items-center justify-content-center sidebar-header-underline">
+                            <div className="col text-center">
+                                {headerFun()}
+                            </div>
+                        </div>
+                    </div>
 
                     {/* body */}
                     <div className="sidebar-body">
                         {bodyContent()}
                     </div>
-                </div>
-
-                <div className="sidebarCircleOne">
-                    <Img src={Image.circleImageOne} width={"90%"} height={"90%"} />
-                </div>
-
-                <div className="sidebarCircleTwo">
-                    <Img src={Image.circleImageTwo} width={"90%"} height={"90%"} />
-                </div>
-
-                <div className="sidebarCircleThree">
-                    <Img src={Image.circleImageThree} width={"90%"} height={"90%"} />
                 </div>
             </div>
 

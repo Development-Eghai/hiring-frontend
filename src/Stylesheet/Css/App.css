@@ -11,10 +11,10 @@
   --root-height: 100vh;
 
   --sidebar-y-padding: 1rem;
-  --sidebar-width: 17rem;
+  --sidebar-width: 21rem;
   --sidebar-header-height: 6rem;
-  --sidebar-body-padding: .5rem .9rem;
-  --sidebar-body-margin: 1rem 0 0 0;
+  --sidebar-body-padding: .9rem .9rem;
+  --sidebar-body-margin: 0 0 0;
   --sidebar-background-color: #ffffff;
   --sidebar-border: 1px solid rgba(236, 236, 236, 0.88);
 
@@ -40,6 +40,10 @@
   --page-main-content-padding-y: 1rem .2rem;
 
   --main-body-height: 88vh
+}
+
+.main_bg {
+  background-color: var(--main-background-color);
 }
 
 .btn-brand-outerLayer-color {
@@ -109,6 +113,7 @@ body {
   background: var(--sidebar-background-color) !important;
   overflow: hidden;
   font-size: .9rem;
+  border-radius: 0 1.5rem 1.5rem 0;
 }
 
 .sidebar-header {
@@ -162,6 +167,13 @@ body {
 
 .sidebar-footer {
   height: var(--sidebar-body-footer-height);
+}
+
+.layout_main_content {
+  width: calc(100% - var(--sidebar-width));
+  height: var(--root-height);
+  background-color: var(--main-background-color);
+  padding: var(--main-content-padding-y) 0;
 }
 
 .navmenu {
@@ -267,6 +279,7 @@ header {
   padding: var(--header-padding-y);
   border: var(--header-border) !important;
   background-color: var(--header-card-background-color) !important;
+  border-radius: .8rem;
 }
 
 .header-body {
@@ -287,7 +300,6 @@ header {
   background: #FFF !important;
   text-align: center !important;
 }
-
 /*  */
 
 
@@ -302,4 +314,9 @@ header {
   background-color: var(--btn-brand-bg-color) !important;
   border: 1px solid var(--btn-brand-border-color) !important;
   color: var(--btn-brand-color) !important;
+}
+
+.main_content_height {
+  height: calc(100vh - (var(--header-height) + 1rem));
+  overflow-y: scroll;
 }
