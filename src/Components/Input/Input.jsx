@@ -16,29 +16,23 @@ const Input = ({
     keyDown,
     disabled,
     max,
-    min
+    min,
+    eyeFunction,
+    eyeIcon
 }) => {
 
     return (
-        <>
+        <div className={eyeFunction ? 'position-relative' : ''}>
             {label ?
                 <Form.Label htmlFor={htmlFor} className={labelClassName}>
                     {label}
-
-                    {
-                        mandatory ?
-                            <span className='text-danger ms-1'>*</span>
-                            :
-                            null
-                    }
-
+                    {mandatory ? <span className='text-danger ms-1'>*</span> : null}
                 </Form.Label>
                 :
                 null
             }
             <Form.Control
-                type={type}
-                id={htmlFor}
+                type={type} id={htmlFor}
                 placeholder={placeholder}
                 className={className}
                 onChange={change}
@@ -46,19 +40,15 @@ const Input = ({
                 multiple={multiple}
                 value={value}
                 disabled={disabled}
-                max={max}
-                min={min}
+                max={max} min={min}
             />
-            {
-                inputError ?
-                    <p className='text-danger pt-2 ps-1 fs-15'>
-                        {inputError}
-                    </p>
-                    :
-                    null
-            }
 
-        </>
+            <span className='eye_button' onClick={eyeFunction}>
+                {eyeIcon}
+            </span>
+
+            {inputError ? <p className='text-danger pt-2 ps-1 fs-15'> {inputError} </p> : null}
+        </div>
     )
 }
 

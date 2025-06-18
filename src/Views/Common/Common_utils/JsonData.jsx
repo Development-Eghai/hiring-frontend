@@ -34,12 +34,14 @@ const JsonData = () => {
                 type: commonState?.login_data?.showPassword ? "text" : "password",
                 category: "input",
                 placeholder: "Password",
+                className: "pe-5",
                 value: commonState?.login_data?.password || '',
                 change: (e) => dispatch(update_login_data({ password: e.target.value })),
-                eyeFunction: () => dispatch(update_login_data({ showPassword: !commonState?.login_data?.showPassword })),
                 keyDown: (e) => {
                     if (e.key === 'Enter') dispatch(handleLogin(commonState?.login_data, navigate))
                 },
+                eyeFunction: () => dispatch(update_login_data({ showPassword: !commonState?.login_data?.showPassword })),
+                eyeIcon: commonState?.login_data?.showPassword ? "hi" : "bye",
                 divClassName: "mb-1",
                 isMandatory: false,
                 Err: commonState?.app_data?.validated && !commonState?.login_data?.password ? "password required" : null

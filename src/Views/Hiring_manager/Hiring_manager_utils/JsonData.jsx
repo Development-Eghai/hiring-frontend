@@ -68,16 +68,56 @@ const JsonData = () => {
                 name: 'Current External Requisitions'
             },
             {
-                icon:'',
-                count:20,
-                name:'Current Internal Requisitions'
+                icon: '',
+                count: 20,
+                name: 'Current Internal Requisitions'
             },
             {
-                icon:'',
-                count:20,
-                name:'Current Internal Requisitions'
+                icon: '',
+                count: 20,
+                name: 'Current Internal Requisitions'
             }
+        ],
+        columns: [
+            {
+                name: 'S.No',
+                selector: (_, index) => String(index + 1).padStart(2, '0'),
+                width: '80px',
+            },
+            {
+                name: 'Position/Role',
+                selector: row => row.role,
+                sortable: true,
+            },
+            {
+                name: 'Tech Stacks',
+                selector: row => row.tech,
+                sortable: true,
+            },
+            {
+                name: 'JD for each role',
+                selector: row => row.jd,
+                sortable: true,
+            },
+            {
+                name: 'Designation Offered',
+                selector: row => row.designation,
+                sortable: true,
+            },
+            {
+                name: 'Target companies',
+                selector: row => row.company,
+                sortable: true,
+            },
+            {
+                name: 'Action',
+                cell: () => <span style={{ fontSize: '20px', cursor: 'pointer' }}>⋮</span>,
+                ignoreRowClick: true,
+                allowOverflow: true,
+                button: true,
+            },
         ]
+
     }
 
     const jsxJson = {

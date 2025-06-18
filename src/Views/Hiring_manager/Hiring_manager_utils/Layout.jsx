@@ -15,7 +15,7 @@ export const Layout = () => {
             <Sidebar responsiveOn="xl" menuOptions={jsonOnly?.sidebar_data} />
 
             <main className="layout_main_content">
-                <div className="container-fluid">
+                <div className="container-fluid ">
                     <header className="py-2">
                         <Header />
                     </header>

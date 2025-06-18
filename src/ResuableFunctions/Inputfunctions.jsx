@@ -159,6 +159,9 @@ export function Inputfunctions(funBy) {
                             mandatory={ipVal?.isMandatory}
                             inputError={ipVal?.Err}
                             disabled={ipVal?.disabled}
+                            eyeFunction={ipVal?.eyeFunction}
+                            eyeIcon={ipVal?.eyeIcon}
+                            className={ipVal?.className}
                             max={ipVal?.name === "To Date" || ipVal?.name === "From Date" ? new Date().toISOString().split('T')[0] : null}
                             min={ipVal?.name === "Next call date" ? new Date().toISOString().split('T')[0] : null}
                         />

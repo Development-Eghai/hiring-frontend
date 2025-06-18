@@ -19,7 +19,6 @@ let initialState = {
         innerHeight: 0,
         buttonSpinner: false,
         token: Cookies.get("pixeel_advant_log") ? decryptData(Cookies.get("pixeel_advant_log"))?.access_token : '',
-        refresh_token: Cookies.get("pixeel_advant_log") ? decryptData(Cookies.get("pixeel_advant_log"))?.refresh_token : '',
         user_role: Cookies.get("pixeel_advant_log") ? decryptData(Cookies.get("pixeel_advant_log"))?.role : '',
         user_id: Cookies.get('pixeel_advant_log') ? decryptData(Cookies.get("pixeel_advant_log"))?.user_id : '',
     },
@@ -86,26 +85,23 @@ const commonSlice = createSlice({
         //Api 
         login_reducer(state, actions) {
             const { type, data } = actions.payload || {};
-
             switch (type) {
                 case "request":
                     state.app_data.buttonSpinner = true;
                     state.app_data.token = null;
-                    state.app_data.refresh_token = null;
                     state.app_data.user_role = null;
                     break;
                 case "response":
                     let update_cookie_log = {
-                        access_token: data?.access_token || '',
-                        refresh_token: data?.refresh_token || '',
+                        [data?.role?.split(" ")?.join("")]: data?.token || '',
                         role: data?.role || '',
                     }
+
                     const encrypted_logs = encryptData(update_cookie_log);
                     Cookies.set('pixeel_advant_log', encrypted_logs);
 
                     state.app_data.buttonSpinner = false;
-                    state.app_data.token = data?.access_token || '';
-                    state.app_data.refresh_token = data?.refresh_token || '';
+                    state.app_data.token = data?.token || '';
                     state.app_data.user_role = data?.role || '';
                     break;
                 case "failure":

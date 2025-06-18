@@ -169,13 +169,6 @@ body {
   height: var(--sidebar-body-footer-height);
 }
 
-.layout_main_content {
-  width: calc(100% - var(--sidebar-width));
-  height: var(--root-height);
-  background-color: var(--main-background-color);
-  padding: var(--main-content-padding-y) 0;
-}
-
 .navmenu {
   font-size: 14px;
   font-style: normal;
@@ -300,6 +293,7 @@ header {
   background: #FFF !important;
   text-align: center !important;
 }
+
 /*  */
 
 
@@ -317,6 +311,14 @@ header {
 }
 
 .main_content_height {
-  height: calc(100vh - (var(--header-height) + 1rem));
-  overflow-y: scroll;
+  height: calc(100vh - (var(--header-height) + 2rem));
+}
+
+@media (min-width: 1200px) {
+  .layout_main_content {
+    width: calc(100% - var(--sidebar-width));
+    height: var(--root-height);
+    background-color: var(--main-background-color);
+    padding: var(--main-content-padding-y) 0;
+  }
 }

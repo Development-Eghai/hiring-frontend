@@ -2,7 +2,25 @@
   width: 18rem !important;
 }
 
-/* main  */ 
+.spinner-border {
+  width: 1.5rem !important;
+  height: 1.5rem !important;
+}
+
+.eye_button {
+  position: absolute;
+  right: 0.9rem;
+  top: 0.5rem;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.home_data_table{
+  height: 80%;
+  overflow-y: scroll;
+}
+
+/* main  */
 .form-control.is-invalid,
 .was-validated .form-control:invalid {
   background-image: none !important;
@@ -116,7 +134,7 @@
   --bs-btn-disabled-color: #fff;
   --bs-btn-disabled-bg: #0AA50E;
   --bs-btn-disabled-border-color: #0AA50E;
-}  
+}
 
 /* multiple image select css  */
 .file-atc-box {
@@ -358,6 +376,6 @@
   max-height: 500px;
 }
 
-.overflowY{
+.overflowY {
   overflow-y: scroll;
 }
