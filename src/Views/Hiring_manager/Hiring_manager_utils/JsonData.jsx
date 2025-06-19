@@ -87,28 +87,33 @@ const JsonData = () => {
                 width: '80px',
             },
             {
-                name: 'Position/Role',
-                selector: row => row.role,
+                name: 'job-position',
+                selector: row => row.job_position || 'N/A',
                 sortable: true,
             },
             {
-                name: 'Tech Stacks',
-                selector: row => row.tech,
+                name: 'Recruiter',
+                selector: row => row.Recruiter || 'N/A',
                 sortable: true,
             },
             {
-                name: 'JD for each role',
-                selector: row => row.jd,
+                name: 'department',
+                selector: row => row.department || 'N/A',
                 sortable: true,
             },
             {
-                name: 'Designation Offered',
-                selector: row => row.designation,
+                name: 'divison',
+                selector: row => row.divison || 'N/A',
                 sortable: true,
             },
             {
-                name: 'Target companies',
-                selector: row => row.company,
+                name: 'location',
+                selector: row => row.location || 'N/A',
+                sortable: true,
+            },
+            {
+                name: 'status',
+                selector: row => row.status || 'N/A',
                 sortable: true,
             },
             {

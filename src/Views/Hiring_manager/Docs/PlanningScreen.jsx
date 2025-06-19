@@ -4,9 +4,30 @@ import { HiringManagerHomeCard } from "Components/Card/HiringManagerHomeCard";
 import { Button, Card, Form, InputGroup } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import Icons from "Utils/Icons";
-import { useCommonState, useDispatch } from "Components/CustomHooks";
-import { HandleGetReportingData } from "Views/Hiring_manager/Actions/HiringManagerAction";
- 
+
+const data = [
+    {
+        role: 'Project Manager',
+        tech: 'Tech Stack 1',
+        jd: 'JD1',
+        designation: 'Manager',
+        company: 'London',
+    },
+    {
+        role: 'QA Engineer',
+        tech: 'Tech Stack 2',
+        jd: 'JD2',
+        designation: 'Tester',
+        company: 'New York',
+    },
+    {
+        role: 'UI/UX Designer',
+        tech: 'Tech Stack 3',
+        jd: 'JD3',
+        designation: 'Designer',
+        company: 'Berlin',
+    },
+];
 const tableStyles = {
     headCells: {
         style: {
@@ -17,16 +38,11 @@ const tableStyles = {
         },
     },
 };
-
-export const Home = () => {
-    const { hiringManagerState } = useCommonState();
-    const dispatch = useDispatch();
+ 
+export const PlanningScreen = () => {
     const { jsonOnly } = JsonData();
     const [searchTerm, setSearchTerm] = useState('');
-
-    React.useEffect(() => {
-        dispatch(HandleGetReportingData({ fields: ["job-poistion", "Recruiter", "divison", "department", "location", "status"] }))
-    }, [])
+    const filteredData = data.filter((row) => row.role?.toLowerCase().includes(searchTerm?.toLowerCase()));
 
     return (
         <div className="h-100">
@@ -66,13 +82,12 @@ export const Home = () => {
 
                 <DataTable
                     columns={jsonOnly?.columns}
-                    data={hiringManagerState?.reporting?.data || []}
+                    data={filteredData}
                     customStyles={tableStyles}
                     pagination
                     responsive
                     striped
                     highlightOnHover
-                    progressPending={hiringManagerState?.isLoading}
                 />
             </Card>
         </div>

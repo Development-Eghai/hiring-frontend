@@ -1,6 +1,6 @@
 import axios from "axios";
 import store from "../StoreIndex";
-import { handlerefreshToken } from "Actions/Common_actions/Common_action";
+import { handlerefreshToken } from "Views/Common/Actions/Common_action";
 
 
 const axiosInstance = axios.create({
