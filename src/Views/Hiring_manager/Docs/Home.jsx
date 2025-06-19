@@ -4,6 +4,7 @@ import { HiringManagerHomeCard } from "Components/Card/HiringManagerHomeCard";
 import { Button, Card, Form, InputGroup } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { FaSearch, FaFilter, FaPlus } from 'react-icons/fa';
+import Icons from "Utils/Icons";
 
 const data = [
     {
@@ -28,7 +29,16 @@ const data = [
         company: 'Berlin',
     },
 ];
-
+const tableStyles = {
+  headCells: {
+    style: {
+      backgroundColor: '#DEE5FF', 
+      color: '#000',              
+      fontWeight: 'bold',         
+      fontSize: '14px',            
+    },
+  },
+};
 export const Home = () => {
     const { jsonOnly } = JsonData();
     const [searchTerm, setSearchTerm] = useState('');
@@ -46,13 +56,16 @@ export const Home = () => {
             <Card className="p-4 home_data_table">
                 <div className="row align-items-center mb-3">
                     <div className="col-3">
-                        <h4 className="fw-bold">Job Roles</h4>
+                        <h4 className="fw-bold mb-0">Job Roles</h4>
                     </div>
                     <div className="col-9 d-flex justify-content-end">
-                        <div className="d-flex align-items-center gap-2">
-                            <InputGroup>
+                        <div className="d-flex align-items-center gap-2 flex-wrap justify-content-end w-100">
+                            <Button variant="outline-secondary" className="d-flex align-items-center">
+                                <span>{Icons.Filter} Filter</span>
+                            </Button>
+                            <InputGroup style={{ maxWidth: '300px' }}>
                                 <InputGroup.Text>
-                                    <FaSearch />
+                                    {Icons.Search}
                                 </InputGroup.Text>
                                 <Form.Control
                                     placeholder="Search job title..."
@@ -60,11 +73,8 @@ export const Home = () => {
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
                             </InputGroup>
-                            <Button variant="outline-secondary">
-                                <FaFilter className="me-1" /> Filter
-                            </Button>
-                            <Button variant="primary">
-                                <FaPlus className="me-1" /> Create New
+                            <Button variant="primary" className="d-flex align-items-center">
+                                <span>{Icons.CreateNew} Create New</span>
                             </Button>
                         </div>
                     </div>
@@ -73,6 +83,7 @@ export const Home = () => {
                 <DataTable
                     columns={jsonOnly?.columns}
                     data={filteredData}
+                    customStyles={tableStyles}
                     pagination
                     responsive
                     striped

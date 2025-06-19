@@ -1,4 +1,5 @@
 import { useCommonState, useDispatch } from 'Components/CustomHooks';
+import Icons from 'Utils/Icons';
 
 const JsonData = () => {
     //main selectors
@@ -10,73 +11,74 @@ const JsonData = () => {
             {
                 name: 'Reporting',
                 route: 'reporting',
-                icon: ''
+                icon: Icons.Reporting
             },
             {
                 name: 'Planning',
                 route: 'planning',
-                icon: '',
+                icon: Icons.Planning,
                 show_sub_routes: window.location.pathname.includes('planning'),
                 sub_routes: [
                     {
                         name: 'Hiring planning form',
                         route: 'planning/hiring_planning_form',
-                        icon: ''
+                        icon: Icons.Planning
                     },
                     {
                         name: 'Interview Design Screen',
                         route: 'planning/interview_design_screen',
-                        icon: ''
+                        icon: Icons.Planning
                     },
                     {
                         name: 'Interviewer Bandwidth',
                         route: 'planning/interviewer_bandwidth',
-                        icon: ''
+                        icon: Icons.Planning
                     },
                     {
                         name: 'Stage alert and responsibility settings',
                         route: 'planning/stage_alert_and_responsibility_settings',
-                        icon: ''
+                        icon: Icons.Planning
                     },
                     {
                         name: 'Customised column and settings',
                         route: 'planning/customised_column_and_settings',
-                        icon: ''
+                        icon: Icons.Planning
                     }
                 ]
             },
             {
                 name: 'Create Job Requisition',
                 route: 'create_job_requisition',
-                icon: ''
+                icon: Icons.Requisition
             },
         ],
         home_cards: [
             {
-                icon: '',
+                icon: Icons.CandidatesForwarded,
                 count: 17,
-                name: 'Candidates Forwarded'
+                name: 'Candidates Forwarded',
+                bgColor: ''
             },
             {
-                icon: '',
+                icon: Icons.NewCandidates,
                 count: 20,
                 name: 'New Candidates'
             },
             {
-                icon: '',
+                icon: Icons.CurrentExternal,
                 count: 20,
                 name: 'Current External Requisitions'
             },
             {
-                icon: '',
+                icon: Icons.CurrentInternal,
                 count: 20,
                 name: 'Current Internal Requisitions'
             },
-            {
-                icon: '',
-                count: 20,
-                name: 'Current Internal Requisitions'
-            }
+            // {
+            //     icon: '',
+            //     count: 20,
+            //     name: 'Current Internal Requisitions'
+            // }
         ],
         columns: [
             {

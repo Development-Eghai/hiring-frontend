@@ -15,18 +15,18 @@ export const handleLogin = (login_data, navigate) => async (dispatch) => {
     if (!username || !password) return dispatch(update_app_data({ type: "validation", data: true }));
     try {
         dispatch(login_reducer({ type: 'request' }))
-        const res = await axios.post(`${BASE_URL}/login/`, {}, {
+        const {data} = await axios.post(`${BASE_URL}/login/`, {}, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Basic ${btoa(`${username}:${password}`)}`
             }
         });
 
-        if (res.status === 200) {
-            dispatch(login_reducer({ type: 'response', data: res?.data }))
-            LoginSuccessNavigateTo(res?.data?.role, navigate)
+        if (data.error_code === 200) {
+            dispatch(login_reducer({ type: 'response', data: data?.data }))
+            LoginSuccessNavigateTo(data?.data?.role, navigate)
         }
-        else dispatch(login_reducer({ type: 'failure', data: { message: res?.data?.message, type: "error" } }))
+        else dispatch(login_reducer({ type: 'failure', data: { message:data?.message, type: "error" } }))
     } catch (err) {
         dispatch(login_reducer({ type: 'failure', data: { message: err?.message, type: "error" } }))
     }

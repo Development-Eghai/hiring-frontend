@@ -29,7 +29,7 @@ const Header = ({
               buttonName={
                 <span>
                   {Icons.logoutLocon}
-                  <span className='ms-2 d-none d-sm-inline-block'>Logout</span>
+                  <span className='ms-2 d-none d-sm-inline-block'>{Icons.Logout}</span>
                 </span>
               }
             />

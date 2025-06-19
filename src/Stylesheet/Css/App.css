@@ -188,7 +188,7 @@ body {
 }
 
 .navlink-sidebar:hover {
-  background-color: #C71943;
+  background:#2D5BFF;
   color: #ffffff !important;
 }
 
@@ -201,7 +201,8 @@ body {
 .navlink-sidebar:hover svg path {
   color: #FFFFFF !important;
   stroke: #ffffff !important;
-  background-color: #C71943 !important;
+  /* background-color: #2D5BFF !important; */
+  background: linear-gradient(92deg, #3B5BCF -4.15%, #2D5BFF 64.99%);
 }
 
 .placeholder-height-15-percent {
