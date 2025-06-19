@@ -162,6 +162,7 @@ export function Inputfunctions(funBy) {
                             eyeFunction={ipVal?.eyeFunction}
                             eyeIcon={ipVal?.eyeIcon}
                             className={ipVal?.className}
+                            placeholder={ipVal?.placeholder}
                             max={ipVal?.name === "To Date" || ipVal?.name === "From Date" ? new Date().toISOString().split('T')[0] : null}
                             min={ipVal?.name === "Next call date" ? new Date().toISOString().split('T')[0] : null}
                         />

@@ -2,7 +2,6 @@ import React from "react";
 import { Card } from "react-bootstrap";
 
 export const HiringManagerHomeCard = (params) => {
-    console.log(params)
 
     return (
         <Card className="w-100 h-100 border-0">

@@ -1,6 +1,7 @@
 import { useCommonState, useCustomNavigate, useDispatch } from 'Components/CustomHooks';
 import { update_login_data } from 'Views/Common/Slices/Common_slice';
 import { handleLogin } from 'Views/Common/Actions/Common_action';
+import Icons from 'Utils/Icons';
 
 const JsonData = () => {
     //main selectors
@@ -41,7 +42,7 @@ const JsonData = () => {
                     if (e.key === 'Enter') dispatch(handleLogin(commonState?.login_data, navigate))
                 },
                 eyeFunction: () => dispatch(update_login_data({ showPassword: !commonState?.login_data?.showPassword })),
-                eyeIcon: commonState?.login_data?.showPassword ? "hi" : "bye",
+                eyeIcon: commonState?.login_data?.showPassword ? Icons?.EyeClose : Icons?.EyeOpen,
                 divClassName: "mb-1",
                 isMandatory: false,
                 Err: commonState?.app_data?.validated && !commonState?.login_data?.password ? "password required" : null
