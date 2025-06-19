@@ -5,6 +5,9 @@ import Error from "Views/Common/Docs/error";
 import { InitializeProjectSetup } from "Views/Common/Docs/InitializeProjectSetup";
 import Login from "Views/Common/Docs/Login";
 import { Home } from "Views/Hiring_manager/Docs/Home";
+import InterviewBandwith from "Views/Hiring_manager/Docs/InterviewBandwith";
+import InterviewDesignDashboard from "Views/Hiring_manager/Docs/InterviewDesignDashboard";
+import InterviewDesignScreen from "Views/Hiring_manager/Docs/InterviewDesignScreen";
 import { Layout } from "Views/Hiring_manager/Hiring_manager_utils/Layout";
 
 function App() {
@@ -23,8 +26,9 @@ function App() {
               <Route path="planning" >
                 <Route index element={<Home />} />
                 <Route path="hiring_planning_form" element={<Home />} />
-                <Route path="interview_design_screen" element={<Home />} />
-                <Route path="interviewer_bandwidth" element={<Home />} />
+                <Route path="interview_design_screen" element={<InterviewDesignScreen />} />
+                <Route path="interview_design_dashboard" element={<InterviewDesignDashboard />} />
+                <Route path="interviewer_bandwidth" element={<InterviewBandwith />} />
                 <Route path="stage_alert_and_responsibility_settings" element={<Home />} />
                 <Route path="customised_column_and_settings" element={<Home />} />
               </Route>

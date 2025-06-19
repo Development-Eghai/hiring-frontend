@@ -323,3 +323,144 @@ header {
     padding: var(--main-content-padding-y) 0;
   }
 }
+
+
+/* InterviewForm.css */
+
+.interview-container {
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.07);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.interview-parameters {
+  margin-top: 2rem;
+}
+
+.parameter-header,
+.parameter-body {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.parameter-header {
+  background-color: #f1f1f1;
+  font-weight: 600;
+  padding: 0.75rem;
+  border-radius: 8px;
+}
+
+.parameter-body {
+  background-color: #ffffff;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.parameter-body button {
+  padding: 0.25rem 0.5rem;
+  font-size: 1rem;
+}
+
+.feedback-section {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #eee;
+}
+
+.feedback-guidelines {
+  color: #0066cc;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.feedback-guidelines:hover {
+  text-decoration: underline;
+}
+
+.star-rating {
+  display: flex;
+  gap: 0.25rem;
+  font-size: 1.5rem;
+  color: #ccc;
+  cursor: pointer;
+}
+
+.star-rating span:hover,
+.star-rating span:hover ~ span {
+  color: #f1c40f;
+}
+
+/* Responsive tweaks */
+@media (max-width: 992px) {
+  .parameter-header,
+  .parameter-body {
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: auto;
+    gap: 0.5rem;
+  }
+}
+
+
+
+.interview-bandwidth-container {
+  background: #f9fbfc;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.section-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.input-form label {
+  font-weight: 500;
+  color: #34495e;
+}
+
+.results-section h4 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.table {
+  background-color: white;
+}
+
+.table th {
+  background-color: #ecf0f1;
+  font-weight: 600;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+
+.scroll-container {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.delete-icon {
+  color: #888;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.delete-icon:hover {
+  color: red;
+}
