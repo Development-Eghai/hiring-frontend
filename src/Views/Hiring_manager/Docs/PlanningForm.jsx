@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { Card, CardHeader } from 'react-bootstrap';
+import axiosInstance from 'Services/axiosInstance';
 
 const PlanningForm = () => {
     const initialState = {
@@ -117,8 +118,10 @@ const PlanningForm = () => {
         });
 
         try {
-            const response = await axios.post(
-                'https://api.pixeladvant.com/hiring_plan/',
+            const response = await axiosInstance.post(
+                '/hiring_plan/',
+                // const { data } = await axiosInstance.post('/api/jobrequisition-dynamic/', params);
+
                 payload,
                 {
                     headers: { 'Content-Type': 'multipart/form-data' },

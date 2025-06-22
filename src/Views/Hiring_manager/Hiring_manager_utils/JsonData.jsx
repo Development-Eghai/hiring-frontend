@@ -88,7 +88,7 @@ const JsonData = () => {
             },
             {
                 name: 'job-position',
-                selector: row => row.job_position || 'N/A',
+                selector: row => row.working_model || 'N/A',
                 sortable: true,
             },
             {
@@ -116,6 +116,50 @@ const JsonData = () => {
                 selector: row => row.status || 'N/A',
                 sortable: true,
             },
+            {
+                name: 'Action',
+                cell: () => <span style={{ fontSize: '20px', cursor: 'pointer' }}>⋮</span>,
+                ignoreRowClick: true,
+                allowOverflow: true,
+                button: true,
+            },
+        ],
+         columns1: [
+            {
+                name: 'S.No',
+                selector: (_, index) => String(index + 1).padStart(2, '0'),
+                width: '80px',
+            },
+            {
+                name: 'Position/Role ',
+                selector: row => row.Position_role| 'N/A',
+                sortable: true,
+            },
+            {
+                name: 'Tech',
+                selector: row => row.Tech || 'N/A',
+                sortable: true,
+            },
+            {
+                name: 'JD',
+                selector: row => row.JD  || 'N/A',
+                sortable: true,
+            },
+            {
+                name: 'Designation',
+                selector: row => row.Designation || 'N/A',
+                sortable: true,
+            },
+            {
+                name: 'Target',
+                selector: row => row.Target || 'N/A',
+                sortable: true,
+            },
+            // {
+            //     name: 'status',
+            //     selector: row => row.status || 'N/A',
+            //     sortable: true,
+            // },
             {
                 name: 'Action',
                 cell: () => <span style={{ fontSize: '20px', cursor: 'pointer' }}>⋮</span>,

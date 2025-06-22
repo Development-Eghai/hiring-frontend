@@ -5,30 +5,33 @@ import { Button, Card, Form, InputGroup } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import Icons from "Utils/Icons";
 import Creatmodel from "./Creatmodel";
+import { useCommonState, useDispatch } from "Components/CustomHooks";
+import { HandleGetPlanningScreen } from "../Actions/HiringManagerAction";
 
-const data = [
-    {
-        role: 'Project Manager',
-        tech: 'Tech Stack 1',
-        jd: 'JD1',
-        designation: 'Manager',
-        company: 'London',
-    },
-    {
-        role: 'QA Engineer',
-        tech: 'Tech Stack 2',
-        jd: 'JD2',
-        designation: 'Tester',
-        company: 'New York',
-    },
-    {
-        role: 'UI/UX Designer',
-        tech: 'Tech Stack 3',
-        jd: 'JD3',
-        designation: 'Designer',
-        company: 'Berlin',
-    },
-];
+
+// const data = [
+//     {
+//        position: 'Project Manager',
+//         Tech: 'Tech Stack 1',
+//         JD: 'JD1',
+//         designation: 'Manager',
+//         Target: 'London',
+//     },
+//     // {
+//     //     role: 'QA Engineer',
+//     //     tech: 'Tech Stack 2',
+//     //     jd: 'JD2',
+//     //     Designation: 'Tester',
+//     //     company: 'New York',
+//     // },
+//     // {
+//     //     role: 'UI/UX Designer',
+//     //     tech: 'Tech Stack 3',
+//     //     jd: 'JD3',
+//     //     designation: 'Designer',
+//     //     company: 'Berlin',
+//     // },
+// ];
 const tableStyles = {
     headCells: {
         style: {
@@ -43,9 +46,16 @@ const tableStyles = {
 export const PlanningScreen = () => {
     const { jsonOnly } = JsonData();
     const [searchTerm, setSearchTerm] = useState('');
-    const filteredData = data.filter((row) => row.role?.toLowerCase().includes(searchTerm?.toLowerCase()));
+    const { planningScreenState } = useCommonState();
+    const dispatch = useDispatch();
     const [showModal, setShowModal] = useState(false);
 
+
+    React.useEffect(() => {
+        dispatch(HandleGetPlanningScreen({ fields: ["Position/Role","Tech","JD","Experience","Designation","Target"] }))
+    }, [])
+
+console.log(planningScreenState)
     return (
         <div className="h-100">
             {/* <div className="row py-3">
@@ -57,11 +67,13 @@ export const PlanningScreen = () => {
             </div> */}
             <Card className="p-4 home_data_table">
                 <div className="row align-items-center mb-3">
-                    <div className="col-3">
-                        <h4 className="fw-bold mb-0">Job Roles</h4>
+                    <div className="col-3 d-flex">
+                        <h4 className="fw-bold mb-0">Planning Lists</h4>
+
                     </div>
                     <div className="col-9 d-flex justify-content-end">
                         <div className="d-flex align-items-center gap-2 flex-wrap justify-content-end w-100">
+                            <h6 className="fw-normal mt-2">View Requisition templates</h6>
                             <Button variant="outline-secondary" className="d-flex align-items-center">
                                 <span>{Icons.Filter} Filter</span>
                             </Button>
@@ -84,13 +96,16 @@ export const PlanningScreen = () => {
                 </div>
 
                 <DataTable
-                    columns={jsonOnly?.columns}
-                    data={filteredData}
+                    columns={jsonOnly?.columns1}
+                    data={planningScreenState?.reporting?.data || []}
                     customStyles={tableStyles}
-                    pagination
-                    responsive
+                    fixedHeader
+                    fixedHeaderScrollHeight="500px"
                     striped
                     highlightOnHover
+                    pagination={true}
+                    progressPending={planningScreenState?.isLoading}
+                    className="custom-datatable"
                 />
             </Card>
         </div>

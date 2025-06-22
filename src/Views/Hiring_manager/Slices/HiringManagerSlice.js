@@ -1,39 +1,118 @@
+// import { createSlice } from "@reduxjs/toolkit";
+
+
+
+// const hiring_managerSlice = createSlice({
+//     name: "hiring_manager",
+//     initialState: {
+//         isLoading: false,
+//         reporting: {}
+//     },
+//     reducers: {
+//         getReportingData: (state, action) => {
+//             const { type, data } = action.payload;
+//             switch (type) {
+//                 case "request":
+//                     state.isLoading = true;
+//                     state.reporting = {};
+//                     break;
+//                 case "response":
+//                     state.isLoading = false;
+//                     state.reporting = data;
+//                     break;
+//                 case "failure":
+//                     state.isLoading = false;
+//                     state.reporting = {};
+//                     break;
+//                 default:
+//                     break;
+//             }
+//         }
+//     },
+    
+// });
+
+
+// const { actions, reducer } = hiring_managerSlice;
+
+
+// export const {
+//     getReportingData,
+    
+// } = actions;
+
+// export default reducer;
+
+// src/Slices/hiringSlices.js
+
+
 import { createSlice } from "@reduxjs/toolkit";
 
+
 const hiring_managerSlice = createSlice({
-    name: "hiring_manager",
-    initialState: {
-        isLoading: false,
-        reporting: {}
-    },
-    reducers: {
-        getReportingData: (state, action) => {
-            const { type, data } = action.payload;
-            switch (type) {
-                case "request":
-                    state.isLoading = true;
-                    state.reporting = {};
-                    break;
-                case "response":
-                    state.isLoading = false;
-                    state.reporting = data;
-                    break;
-                case "failure":
-                    state.isLoading = false;
-                    state.reporting = {};
-                    break;
-                default:
-                    break;
-            }
-        }
+  name: "hiring_manager",
+  initialState: {
+    isLoading: false,
+    reporting: {}
+  },
+  reducers: {
+    getReportingData: (state, action) => {
+      const { type, data } = action.payload;
+      switch (type) {
+        case "request":
+          state.isLoading = true;
+          state.reporting = {};
+          break;
+        case "response":
+          state.isLoading = false;
+          state.reporting = data;
+          break;
+        case "failure":
+          state.isLoading = false;
+          state.reporting = {};
+          break;
+        default:
+          break;
+      }
     }
+  }
 });
 
-const { actions, reducer } = hiring_managerSlice;
 
-export const {
-    getReportingData
-    
-} = actions;
+const Planning_Screen = createSlice({
+  name: "Planning_Screen",
+  initialState: {
+    isLoading: false,
+    reporting: {}
+  },
+  reducers: {
+    getPlanningScreen: (state, action) => {
+      const { type, data } = action.payload;
+      switch (type) {
+        case "request":
+          state.isLoading = true;
+          state.reporting = {};
+          break;
+        case "response":
+          state.isLoading = false;
+          state.reporting = data;
+          break;
+        case "failure":
+          state.isLoading = false;
+          state.reporting = {};
+          break;
+        default:
+          break;
+      }
+    }
+  }
+});
 
-export default reducer;
+
+export const { getReportingData } = hiring_managerSlice.actions;
+export const { getPlanningScreen } = Planning_Screen.actions;
+
+
+export const hiringManagerReducer = hiring_managerSlice.reducer;
+export const planningScreenReducer = Planning_Screen.reducer;
+

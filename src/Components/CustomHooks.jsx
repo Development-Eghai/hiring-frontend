@@ -10,11 +10,12 @@ import { update_app_data } from 'Views/Common/Slices/Common_slice';
 export const useCommonState = () => {
   const selectCommonState = (state) => state.commonState;
   const selecthiringmanagerReducer = (state) => state.hiringManagerState;
+  const selectplanningScreenState = (state) => state.planningScreenState;
 
   const selectMemoizedCommonState = createSelector(
-    [selectCommonState, selecthiringmanagerReducer],
-    (commonState, hiringManagerState) => (
-      { commonState, hiringManagerState }
+    [selectCommonState, selecthiringmanagerReducer,selectplanningScreenState],
+    (commonState, hiringManagerState,planningScreenState) => (
+      { commonState, hiringManagerState,planningScreenState }
     )
   )
   return useSelector(selectMemoizedCommonState);
