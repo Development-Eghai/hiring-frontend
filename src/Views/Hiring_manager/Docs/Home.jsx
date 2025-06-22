@@ -61,7 +61,7 @@ export const Home = () => {
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
                             </InputGroup>
-                            <Creatmodel show={showModal} onHide={() => setShowModal(false)} />
+                            {/* <Creatmodel show={showModal} onHide={() => setShowModal(false)} /> */}
                         </div>
                     </div>
                 </div>
