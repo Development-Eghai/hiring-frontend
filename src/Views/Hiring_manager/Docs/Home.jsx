@@ -6,7 +6,9 @@ import DataTable from 'react-data-table-component';
 import Icons from "Utils/Icons";
 import { useCommonState, useDispatch } from "Components/CustomHooks";
 import { HandleGetReportingData } from "Views/Hiring_manager/Actions/HiringManagerAction";
- 
+import Creatmodel from "./Creatmodel";
+
+
 const tableStyles = {
     headCells: {
         style: {
@@ -14,6 +16,7 @@ const tableStyles = {
             color: '#000',
             fontWeight: 'bold',
             fontSize: '14px',
+            overflowY: "auto"
         },
     },
 };
@@ -23,6 +26,7 @@ export const Home = () => {
     const dispatch = useDispatch();
     const { jsonOnly } = JsonData();
     const [searchTerm, setSearchTerm] = useState('');
+    const [showModal, setShowModal] = useState(false);
 
     React.useEffect(() => {
         dispatch(HandleGetReportingData({ fields: ["job-poistion", "Recruiter", "divison", "department", "location", "status"] }))
@@ -57,22 +61,21 @@ export const Home = () => {
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
                             </InputGroup>
-                            <Button variant="primary" className="d-flex align-items-center">
-                                <span>{Icons.CreateNew} Create New</span>
-                            </Button>
+                            <Creatmodel show={showModal} onHide={() => setShowModal(false)} />
                         </div>
                     </div>
                 </div>
-
                 <DataTable
                     columns={jsonOnly?.columns}
                     data={hiringManagerState?.reporting?.data || []}
                     customStyles={tableStyles}
-                    pagination
-                    responsive
+                    fixedHeader
+                    fixedHeaderScrollHeight="500px"
                     striped
                     highlightOnHover
+                    pagination={true}
                     progressPending={hiringManagerState?.isLoading}
+                    className="custom-datatable"
                 />
             </Card>
         </div>

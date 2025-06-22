@@ -4,6 +4,7 @@ import { HiringManagerHomeCard } from "Components/Card/HiringManagerHomeCard";
 import { Button, Card, Form, InputGroup } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import Icons from "Utils/Icons";
+import Creatmodel from "./Creatmodel";
 
 const data = [
     {
@@ -38,21 +39,22 @@ const tableStyles = {
         },
     },
 };
- 
+
 export const PlanningScreen = () => {
     const { jsonOnly } = JsonData();
     const [searchTerm, setSearchTerm] = useState('');
     const filteredData = data.filter((row) => row.role?.toLowerCase().includes(searchTerm?.toLowerCase()));
+    const [showModal, setShowModal] = useState(false);
 
     return (
         <div className="h-100">
-            <div className="row py-3">
+            {/* <div className="row py-3">
                 {jsonOnly?.home_cards?.map((card, index) =>
                     <div className="col-12 col-md-6 col-lg-4 col-xl mb-3 px-2" key={index}>
                         <HiringManagerHomeCard data={card} />
                     </div>
                 )}
-            </div>
+            </div> */}
             <Card className="p-4 home_data_table">
                 <div className="row align-items-center mb-3">
                     <div className="col-3">
@@ -73,9 +75,10 @@ export const PlanningScreen = () => {
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
                             </InputGroup>
-                            <Button variant="primary" className="d-flex align-items-center">
+                            {/* <Button variant="primary" className="d-flex align-items-center">
                                 <span>{Icons.CreateNew} Create New</span>
-                            </Button>
+                            </Button> */}
+                            <Creatmodel show={showModal} onHide={() => setShowModal(false)} />
                         </div>
                     </div>
                 </div>
