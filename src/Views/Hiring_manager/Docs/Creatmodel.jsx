@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { FaCalendarAlt } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 import Icons from 'Utils/Icons';
 
 const Creatmodel = () => {
@@ -80,13 +81,13 @@ const Creatmodel = () => {
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button
-                        className="w-100"
-                        style={{ backgroundColor: '#2563EB', border: 'none' }}
+                    <Link
+                        to="/hiring_manager/planning/hiring_planning_form"
+                        className="w-100 px-5 py-2 text-white bg-primary text-center decoration-none  rounded"
                         onClick={handleSubmit}
                     >
                         Create
-                    </Button>
+                    </Link>
                 </Modal.Footer>
             </Modal>
 

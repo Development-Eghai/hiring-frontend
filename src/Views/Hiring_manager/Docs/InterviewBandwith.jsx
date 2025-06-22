@@ -1,153 +1,255 @@
-import React from "react";
-import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import React, { useState } from "react";
+import { Container, Row, Col, Form, Button, Spinner } from "react-bootstrap";
 import DataTable from "react-data-table-component";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import axiosInstance from "Services/axiosInstance";
 
 const InterviewBandwidth = () => {
-  const resultData = [
-    { metric: "Candidates Required", value: "120" },
-    { metric: "Decline Adjusted Count", value: "24" },
-    { metric: "Total Candidate Pipeline", value: "144" },
-    { metric: "Total Interviews Needed", value: "432" },
-    { metric: "Total Interview Hours", value: "864" },
-    { metric: "Working Hours per Week", value: "40" },
-    { metric: "Total Interview Weeks", value: "21.6" },
-    { metric: "Interviewer Bandwidth per Month", value: "14.4" },
-    { metric: "No. of Interviewers Needed", value: "14.4" },
-    { metric: "Leaves Adjustment", value: "15.9" },
-  ];
+  const [formData, setFormData] = useState({
+    no_of_roles_to_hire: "",
+    conversion_ratio: "",
+    offer_decline: "",
+    elimination: "",
+    avg_interviewer_time_per_week_hrs: "",
+    interview_round: "",
+    interview_time_per_round: "",
+    interviewer_leave_days: "",
+    no_of_month_interview_happens: "",
+  });
+
+  const [resultData, setResultData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const columns = [
-    {
-      name: "Metrics",
-      selector: (row) => row.metric,
-      grow: 3,
-      wrap: true,
-    },
-    {
-      name: "Values",
-      selector: (row) => row.value,
-      grow: 1,
-      center: true,
-    },
+    { name: "Metrics", selector: (row) => row.metric, grow: 3, wrap: true },
+    { name: "Values", selector: (row) => row.value, grow: 1, center: true },
   ];
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const validateForm = () => {
+    for (const key in formData) {
+      if (formData[key] === "") {
+        toast.warn(`Please fill out ${key.replace(/_/g, " ")}`);
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const handleCalculate = async () => {
+    if (!validateForm()) return;
+
+    setLoading(true);
+    setResultData([]);
+
+    try {
+      const payload = {
+        ...formData,
+        no_of_roles_to_hire: Number(formData.no_of_roles_to_hire),
+        conversion_ratio: Number(formData.conversion_ratio),
+        offer_decline: Number(formData.offer_decline),
+        elimination: Number(formData.elimination),
+        avg_interviewer_time_per_week_hrs: Number(formData.avg_interviewer_time_per_week_hrs),
+        interview_round: Number(formData.interview_round),
+        interview_time_per_round: Number(formData.interview_time_per_round),
+        interviewer_leave_days: Number(formData.interviewer_leave_days),
+        no_of_month_interview_happens: Number(formData.no_of_month_interview_happens),
+
+        // Static values
+        dead_line_days: 10,
+        working_hours_per_day: 8,
+        working_hrs_per_week: 40,
+      };
+
+      const res = await axiosInstance.post("/interview_planner_calc/", payload);
+
+      if (res.data.success) {
+        const data = res.data.data;
+        const results = [
+          { metric: "Candidates Required", value: data.required_candidate },
+          { metric: "Decline Adjusted Count", value: data.decline_adjust_count },
+          { metric: "Total Candidate Pipeline", value: data.total_candidate_pipline },
+          { metric: "Total Interviews Needed", value: data.total_interviews_needed },
+          { metric: "Total Interview Hours", value: data.total_interview_hrs },
+          { metric: "Working Hours per Week", value: data.working_hrs_per_week },
+          { metric: "Total Interview Weeks", value: data.total_interview_weeks },
+          { metric: "No. of Interviewers Needed", value: data.no_of_interviewer_need },
+          { metric: "Leaves Adjustment", value: data.leave_adjustment },
+        ];
+        setResultData(results);
+        toast.success("Calculation completed successfully!");
+      } else {
+        toast.error("API responded with an error.");
+      }
+    } catch (error) {
+      toast.error("An error occurred while fetching data.");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <Container className="interview-bandwidth-container py-4">
-      <h3 className="section-title mb-4">Interview Bandwidth Calculator</h3>
+    <Container className="py-4">
+      <ToastContainer />
+      <h3 className="mb-4 text-center">Interviewer Bandwidth Calculator</h3>
 
-      {/* Input Form */}
-      <Form className="input-form mb-5">
-        <Row className="mb-3 g-2">
-          <Col md={4} className="px-2">
-            <Form.Group>
-              <Form.Label>No. of Roles to Hire</Form.Label>
-              <Form.Control type="number" placeholder="Enter number" />
+      <Form className="mb-5">
+        <Row className="mb-3 gap-2">
+          <Col >
+            <Form.Group className="">
+              <Form.Label>No. of Roles to Hire *</Form.Label>
+              <Form.Control
+                type="number"
+                name="no_of_roles_to_hire"
+                value={formData.no_of_roles_to_hire}
+                onChange={handleChange}
+              />
             </Form.Group>
           </Col>
-          <Col md={4} className="px-2">
+
+          <Col>
             <Form.Group>
-              <Form.Label>Conversion Ratio (e.g., 12 means 1:12)</Form.Label>
-              <Form.Select>
-                <option>1:12</option>
-                <option>1:10</option>
-                <option>1:15</option>
-              </Form.Select>
+              <Form.Label>Conversion Ratio *</Form.Label>
+              <Form.Control
+                type="number"
+                name="conversion_ratio"
+                value={formData.conversion_ratio}
+                onChange={handleChange}
+              />
+
             </Form.Group>
           </Col>
-          <Col md={4} className="px-2">
+
+          <Col >
             <Form.Group>
-              <Form.Label>Offer Decline %</Form.Label>
-              <Form.Control type="number" placeholder="%" />
+              <Form.Label>Offer Decline % *</Form.Label>
+              <Form.Control
+                type="number"
+                name="offer_decline"
+                value={formData.offer_decline}
+                onChange={handleChange}
+              />
             </Form.Group>
           </Col>
         </Row>
 
-        <Row className="mb-3">
-          <Col md={4} className="px-2">
+        <Row className="mb-3 gap-2">
+          <Col>
             <Form.Group>
-              <Form.Label>Elimination %</Form.Label>
-              <Form.Control type="number" placeholder="%" />
+              <Form.Label>Elimination % *</Form.Label>
+              <Form.Control
+                type="number"
+                name="elimination"
+                value={formData.elimination}
+                onChange={handleChange}
+              />
             </Form.Group>
           </Col>
-          <Col md={4} className="px-2">
+
+          <Col>
             <Form.Group>
-              <Form.Label>Avg Interviewer Time per Week (hrs)</Form.Label>
-              <Form.Control type="number" placeholder="Hours" />
+              <Form.Label>Avg Interviewer Time/Week (hrs) *</Form.Label>
+              <Form.Control
+                type="number"
+                name="avg_interviewer_time_per_week_hrs"
+                value={formData.avg_interviewer_time_per_week_hrs}
+                onChange={handleChange}
+              />
             </Form.Group>
           </Col>
-          <Col md={4} className="px-2">
+
+          <Col>
             <Form.Group>
-              <Form.Label>No. of Rounds of Interview</Form.Label>
-              <Form.Control type="number" placeholder="Rounds" />
+              <Form.Label>No. of Interview Rounds *</Form.Label>
+              <Form.Control
+                type="number"
+                name="interview_round"
+                value={formData.interview_round}
+                onChange={handleChange}
+              />
             </Form.Group>
           </Col>
         </Row>
 
-        <Row className="mb-3">
-          <Col md={4} className="px-2">
+        <Row className="mb-3 gap-2">
+          <Col>
             <Form.Group>
-              <Form.Label>Interview Time per Round (hrs)</Form.Label>
-              <Form.Control type="number" placeholder="Hours" />
+              <Form.Label>Time per Round (hrs) *</Form.Label>
+              <Form.Control
+                type="number"
+                name="interview_time_per_round"
+                value={formData.interview_time_per_round}
+                onChange={handleChange}
+              />
             </Form.Group>
           </Col>
-          <Col md={4} className="px-2">
+
+          <Col>
             <Form.Group>
-              <Form.Label>Unplanned Leave Days per Interviewer</Form.Label>
-              <Form.Control type="number" placeholder="Days" />
+              <Form.Label>Unplanned Leave Days *</Form.Label>
+              <Form.Control
+                type="number"
+                name="interviewer_leave_days"
+                value={formData.interviewer_leave_days}
+                onChange={handleChange}
+              />
             </Form.Group>
           </Col>
-          <Col md={4} className="px-2">
+
+          <Col>
             <Form.Group>
-              <Form.Label>No. of Months Interview Happens</Form.Label>
-              <Form.Control type="number" placeholder="Months" />
+              <Form.Label>Interview Duration (Months) *</Form.Label>
+              <Form.Control
+                type="number"
+                name="no_of_month_interview_happens"
+                value={formData.no_of_month_interview_happens}
+                onChange={handleChange}
+              />
             </Form.Group>
           </Col>
         </Row>
 
         <div className="text-end">
-          <Button variant="primary px-5">Calculate</Button>
+          <Button variant="primary" onClick={handleCalculate} disabled={loading}>
+            {loading ? <Spinner animation="border" size="sm" /> : "Calculate"}
+          </Button>
         </div>
       </Form>
 
-      {/* Results Table Using React Data Table */}
-      <div className="results-section">
-        <h4 className="mb-3">Calculated Section</h4>
-        <div
-          
-        >
-          <DataTable
-            columns={columns}
-            data={resultData}
-            striped
-            dense
-            persistTableHead
-            customStyles={{
-              headRow: {
-                style: {
-                  backgroundColor: "#f1f5fb",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  paddingTop: "20px",
-                  paddingBottom: "20px",
-                  whiteSpace: "nowrap",
+      {resultData.length > 0 && (
+        <div className="results-section">
+          <h4 className="mb-3">Calculated Results</h4>
+          <div style={{ maxHeight: "400px", overflowY: "auto" }}>
+            <DataTable
+              columns={columns}
+              data={resultData}
+              striped
+              dense
+              persistTableHead
+              customStyles={{
+                headRow: {
+                  style: {
+                    backgroundColor: "#f1f5fb",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                  },
                 },
-              },
-              rows: {
-                style: {
-                  paddingTop: "20px",
-                  paddingBottom: "20px",
-                  whiteSpace: "nowrap",
+                rows: {
+                  style: {
+                    fontSize: "14px",
+                  },
                 },
-              },
-              cells: {
-                style: {
-                  fontSize: "14px",
-                },
-              },
-            }}
-          />
+              }}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </Container>
   );
 };
