@@ -9,8 +9,8 @@ const JsonData = () => {
     const jsonOnly = {
         sidebar_data: [
             {
-                name: 'Reporting',
-                route: 'reporting',
+                name: 'Dashboard',
+                route: 'hiring_manager_dashboard',
                 icon: Icons.Reporting
             },
             {
@@ -46,11 +46,11 @@ const JsonData = () => {
                     }
                 ]
             },
-            {
-                name: 'Create Job Requisition',
-                route: 'create_job_requisition',
-                icon: Icons.Requisition
-            },
+            // {
+            //     name: 'Create Job Requisition',
+            //     route: 'create_job_requisition',
+            //     icon: Icons.Requisition
+            // },
         ],
         home_cards: [
             {

@@ -8,6 +8,7 @@ import { Home } from "Views/Hiring_manager/Docs/Home";
 import InterviewBandwith from "Views/Hiring_manager/Docs/InterviewBandwith";
 import InterviewDesignDashboard from "Views/Hiring_manager/Docs/InterviewDesignDashboard";
 import InterviewDesignScreen from "Views/Hiring_manager/Docs/InterviewDesignScreen";
+import PlanningForm from "Views/Hiring_manager/Docs/PlanningForm";
 import { PlanningScreen } from "Views/Hiring_manager/Docs/PlanningScreen";
 import { Layout } from "Views/Hiring_manager/Hiring_manager_utils/Layout";
 
@@ -23,11 +24,11 @@ function App() {
           <Route path="/hiring_manager">
             <Route element={<Layout />}>
               <Route path="home" element={<Home />} />
-              <Route path="reporting" element={<Home />} />
+              <Route path="hiring_manager_dashboard" element={<Home />} />
               <Route path="planning" >
                 <Route index element={<PlanningScreen />} />
-                <Route path="hiring_planning_form" element={<PlanningScreen />} />
-                <Route path="interview_design_screen" element={<InterviewDesignScreen />} />
+                <Route path="hiring_planning_form" element={<PlanningForm />} />
+                <Route path="interview_design_screen" element={<InterviewDesignDashboard />} />
                 <Route path="interview_design_dashboard" element={<InterviewDesignDashboard />} />
                 <Route path="interviewer_bandwidth" element={<InterviewBandwith />} />
                 <Route path="stage_alert_and_responsibility_settings" element={<Home />} />
