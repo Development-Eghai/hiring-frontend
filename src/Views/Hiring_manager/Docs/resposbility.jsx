@@ -74,7 +74,7 @@ const ResponsibilitySetting = () => {
   );
 
   return (
-    <Container className="">
+    <div className="    ">
       <Card className="shadow-sm">
         <Card.Body>
           <h4 className="mb-3 fw-bold">Setting Responsibility</h4>
@@ -184,7 +184,7 @@ const ResponsibilitySetting = () => {
           </div>
         </Card.Body>
       </Card>
-    </Container>
+    </div>
   );
 };
 
