@@ -74,8 +74,8 @@ const ResponsibilitySetting = () => {
   );
 
   return (
-    <div className="    ">
-      <Card className="shadow-sm">
+    <div className="  h-100  ">
+      <Card className="shadow-sm home_data_table"style={{height:"600px"}}>
         <Card.Body>
           <h4 className="mb-3 fw-bold">Setting Responsibility</h4>
           <p className="text-muted mb-4">

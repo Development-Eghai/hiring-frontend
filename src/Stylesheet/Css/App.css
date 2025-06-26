@@ -465,4 +465,49 @@ header {
   color: red;
 }
 
-
+/* JobRequisition */
+/* src/Stylesheet/Css/App.css */
+.stepper {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.step {
+  position: relative;
+  flex: 1;
+  text-align: center;
+}
+.step:not(:first-child)::after {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #7d7d7d;
+  z-index: 0;
+}
+.step.done .circle,
+.step.active .circle {
+  background-color: #55b776;
+  border-color: #55b776;
+}
+.step.done .circle::before {
+  content: "✓";
+  color: white;
+  font-size: 18px;
+}
+.circle {
+  width: 30px;
+  height: 30px;
+  margin: 0 auto;
+  border: 2px solid #7d7d7d;
+  border-radius: 50%;
+  background: white;
+  line-height: 30px;
+  z-index: 1;
+}
+.step.done + .step::after,
+.step.active + .step::after {
+  background-color: #55b776;
+}
