@@ -29,7 +29,7 @@ const CustomizeFieldLabels = () => {
   };
 
   return (
-    <Container className="my-5">
+    <div className="home_data_table my-5">
       <Card className="shadow-lg border-0">
         <Card.Body>
           <h4 className="mb-4 fw-bold text-primary">Customize Field Labels</h4>
@@ -63,7 +63,7 @@ const CustomizeFieldLabels = () => {
           </Form>
         </Card.Body>
       </Card>
-    </Container>
+    </div>
   );
 };
 

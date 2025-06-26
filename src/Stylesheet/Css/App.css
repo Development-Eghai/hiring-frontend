@@ -511,3 +511,12 @@ header {
 .step.active + .step::after {
   background-color: #55b776;
 }
+/* yourStyles.css */
+.quill-editor {
+  min-height: 200px;
+  border-radius: 8px;
+}
+
+.ql-container {
+  min-height: 150px;
+}
