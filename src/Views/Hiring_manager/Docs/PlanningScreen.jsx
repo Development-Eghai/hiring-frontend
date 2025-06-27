@@ -7,6 +7,7 @@ import Icons from "Utils/Icons";
 import Creatmodel from "./Creatmodel";
 import { useCommonState, useDispatch } from "Components/CustomHooks";
 import { HandleGetPlanningScreen } from "../Actions/HiringManagerAction";
+import FilterComponent from "./FilterComponent";
 
 
 // const data = [
@@ -65,7 +66,8 @@ console.log(planningScreenState)
                     </div>
                 )}
             </div> */}
-            <Card className="p-4 home_data_table">
+            <Card className="p-4  
+            ">
                 <div className="row align-items-center mb-3">
                     <div className="col-3 d-flex">
                         <h4 className="fw-bold mb-0">Planning Lists</h4>
@@ -74,9 +76,10 @@ console.log(planningScreenState)
                     <div className="col-9 d-flex justify-content-end">
                         <div className="d-flex align-items-center gap-2 flex-wrap justify-content-end w-100">
                             <h6 className="fw-normal mt-2">View Requisition templates</h6>
-                            <Button variant="outline-secondary" className="d-flex align-items-center">
+                            {/* <Button variant="outline-secondary" className="d-flex align-items-center">
                                 <span>{Icons.Filter} Filter</span>
-                            </Button>
+                            </Button> */}
+                            <FilterComponent/>
                             <InputGroup style={{ maxWidth: '300px' }}>
                                 <InputGroup.Text>
                                     {Icons.Search}

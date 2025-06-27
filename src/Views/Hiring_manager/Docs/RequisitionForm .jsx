@@ -485,7 +485,11 @@ const RequisitionForm = () => {
                         highlightOnHover
                     />
                     <div className="row">
+<<<<<<< Updated upstream
                         <div className="col-md-3">
+=======
+                        <div className="col-md-4">
+>>>>>>> Stashed changes
                             <label className="form-label">ONB Coordinator: <span className="text-danger">*</span></label>
                             <select
                                 {...register("onbCoordinator", { required: "ONB Coordinator is required" })}
@@ -498,7 +502,11 @@ const RequisitionForm = () => {
                             {errors.onbCoordinator && <div className="invalid-feedback">{errors.onbCoordinator.message}</div>}
                         </div>
 
+<<<<<<< Updated upstream
                         <div className="col-md-3">
+=======
+                        <div className="col-md-4">
+>>>>>>> Stashed changes
                             <label className="form-label">
                                 ONB Coordinator Team <small>(Manage Additional Users)</small>:
                             </label>
@@ -512,7 +520,11 @@ const RequisitionForm = () => {
                             </select>
                         </div>
 
+<<<<<<< Updated upstream
                         <div className="col-md-3">
+=======
+                        <div className="col-md-4">
+>>>>>>> Stashed changes
                             <label className="form-label">ISG Team: <span className="text-danger">*</span></label>
                             <select
                                 {...register("isgTeam", { required: "ISG Team is required" })}
@@ -527,7 +539,11 @@ const RequisitionForm = () => {
                     </div>
 
                     <div className="row mt-3">
+<<<<<<< Updated upstream
                         <div className="col-md-3">
+=======
+                        <div className="col-md-4">
+>>>>>>> Stashed changes
                             <label className="form-label">Interview Teammate 1 (Emp ID): <span className="text-danger">*</span></label>
                             <select
                                 {...register("interviewTeammate1", { required: "Teammate 1 is required" })}
@@ -540,7 +556,11 @@ const RequisitionForm = () => {
                             {errors.interviewTeammate1 && <div className="invalid-feedback">{errors.interviewTeammate1.message}</div>}
                         </div>
 
+<<<<<<< Updated upstream
                         <div className="col-md-3">
+=======
+                        <div className="col-md-4">
+>>>>>>> Stashed changes
                             <label className="form-label">Interview Teammate 2 (Emp ID): <span className="text-danger">*</span></label>
                             <select
                                 {...register("interviewTeammate2", { required: "Teammate 2 is required" })}
