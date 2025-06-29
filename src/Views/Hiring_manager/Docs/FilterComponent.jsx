@@ -69,12 +69,12 @@ const FilterComponent = () => {
   return (
     <>
       <Button variant="outline-secondary" className="d-flex align-items-center" onClick={openModal}>
-        <span>{Icons.Filter} Filter</span>
+        <span>{Icons.Filter} Display  Options</span>
       </Button>
 
       <Modal show={showModal} onHide={closeModal} size="lg" centered>
         <Modal.Header closeButton>
-          <Modal.Title>Filter Options</Modal.Title>
+          <Modal.Title>Display  Options</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="row"

@@ -1,6 +1,6 @@
 import React from 'react';
 import DataTable from 'react-data-table-component';
-import { FaTrash } from 'react-icons/fa';
+import { FaAddressBook, FaInfo, FaInfoCircle, FaTrash } from 'react-icons/fa';
 
 const data = [
   {
@@ -116,7 +116,7 @@ const columns = [
   },
   {
     name: 'Status',
-    cell: () => <FaTrash className="delete-icon" />,
+    cell: () => <FaInfoCircle className="delete-icon" />,
     button: true,
     width: '70px',
     center: true,
@@ -135,7 +135,7 @@ const InterviewDesignDashboard = () => {
 
         columns={columns}
         data={data}
-        pagination
+        
         striped
         dense
         persistTableHead
