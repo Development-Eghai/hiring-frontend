@@ -84,7 +84,7 @@ const Creatmodel = () => {
         </Modal.Body>
         <Modal.Footer>
           <Link
-            to="/hiring_manager/planning/hiring_planning_form"
+            to="/hiring_manager/job_requisition"
             className="w-100 px-5 py-2 text-white bg-primary text-center decoration-none  rounded"
             onClick={handleSubmit}
           >

@@ -3,8 +3,8 @@ export function LoginSuccessNavigateTo(user_role, navigate) {
         case "Hiring Manager":
             return navigate("/hiring_manager/home");
 
-        case "user":
-            navigate("/user_dashboard");
+        case "recruiter":
+            navigate("/recruiter");
             break;
             
         default:

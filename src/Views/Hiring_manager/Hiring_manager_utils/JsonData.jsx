@@ -24,6 +24,11 @@ const JsonData = () => {
                         route: 'planning/hiring_planning_form',
                         icon: Icons.Planning
                     },
+                     {
+                        name: 'Interview Design Dashboard',
+                        route: 'planning/interview_design_dashboard',
+                        icon: Icons.Planning
+                    },
                     {
                         name: 'Interview Design Screen',
                         route: 'planning/interview_design_screen',

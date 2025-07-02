@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import JsonData from "../Hiring_manager_utils/JsonData";
 import { Card, Form, InputGroup } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
-import Creatmodel from "./Creatmodel";
 import Icons from "Utils/Icons";
 import FilterComponent from "./FilterComponent";
 import { useCommonState, useDispatch } from "Components/CustomHooks";
@@ -49,7 +48,7 @@ export const PlanningScreen = () => {
 
     return (
         <div className="h-100">
-            <Card className="p-4">
+            <Card className="p-4 h-100">
                 <div className="row align-items-center mb-3">
                     <div className="col-3 d-flex">
                         <h4 className="fw-bold mb-0">Planning Lists</h4>
@@ -66,7 +65,7 @@ export const PlanningScreen = () => {
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
                             </InputGroup>
-                            <Creatmodel show={showModal} onHide={() => setShowModal(false)} />
+
                         </div>
                     </div>
                 </div>
@@ -76,7 +75,6 @@ export const PlanningScreen = () => {
                     data={filteredData}
                     customStyles={tableStyles}
                     fixedHeader
-                    fixedHeaderScrollHeight="500px"
                     striped
                     highlightOnHover
                     pagination

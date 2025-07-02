@@ -98,9 +98,10 @@ const RequisitionForm = () => {
                     : "bg-primary text-white"
                     }`}
             >
-                <div className="mb-3">
+                <div className="row">
+                <div className="mb-3 col-md-3">
                     <label className="form-label">
-                        Job Title
+                        Req Id
                         <input
                             type="text"
                             className="form-control"
@@ -108,6 +109,18 @@ const RequisitionForm = () => {
                             onBlur={handleRequisitionSubmit}
                         />
                     </label>
+                </div>
+                <div className="mb-3 col-md-3">
+                    <label className="form-label">
+                        Planning Id
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Enter job title"
+                            onBlur={handleRequisitionSubmit}
+                        />
+                    </label>
+                </div>
                 </div>
             </AccordionItem>
 

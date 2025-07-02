@@ -23,7 +23,6 @@ export function decryptData(ciphertext) {
         const bytes = CryptoJS.TripleDES.decrypt(fixedCiphertext, REACT_APP_CRYPTO_SECRET_KEY);
         if (!bytes?.sigBytes) return null
         const originalData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-        console.log(originalData)
         return originalData;
     } catch (error) {
         return null

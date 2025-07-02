@@ -18,9 +18,9 @@ let initialState = {
         innerWidth: 0,
         innerHeight: 0,
         buttonSpinner: false,
-        token: Cookies.get("pixeel_advant_log") ? decryptData(Cookies.get("pixeel_advant_log"))?.access_token : '',
-        user_role: Cookies.get("pixeel_advant_log") ? decryptData(Cookies.get("pixeel_advant_log"))?.role : '',
-        user_id: Cookies.get('pixeel_advant_log') ? decryptData(Cookies.get("pixeel_advant_log"))?.user_id : '',
+        token: Cookies.get("pixeel_advant_log") ? decryptData(Cookies.get("pixeel_advant_log"))[get_dashboard_role()]?.access : '',
+        user_role: Cookies.get("pixeel_advant_log") ? decryptData(Cookies.get("pixeel_advant_log"))[get_dashboard_role()]?.role : '',
+        user_id: Cookies.get('pixeel_advant_log') ? decryptData(Cookies.get("pixeel_advant_log"))[get_dashboard_role()]?.user_id : '',
     },
     pagination: {
         currentPage: 1,
@@ -92,11 +92,18 @@ const commonSlice = createSlice({
                     state.app_data.user_role = null;
                     break;
                 case "response":
-                    let update_cookie_log = {
-                        [data?.role?.split(" ")?.join("")]: data?.token || '',
-                        role: data?.role || '',
-                    }
-
+                    let update_cookie_log = {}
+                    const avail_cookie_data = decryptData(Cookies.get("pixeel_advant_log"));
+                    if(Object.keys(avail_cookie_data)?.length){
+                        if (!avail_cookie_data.hasOwnProperty(data?.role?.split(" ")?.join(""))) {
+                     update_cookie_log = {...avail_cookie_data,  [data?.role?.split(" ")?.join("")]: { ...data || {} }  }
+                        }else{
+                            update_cookie_log = {...update_cookie_log}
+                        }
+                    }else{
+                        update_cookie_log = { [data?.role?.split(" ")?.join("")]: { ...data || {} }}
+                    } 
+                    
                     const encrypted_logs = encryptData(update_cookie_log);
                     Cookies.set('pixeel_advant_log', encrypted_logs);
 
@@ -138,6 +145,22 @@ function setErrorState(state, action) {
     let error_message = typeof action.payload === 'object' ? action.payload?.message : action.payload;
     state.Err = error_message;
     state.Toast_Type = "error";
+}
+
+function get_dashboard_role(){
+    const path = window.location.pathname?.split('/')[1]
+    if(path){
+        switch (path){
+            case 'hiring_manager':
+                return 'HiringManager'
+
+            case 'recruiter':
+                return 'Recruiter'
+
+            default:
+                return ''
+        }
+    }
 }
 
 const { actions, reducer } = commonSlice;

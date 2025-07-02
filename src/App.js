@@ -15,6 +15,7 @@ import PlanningForm from "Views/Hiring_manager/Docs/PlanningForm";
 import { PlanningScreen } from "Views/Hiring_manager/Docs/PlanningScreen";
 import ResponsibilitySetting from "Views/Hiring_manager/Docs/resposbility";
 import { Layout } from "Views/Hiring_manager/Hiring_manager_utils/Layout";
+import { ReqHome } from "Views/Recruiter/Docs";
 
 function App() {
   return (
@@ -44,7 +45,7 @@ function App() {
           </Route>
 
 
-          <Route path="/recruiter">
+          <Route path="/recruiter" element={<ReqHome/>}>
 
           </Route>
 

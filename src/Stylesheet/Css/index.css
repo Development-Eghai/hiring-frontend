@@ -16,8 +16,12 @@
 }
 
 .home_data_table{
-  height: 80%;
+  height: calc(var(--root-height) - (var(--header-height) + 4rem));
   overflow-y: scroll;
+}
+.sc-fVHBlr.kkoiZw,
+.custom-datatable{
+  height: 100% !important;
 }
 
 /* main  */
