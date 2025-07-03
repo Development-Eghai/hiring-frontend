@@ -3,6 +3,8 @@ import ButtonComponent from 'Components/Button/Button';
 import Icons from 'Utils/Icons';
 import { useCommonState, useDispatch } from 'Components/CustomHooks';
 import HeaderCard from 'Components/Card/HeaderCard';
+import { useLocation } from 'react-router-dom';
+import { FaSearch, FaBell, FaUser } from 'react-icons/fa';
 
 const Header = ({
   offcanvasOn,
@@ -11,6 +13,8 @@ const Header = ({
   const { commonState } = useCommonState();
   const dispatch = useDispatch()
 
+  const location = useLocation();
+  const currentPath = location.pathname
 
   const headerContentFunc = () => {
     return <>
@@ -52,17 +56,74 @@ const Header = ({
       </div>
     </>
   }
+  
+  const recruiterHeader = () => {
+    return (
+      <>
+        <div className="row align-items-center py-2 border-bottom">
+          <div className="col-md-3">
+            <h4 className="fw-bold">Recruiter_Dashboard</h4>
+          </div>
+  
+          <div className="col-md-6 d-flex justify-content-center">
+          </div>
+  
+          <div className="col-md-3 d-flex align-items-center justify-content-end gap-4">
+            <div className="input-group input-group-sm w-100">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Search .."
+              />
+              <span className="input-group-text bg-white border-start-0">
+                <FaSearch />
+              </span>
+            </div>
+
+            {/* Icons */}
+            <FaBell className="fs-6 " />
+            <FaUser className="fs-6" />
+            </div>
+        </div>
+        <div className="row mt-2">
+          <div className="col d-flex flex-wrap gap-2">
+            <ButtonComponent buttonName="Candidates" className="btn-primary" />
+            <ButtonComponent buttonName="Schedule interview" className="btn-primary" />
+            <ButtonComponent buttonName="Recruiter Negotiation" className="btn-primary" />
+            <ButtonComponent buttonName="Screening" className="btn-primary" />
+            <ButtonComponent buttonName="Hiring Manager Approval" className="btn-primary" />
+            <ButtonComponent buttonName="Interview Stages" className="btn-primary" />
+            <ButtonComponent buttonName="Scorecard / Debrief" className="btn-primary" />
+            <ButtonComponent buttonName="Offer" className="btn-primary" />
+            <ButtonComponent buttonName="Approval" className="btn-primary" />
+            <ButtonComponent buttonName="Onboarding" className="btn-primary" />
+          </div>
+        </div>
+      </>
+    );
+  };
+  
+  
 
   return (
-
-    <HeaderCard
-      cardClassName='w-100 border-0 header-card '
-      cardTitleClassName="row justify-content-end mb-0"
-      cardBodyClassName='py-3 header-body'
-      cardContent={headerContentFunc()}
-    />
-
-  )
+    <>
+      {currentPath.startsWith("/recruiter") ? (
+        <HeaderCard
+          cardClassName="w-100 border-0 header-card"
+          cardTitleClassName="row justify-content-end mb-0"
+          cardBodyClassName="py-3 header-body"
+          cardContent={recruiterHeader()}
+        />
+      ) : (
+        <HeaderCard
+          cardClassName="w-100 border-0 header-card"
+          cardTitleClassName="row justify-content-end mb-0"
+          cardBodyClassName="py-3 header-body"
+          cardContent={headerContentFunc()}
+        />
+      )}
+    </>
+  );
 }
 
 export default Header
