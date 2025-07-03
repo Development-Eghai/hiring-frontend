@@ -1,31 +1,141 @@
-import React, { useState } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Modal, Button, Form, Spinner } from "react-bootstrap";
 import { FaCalendarAlt } from "react-icons/fa";
-import { Link } from "react-router-dom";
-import Icons from "Utils/Icons";
+import axios from "axios";
+import Icons from "Utils/Icons"; // Adjust path as needed
 
 const Creatmodel = () => {
   const [show, setShow] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [planIds, setPlanIds] = useState([]);
+  const [templateOptions, setTemplateOptions] = useState([]);
+  const [statusMessage, setStatusMessage] = useState(null); // ✅ For inline message
+
   const [formData, setFormData] = useState({
-    jobDate: "",
-    jobTemplate: "",
-    openings: "",
+    hiring_plan_id: "",
+    requisition_date: "",
+    requisition_template: "",
+    no_of_openings: "",
   });
+
+  useEffect(() => {
+    if (show) {
+      setStatusMessage(null); // Clear message
+      fetchPlanIds();
+      fetchJobTemplates();
+    }
+  }, [show]);
+
+  const fetchPlanIds = async () => {
+    try {
+      const res = await axios.post(
+        "https://api.pixeladvant.com/get_plan_id_position_role/",
+        {}
+      );
+      const data = res?.data?.data;
+
+      if (Array.isArray(data) && data.length) {
+        setPlanIds(data);
+        sessionStorage.setItem("planData", JSON.stringify(data));
+      } else {
+        setPlanIds([]);
+      }
+    } catch (err) {
+      console.error("Plan ID fetch error:", err);
+      setPlanIds([]);
+    }
+  };
+
+  const fetchJobTemplates = async () => {
+    try {
+      const res = await axios.get("https://api.pixeladvant.com/reqs/ids/");
+      const data = res?.data?.data;
+
+      if (Array.isArray(data)) {
+        setTemplateOptions(data);
+      } else {
+        setTemplateOptions([]);
+      }
+    } catch (err) {
+      console.error("Template fetch error:", err);
+      setTemplateOptions([]);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = () => {
-    console.log("Form submitted:", formData);
-    setShow(false);
+  const handleSubmit = async () => {
+    const {
+      hiring_plan_id,
+      requisition_date,
+      requisition_template,
+      no_of_openings,
+    } = formData;
+
+    if (
+      !hiring_plan_id ||
+      !requisition_date ||
+      !requisition_template ||
+      !no_of_openings
+    ) {
+      setStatusMessage({
+        type: "danger",
+        text: "Please fill all required fields.",
+      });
+      return;
+    }
+
+    const payload = {
+      hiring_plan_id,
+      requisition_date,
+      requisition_template,
+      no_of_openings: parseInt(no_of_openings),
+    };
+
+    try {
+      setLoading(true);
+      const res = await axios.put(
+        "https://api.pixeladvant.com/hiring_plan/",
+        payload
+      );
+
+      if (res?.data?.success) {
+        setStatusMessage({
+          type: "success",
+          text: "Job requisition created successfully!",
+        });
+        setFormData({
+          hiring_plan_id: "",
+          requisition_date: "",
+          requisition_template: "",
+          no_of_openings: "",
+        });
+        // You can close modal after success if needed:
+        // setTimeout(() => setShow(false), 1000);
+      } else {
+        setStatusMessage({
+          type: "danger",
+          text: "Failed to create job requisition.",
+        });
+      }
+    } catch (err) {
+      console.error("Submission error:", err);
+      setStatusMessage({
+        type: "danger",
+        text: "An error occurred during submission.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <>
       <Button variant="primary" onClick={() => setShow(true)}>
-        {Icons.CreateNew} Create New
+        {Icons?.CreateNew || "+"} Create New
       </Button>
 
       <Modal
@@ -37,59 +147,116 @@ const Creatmodel = () => {
         <Modal.Header closeButton>
           <Modal.Title>Manage Job Requisition</Modal.Title>
         </Modal.Header>
+
         <Modal.Body>
           <Form>
+            {/* Planning ID */}
             <Form.Group className="mb-3">
               <Form.Label>
-                Date of new job Requisition
-                <span className="text-danger">*</span>
-              </Form.Label>
-              <div className="d-flex align-items-center position-relative">
-                <Form.Control
-                  type="date"
-                  name="jobDate"
-                  value={formData.jobDate}
-                  onChange={handleChange}
-                />
-                <FaCalendarAlt className="position-absolute end-0 me-3 text-muted" />
-              </div>
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>
-                Job Requisition Template<span className="text-danger">*</span>
+                Planning ID <span className="text-danger">*</span>
               </Form.Label>
               <Form.Select
-                name="jobTemplate"
-                value={formData.jobTemplate}
+                name="hiring_plan_id"
+                value={formData.hiring_plan_id}
                 onChange={handleChange}
+                disabled={loading || planIds.length === 0}
               >
-                <option value="">Select Template</option>
-                <option value="template1">Template 1</option>
-                <option value="template2">Template 2</option>
+                <option value="">Select Planning ID</option>
+                {planIds.map((id, idx) => (
+                  <option key={idx} value={id}>
+                    {id}
+                  </option>
+                ))}
               </Form.Select>
             </Form.Group>
 
+            {/* Requisition Date */}
             <Form.Group className="mb-3">
-              <Form.Label>Number of Openings</Form.Label>
+              <Form.Label>
+                Date of Requisition <span className="text-danger">*</span>
+              </Form.Label>
+
+              <div
+                className="position-relative"
+                onClick={() =>
+                  document
+                    .getElementById("requisitionDateInput")
+                    ?.showPicker?.()
+                }
+                style={{ cursor: "pointer" }}
+              >
+                <Form.Control
+                  type="date"
+                  name="requisition_date"
+                  id="requisitionDateInput"
+                  value={formData.requisition_date}
+                  onChange={handleChange}
+                  
+                />
+                {/* <FaCalendarAlt
+                  className="position-absolute text-muted"
+                  style={{
+                    right: "1rem",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    pointerEvents: "none",
+                  }}
+                /> */}
+              </div>
+            </Form.Group>
+
+            {/* Template Dropdown */}
+            <Form.Group className="mb-3">
+              <Form.Label>
+                Job Requisition Template <span className="text-danger">*</span>
+              </Form.Label>
+              <Form.Select
+                name="requisition_template"
+                value={formData.requisition_template}
+                onChange={handleChange}
+                disabled={loading || templateOptions.length === 0}
+              >
+                <option value="">Select Template</option>
+                {templateOptions.map((item, idx) => (
+                  <option key={idx} value={item.req_ids}>
+                    {item.job_position}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+
+            {/* No of Openings */}
+            <Form.Group className="mb-3">
+              <Form.Label>
+                Number of Openings <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="number"
-                name="openings"
-                value={formData.openings}
+                name="no_of_openings"
+                value={formData.no_of_openings}
                 onChange={handleChange}
                 placeholder="Enter number"
               />
             </Form.Group>
           </Form>
         </Modal.Body>
-        <Modal.Footer>
-          <Link
-            to="/hiring_manager/job_requisition"
-            className="w-100 px-5 py-2 text-white bg-primary text-center decoration-none  rounded"
+
+        <Modal.Footer className="flex-column">
+          {/* {statusMessage && (
+            <div
+              className={`text-${statusMessage.type} w-100 text-center mb-2`}
+            >
+              {statusMessage.text}
+            </div>
+          )} */}
+          <Button
+            variant="primary"
+            className="w-100"
             onClick={handleSubmit}
+            disabled={loading}
           >
-            Create
-          </Link>
+            {loading ? <Spinner animation="border" size="sm" /> : "Create"}
+          </Button>
         </Modal.Footer>
       </Modal>
 

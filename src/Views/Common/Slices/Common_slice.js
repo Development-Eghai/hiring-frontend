@@ -1,6 +1,32 @@
 import { decryptData, encryptData } from "Security/Crypto/Crypto";
-import Cookies from 'js-cookie'
+import Cookies from 'js-cookie';
 import { createSlice } from "@reduxjs/toolkit";
+
+// Utility to get role from path
+function get_dashboard_role() {
+    if (typeof window === 'undefined') return '';
+    const path = window.location.pathname?.split('/')[1];
+    switch (path) {
+        case 'hiring_manager': return 'HiringManager';
+        case 'recruiter': return 'Recruiter';
+        default: return '';
+    }
+}
+
+// Safe cookie decryption
+function getUserDataFromCookie() {
+    const encryptedCookie = Cookies.get("pixeel_advant_log");
+    let decryptedData = {};
+    try {
+        decryptedData = encryptedCookie ? decryptData(encryptedCookie) : {};
+    } catch (err) {
+        decryptedData = {};
+    }
+    const roleKey = get_dashboard_role();
+    return decryptedData[roleKey] || {};
+}
+
+const userData = getUserDataFromCookie();
 
 let initialState = {
     login_data: {},
@@ -18,9 +44,9 @@ let initialState = {
         innerWidth: 0,
         innerHeight: 0,
         buttonSpinner: false,
-        token: Cookies.get("pixeel_advant_log") ? decryptData(Cookies.get("pixeel_advant_log"))[get_dashboard_role()]?.access : '',
-        user_role: Cookies.get("pixeel_advant_log") ? decryptData(Cookies.get("pixeel_advant_log"))[get_dashboard_role()]?.role : '',
-        user_id: Cookies.get('pixeel_advant_log') ? decryptData(Cookies.get("pixeel_advant_log"))[get_dashboard_role()]?.user_id : '',
+        token: userData?.access || '',
+        user_role: userData?.role || '',
+        user_id: userData?.user_id || '',
     },
     pagination: {
         currentPage: 1,
@@ -35,7 +61,7 @@ let initialState = {
         Err: null,
         Toast_Type: null
     },
-}
+};
 
 const commonSlice = createSlice({
     name: 'common_slice',
@@ -43,11 +69,11 @@ const commonSlice = createSlice({
     reducers: {
         updateModalShow(state, actions) {
             const { data } = actions.payload;
-            state.modal.show = true
-            state.modal.size = data?.modalSize || "md"
-            state.modal.from = data?.modal_from || null
-            state.modal.type = data?.modal_type || null
-            state.modal.close_btn = data?.modal_close_btn || false
+            state.modal.show = true;
+            state.modal.size = data?.modalSize || "md";
+            state.modal.from = data?.modal_from || null;
+            state.modal.type = data?.modal_type || null;
+            state.modal.close_btn = data?.modal_close_btn || false;
         },
         update_app_data(state, action) {
             const { type, data } = action.payload;
@@ -69,7 +95,7 @@ const commonSlice = createSlice({
                     state.app_data.validated = data || false;
                     break;
                 default:
-                    return
+                    return;
             }
         },
         update_login_data(state, action) {
@@ -82,7 +108,6 @@ const commonSlice = createSlice({
             state.error.Toast_Type = Toast_Type || null;
         },
 
-        //Api 
         login_reducer(state, actions) {
             const { type, data } = actions.payload || {};
             switch (type) {
@@ -91,84 +116,75 @@ const commonSlice = createSlice({
                     state.app_data.token = null;
                     state.app_data.user_role = null;
                     break;
+
                 case "response":
-                    let update_cookie_log = {}
-                    const avail_cookie_data = decryptData(Cookies.get("pixeel_advant_log"));
-                    if(Object.keys(avail_cookie_data)?.length){
-                        if (!avail_cookie_data.hasOwnProperty(data?.role?.split(" ")?.join(""))) {
-                     update_cookie_log = {...avail_cookie_data,  [data?.role?.split(" ")?.join("")]: { ...data || {} }  }
-                        }else{
-                            update_cookie_log = {...update_cookie_log}
-                        }
-                    }else{
-                        update_cookie_log = { [data?.role?.split(" ")?.join("")]: { ...data || {} }}
-                    } 
-                    
-                    const encrypted_logs = encryptData(update_cookie_log);
+                    const encryptedCookie = Cookies.get("pixeel_advant_log");
+                    let existingData = {};
+                    try {
+                        existingData = encryptedCookie ? decryptData(encryptedCookie) : {};
+                    } catch {
+                        existingData = {};
+                    }
+
+                    const roleKey = data?.role?.split(" ")?.join("") || '';
+                    let updatedCookieData = { ...existingData };
+
+                    if (!existingData?.hasOwnProperty(roleKey)) {
+                        updatedCookieData[roleKey] = { ...data };
+                    }
+
+                    const encrypted_logs = encryptData(updatedCookieData);
                     Cookies.set('pixeel_advant_log', encrypted_logs);
 
                     state.app_data.buttonSpinner = false;
                     state.app_data.token = data?.token || '';
                     state.app_data.user_role = data?.role || '';
+                    state.app_data.user_id = data?.user_id || '';
                     break;
+
                 case "failure":
                     state.app_data.buttonSpinner = false;
                     state.error.Err = data?.message || 'Login failed';
                     state.error.Toast_Type = data?.Toast_Type || "error";
                     break;
+
                 default:
-                    return
+                    return;
             }
         },
-        logout(state, actions) {
+
+        logout(state) {
             Cookies.remove("pixeel_advant_log");
             state.app_data.token = '';
             state.app_data.refresh_token = '';
             state.app_data.user_role = '';
             state.app_data.user_id = '';
         },
+    }
+});
 
-    },
-    // extraReducers: (builder) => {
-    //     builder
-
-    // }
-})
-
+// Optional helper functions
 function setSuccessState(state, action) {
-    let error_message = typeof action.payload === 'object' ? action.payload?.message : action.payload;
-    state.Err = error_message;
+    const msg = typeof action.payload === 'object' ? action.payload?.message : action.payload;
+    state.Err = msg;
     state.Toast_Type = "success";
 }
 
 function setErrorState(state, action) {
-    let error_message = typeof action.payload === 'object' ? action.payload?.message : action.payload;
-    state.Err = error_message;
+    const msg = typeof action.payload === 'object' ? action.payload?.message : action.payload;
+    state.Err = msg;
     state.Toast_Type = "error";
-}
-
-function get_dashboard_role(){
-    const path = window.location.pathname?.split('/')[1]
-    if(path){
-        switch (path){
-            case 'hiring_manager':
-                return 'HiringManager'
-
-            case 'recruiter':
-                return 'Recruiter'
-
-            default:
-                return ''
-        }
-    }
 }
 
 const { actions, reducer } = commonSlice;
 
 export const {
-    update_login_data, update_app_data,
-    update_error, login_reducer, logout,
-
+    update_login_data,
+    update_app_data,
+    update_error,
+    login_reducer,
+    logout,
+    updateModalShow
 } = actions;
 
-export default reducer
+export default reducer;
