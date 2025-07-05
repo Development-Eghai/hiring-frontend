@@ -3,6 +3,7 @@ import { Modal, Button, Form, Spinner } from "react-bootstrap";
 import { FaCalendarAlt } from "react-icons/fa";
 import axios from "axios";
 import Icons from "Utils/Icons"; // Adjust path as needed
+import { useNavigate } from "react-router-dom";
 
 const Creatmodel = () => {
   const [show, setShow] = useState(false);
@@ -10,6 +11,7 @@ const Creatmodel = () => {
   const [planIds, setPlanIds] = useState([]);
   const [templateOptions, setTemplateOptions] = useState([]);
   const [statusMessage, setStatusMessage] = useState(null); // ✅ For inline message
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     hiring_plan_id: "",
@@ -74,7 +76,10 @@ const Creatmodel = () => {
       requisition_template,
       no_of_openings,
     } = formData;
-
+    
+    if(requisition_template){
+      localStorage.setItem("reqtempid",requisition_template)
+    }
     if (
       !hiring_plan_id ||
       !requisition_date ||
@@ -87,7 +92,7 @@ const Creatmodel = () => {
       });
       return;
     }
-
+    
     const payload = {
       hiring_plan_id,
       requisition_date,
@@ -113,6 +118,7 @@ const Creatmodel = () => {
           requisition_template: "",
           no_of_openings: "",
         });
+        navigate("/hiring_manager/job_requisition")
         // You can close modal after success if needed:
         // setTimeout(() => setShow(false), 1000);
       } else {

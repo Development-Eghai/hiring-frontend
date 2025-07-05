@@ -8,6 +8,7 @@ import DataTable from "react-data-table-component";
 import { PlusCircle } from "react-bootstrap-icons";
 import { Button, Form } from "react-bootstrap";
 import axiosInstance from "Services/axiosInstance";
+import { useCommonState } from "Components/CustomHooks";
 const AccordionItem = ({ title, children, isOpen, onClick }) => (
   <div className="mb-2">
     <div
@@ -23,6 +24,7 @@ const AccordionItem = ({ title, children, isOpen, onClick }) => (
 );
 
 const RequisitionForm = (handleNext) => {
+  const {commonState} = useCommonState();
   const [openSection, setOpenSection] = useState(null);
   const [completedSections, setCompletedSections] = useState([]);
 
@@ -31,6 +33,9 @@ const RequisitionForm = (handleNext) => {
 
   const [Reqid, setReqid] = useState([]);
   const [planid,setPlanId] = useState([])
+  const [tempDetails,setTempDetails] = useState();
+  const [reqtempid,setreqtempid] = useState(localStorage.getItem("reqtempid"));
+
 
   const [Competencies,setCompetencies] = useState([
     {
@@ -232,8 +237,45 @@ const RequisitionForm = (handleNext) => {
         headers: { "Content-Type": "application/json" },
       }
     );
-    setPlanId(response?.data?.data)
+
+    if(response?.success){
+          setPlanId(response?.data?.data)
+    }
+
+    let gettempleteDetail;
+    
+    if (reqtempid) {
+      console.log(reqtempid,"rekj")
+       gettempleteDetail = await axiosInstance.post(
+        "/get_requisition_by_id/",
+        {
+          req_id: reqtempid,
+        }
+      );
+    }
+
+  if(gettempleteDetail?.data?.error_code == 200){
+    // localStorage.removeItem("reqtempid")
+    const templeteDetails = gettempleteDetail?.data?.data;
+    const {requisition_information,position_information,billing_details,posting_details,asset_details} = templeteDetails;
+    console.log(posting_details?.teams[0]?.team_type,"htfhgv")
+
+    reset({
+      ...requisition_information,
+        ...position_information,
+        ...billing_details,
+        ...posting_details,
+        ...asset_details,
+        team_type_1:posting_details?.teams[0]?.team_type,
+        team_type_2:posting_details?.teams[1]?.team_type,
+        team_type_3:posting_details?.teams[2]?.team_type,
+        interview_teammate_1:posting_details?.interview_team[0]?.employee_id,
+        interview_teammate_2:posting_details?.interview_team[1]?.employee_id
+    })
+
+  }
   }, []);
+
 
 
   const handleQuestionInputChange = (id, field, value) => {
@@ -292,8 +334,10 @@ const RequisitionForm = (handleNext) => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
 
+  console.log(register,"hfskjs")
   const onSubmit = (data) => {
     console.log("Form Submitted", data);
     const req_id = data?.req_id || ""
@@ -338,12 +382,12 @@ const RequisitionForm = (handleNext) => {
     const job_region = data?.job_region || "";
     const internal_job_description = data?.internal_job_description || "";
     const external_job_description = data?.external_job_description || "";
-    const ONB_coordinator = data?.ONB_coordinator || "";
-    const ONB_coordinator_team = data?.ONB_coordinator_team || "";
     const ISG_team = data?.ISG_team ||"";
     const interview_teammate_1 = data?.interview_teammate_1 || "";
     const interview_teammate_2 = data?.interview_teammate_2 || "";
-    
+    const team_type_1 = data?.team_type_1 || ""
+    const team_type_2 = data?.team_type_2 || ""
+    const team_type_3 = data?.team_type_3 || ""
 
     const laptop_needed = data?.laptop_needed || ""
     const laptop_type = data?.laptop_type || ""
@@ -403,9 +447,17 @@ const RequisitionForm = (handleNext) => {
     // };
 
     const formdata = {
+      user_role : commonState?.app_data?.user_id || '',
+      PositionTitle: "Software Engineer1",
+      Planning_id : plan_id,
+      Recruiter: "John Doe",
+      HiringManager: 1,
+      No_of_positions: 2,
+      Status: "Pending Approval",
+
       requisition_information: {
         req_id,
-        plan_id
+        plan_id,
       },
 
       position_information: {
@@ -444,9 +496,6 @@ const RequisitionForm = (handleNext) => {
         job_category,
         job_region,
         required_score,
-        ONB_coordinator,
-        ONB_coordinator_team,
-        ISG_team,
         interview_teammate_1,
         interview_teammate_2,
         internalDesc,
@@ -465,13 +514,15 @@ const RequisitionForm = (handleNext) => {
           expected_rating:Competencies?.ExpectedRating || "",
           weight:Competencies?.Weight || "",
         },
+        teams:[{team_type:team_type_1},{team_type:team_type_2},{team_type:team_type_3}],
+        interview_teammate:[{employee_id:interview_teammate_1},{employee_id:interview_teammate_2}]
       },
       asset_deatils:{
         laptop_type,
         laptop_needed,
         additional_questions,
         comments
-      }
+      },
     };
 
     const response = axiosInstance
@@ -1048,58 +1099,58 @@ const RequisitionForm = (handleNext) => {
             <div className="row">
               <div className="col-md-4">
                 <label className="form-label">
-                  ONB Coordinator: <span className="text-danger">*</span>
+                  Team Type: <span className="text-danger">*</span>
                 </label>
                 <select
-                  {...register("ONB_coordinator", {
-                    required: "ONB Coordinator is required",
+                  {...register("team_type_1", {
+                    required: "Team type is required",
                   })}
                   className={`form-select ${
-                    errors.ONB_coordinator ? "is-invalid" : ""
+                    errors.team_type_1 ? "is-invalid" : ""
                   }`}
                 >
                   <option value="">Select Coordinator</option>
-                  <option value="Coordinator 1">Coordinator 1</option>
+                  <option value="ONB Coordinator">Coordinator 1</option>
                   <option value="Coordinator 2">Coordinator 2</option>
                 </select>
-                {errors.ONB_coordinator && (
+                {errors.team_type_1 && (
                   <div className="invalid-feedback">
-                    {errors.ONB_coordinator.message}
+                    {errors.team_type_1.message}
                   </div>
                 )}
               </div>
 
               <div className="col-md-4">
                 <label className="form-label">
-                  ONB Coordinator Team <small>(Manage Additional Users)</small>:
+                  Team type:
                 </label>
                 <select
-                  {...register("ONB_coordinator_team")}
+                  {...register("team_type_2")}
                   className="form-select"
                 >
-                  <option value="">Select Team</option>
-                  <option value="Team 1">Team 1</option>
+                  <option value="">Select Team type</option>
+                  <option value="ONB Coordinator name">Team 1</option>
                   <option value="Team 2">Team 2</option>
                 </select>
               </div>
 
               <div className="col-md-4">
                 <label className="form-label">
-                  ISG Team: <span className="text-danger">*</span>
+                  Team type: <span className="text-danger">*</span>
                 </label>
                 <select
-                  {...register("ISG_team", { required: "ISG Team is required" })}
+                  {...register("team_type_3", { required: "ISG Team is required" })}
                   className={`form-select ${
-                    errors.ISG_team ? "is-invalid" : ""
+                    errors.team_type_3 ? "is-invalid" : ""
                   }`}
                 >
-                  <option value="">Select ISG Team</option>
-                  <option value="ISG 1">ISG 1</option>
+                  <option value="">Select Team type</option>
+                  <option value="ISG Team">ISG 1</option>
                   <option value="ISG 2">ISG 2</option>
                 </select>
-                {errors.ISG_team && (
+                {errors.team_type_3 && (
                   <div className="invalid-feedback">
-                    {errors.ISG_team.message}
+                    {errors.team_type_3.message}
                   </div>
                 )}
               </div>
@@ -1120,8 +1171,8 @@ const RequisitionForm = (handleNext) => {
                   }`}
                 >
                   <option value="">Select Teammate</option>
-                  <option value="Emp001">Emp001</option>
-                  <option value="Emp002">Emp002</option>
+                  <option value="EMP001">EMP001</option>
+                  <option value="EMP002">EMP002</option>
                 </select>
                 {errors.interview_teammate_1 && (
                   <div className="invalid-feedback">
@@ -1144,7 +1195,7 @@ const RequisitionForm = (handleNext) => {
                   }`}
                 >
                   <option value="">Select Teammate</option>
-                  <option value="Emp003">Emp003</option>
+                  <option value="EMP002">EMP002</option>
                   <option value="Emp004">Emp004</option>
                 </select>
                 {errors.interview_teammate_2 && (
