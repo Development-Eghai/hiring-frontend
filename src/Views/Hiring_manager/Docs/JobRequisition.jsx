@@ -4,6 +4,14 @@ import RequisitionForm from "./RequisitionForm ";
 import { Card } from "react-bootstrap";
 
 const JobRequisition = () => {
+
+    const handleNext = () => {
+    setCompletedSteps((prev) => [...prev, activeStep]); 
+    if (activeStep < steps.length - 1) {
+      setActiveStep((prev) => prev + 1);
+    }
+  };
+  
   const steps = [
     {
       label: "Requisition Created",
@@ -55,12 +63,6 @@ const JobRequisition = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
 
-  const handleNext = () => {
-    setCompletedSteps((prev) => [...prev, activeStep]); 
-    if (activeStep < steps.length - 1) {
-      setActiveStep((prev) => prev + 1);
-    }
-  };
 
   const handleDone = () => {
     setCompletedSteps((prev) => {
