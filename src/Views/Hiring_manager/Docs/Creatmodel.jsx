@@ -83,7 +83,6 @@ const Creatmodel = () => {
     if (
       !hiring_plan_id ||
       !requisition_date ||
-      !requisition_template ||
       !no_of_openings
     ) {
       setStatusMessage({
