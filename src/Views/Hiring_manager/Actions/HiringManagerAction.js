@@ -46,7 +46,6 @@ export const HandleGetPlanningScreen = (params) => async (dispatch) => {
     dispatch(getPlanningScreen({ type: "request" }));
     
     const { data } = await axiosInstance.post('/api/hiring-plans/', params);
-    console.log (data.data)
 
     if (data?.error_code === 200) {
       dispatch(getPlanningScreen({ type: "response", data: data?.data }));

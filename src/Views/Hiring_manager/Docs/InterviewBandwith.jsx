@@ -32,7 +32,14 @@ const InterviewBandwidth = () => {
   };
 
   const validateForm = () => {
-    for (const key in formData) {
+    const requiredFields = [
+      "no_of_roles_to_hire",
+      "conversion_ratio",
+      "interview_round",
+      "interview_time_per_round",
+    ];
+
+    for (const key of requiredFields) {
       if (formData[key] === "") {
         toast.warn(`Please fill out ${key.replace(/_/g, " ")}`);
         return false;
@@ -40,6 +47,8 @@ const InterviewBandwidth = () => {
     }
     return true;
   };
+
+  const safeNumber = (val) => val !== "" ? Number(val) : null;
 
   const handleCalculate = async () => {
     if (!validateForm()) return;
@@ -50,15 +59,15 @@ const InterviewBandwidth = () => {
     try {
       const payload = {
         ...formData,
-        no_of_roles_to_hire: Number(formData.no_of_roles_to_hire),
-        conversion_ratio: Number(formData.conversion_ratio),
-        offer_decline: Number(formData.offer_decline),
-        elimination: Number(formData.elimination),
-        avg_interviewer_time_per_week_hrs: Number(formData.avg_interviewer_time_per_week_hrs),
-        interview_round: Number(formData.interview_round),
-        interview_time_per_round: Number(formData.interview_time_per_round),
-        interviewer_leave_days: Number(formData.interviewer_leave_days),
-        no_of_month_interview_happens: Number(formData.no_of_month_interview_happens),
+        no_of_roles_to_hire: safeNumber(formData.no_of_roles_to_hire),
+        conversion_ratio: safeNumber(formData.conversion_ratio),
+        offer_decline: safeNumber(formData.offer_decline),
+        elimination: safeNumber(formData.elimination),
+        avg_interviewer_time_per_week_hrs: safeNumber(formData.avg_interviewer_time_per_week_hrs),
+        interview_round: safeNumber(formData.interview_round),
+        interview_time_per_round: safeNumber(formData.interview_time_per_round),
+        interviewer_leave_days: safeNumber(formData.interviewer_leave_days),
+        no_of_month_interview_happens: safeNumber(formData.no_of_month_interview_happens),
 
         // Static values
         dead_line_days: 10,
@@ -101,8 +110,8 @@ const InterviewBandwidth = () => {
 
       <Form className="mb-5">
         <Row className="mb-3 gap-2">
-          <Col >
-            <Form.Group className="">
+          <Col>
+            <Form.Group>
               <Form.Label>No. of Roles to Hire *</Form.Label>
               <Form.Control
                 type="number"
@@ -122,13 +131,12 @@ const InterviewBandwidth = () => {
                 value={formData.conversion_ratio}
                 onChange={handleChange}
               />
-
             </Form.Group>
           </Col>
 
-          <Col >
+          <Col>
             <Form.Group>
-              <Form.Label>Offer Decline % *</Form.Label>
+              <Form.Label>Offer Decline %</Form.Label>
               <Form.Control
                 type="number"
                 name="offer_decline"
@@ -140,9 +148,9 @@ const InterviewBandwidth = () => {
         </Row>
 
         <Row className="mb-3 gap-2">
-          <Col>
+          {/* <Col>
             <Form.Group>
-              <Form.Label>Elimination % *</Form.Label>
+              <Form.Label>Elimination %</Form.Label>
               <Form.Control
                 type="number"
                 name="elimination"
@@ -150,11 +158,11 @@ const InterviewBandwidth = () => {
                 onChange={handleChange}
               />
             </Form.Group>
-          </Col>
+          </Col> */}
 
           <Col>
             <Form.Group>
-              <Form.Label>Avg Interviewer Time/Week (hrs) *</Form.Label>
+              <Form.Label>Avg Interviewer Time/Week (hrs)</Form.Label>
               <Form.Control
                 type="number"
                 name="avg_interviewer_time_per_week_hrs"
@@ -175,9 +183,7 @@ const InterviewBandwidth = () => {
               />
             </Form.Group>
           </Col>
-        </Row>
 
-        <Row className="mb-3 gap-2">
           <Col>
             <Form.Group>
               <Form.Label>Time per Round (hrs) *</Form.Label>
@@ -189,10 +195,12 @@ const InterviewBandwidth = () => {
               />
             </Form.Group>
           </Col>
+        </Row>
 
+        <Row className="mb-3 gap-2">
           <Col>
             <Form.Group>
-              <Form.Label>Unplanned Leave Days *</Form.Label>
+              <Form.Label>Unplanned Leave Days</Form.Label>
               <Form.Control
                 type="number"
                 name="interviewer_leave_days"
@@ -204,7 +212,7 @@ const InterviewBandwidth = () => {
 
           <Col>
             <Form.Group>
-              <Form.Label>Interview Duration (Months) *</Form.Label>
+              <Form.Label>Interview Duration (Months)</Form.Label>
               <Form.Control
                 type="number"
                 name="no_of_month_interview_happens"

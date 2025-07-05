@@ -27,6 +27,12 @@ const InterviewDesignDashboard = () => {
             width: "70px",
             center: true,
           },
+           {
+            name: "Planning ID",
+            selector: (row) => row.id,
+            wrap: true,
+            grow: 2,
+          },
           {
             name: "Position / Role",
             selector: (row) => row.label,

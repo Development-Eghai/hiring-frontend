@@ -21,6 +21,12 @@ const InterviewForm = () => {
   const [noOfRounds, setNoOfRounds] = useState("");
   const [feedbackText, setFeedbackText] = useState("");
 
+  const [positionRoles, setPositionRoles] = useState([]);
+  const [planIds, setPlanIds] = useState([]);
+  const [screeningTypes, setScreeningTypes] = useState([]);
+  const [scoreCards, setScoreCards] = useState([]);
+
+
   const params = {
     score_card: "",
     options: "",
@@ -31,6 +37,32 @@ const InterviewForm = () => {
     mode: "",
     feedback: "",
   };
+
+  useEffect(() => {
+    const fetchDropdownData = async () => {
+      try {
+        const designRes = await axios.get("https://api.pixeladvant.com/design_screen_list_data/");
+        const scoreCardRes = await axios.get("https://api.pixeladvant.com/config_score_card/");
+
+        if (designRes.data?.success) {
+          const { position_role, plan_id, screening_type } = designRes.data.data;
+          setPositionRoles(position_role || []);
+          setPlanIds(plan_id || []);
+          setScreeningTypes(screening_type || []);
+        }
+
+        if (scoreCardRes.data?.success) {
+          setScoreCards(scoreCardRes.data.data || []);
+        }
+      } catch (error) {
+        toast.error("Failed to fetch dropdown data.");
+        console.error("Dropdown fetch error:", error);
+      }
+    };
+
+    fetchDropdownData();
+  }, []);
+
 
   const handleChangeNoOfRounds = (e) => {
     setNoOfRounds(e.target.value);
@@ -44,40 +76,6 @@ const InterviewForm = () => {
       setParameters([]);
     }
   };
-
-  // const handleSaveParameter = (index) => {
-  //   const allFilled = Object.values(parameters[index]).every(
-  //     (val) => val !== ""
-  //   );
-  //   if (!allFilled) {
-  //     toast.warning("Please fill all fields in the parameter row.");
-  //     return;
-  //   }
-
-  //   setLoadingIndex(index);
-  //   setTimeout(() => {
-  //     setLoadingIndex(null);
-  //     setParameters((prev) => [
-  //       ...prev,
-  //       {
-  //         score_card: "",
-  //         options: "",
-  //         guideline: "",
-  //         min_questions: "",
-  //         screen_type: "",
-  //         duration: "",
-  //         mode: "",
-  //         feedback: "",
-  //       },
-  //     ]);
-  //   }, 1000);
-  // };
-
-  // const handleRemoveParameter = (index) => {
-  //   const updated = [...parameters];
-  //   updated.splice(index, 1);
-  //   setParameters(updated);
-  // };
 
   const handleChange = (index, key, value) => {
     const updated = [...parameters];
@@ -100,14 +98,7 @@ const InterviewForm = () => {
       return false;
     }
 
-    const hasEmptyParam = parameters.some((param) =>
-      Object.values(param).some((val) => val === "")
-    );
-
-    if (hasEmptyParam) {
-      toast.error("Please complete all interview parameter fields.");
-      return false;
-    }
+   
 
     return true;
   };
@@ -186,29 +177,24 @@ const InterviewForm = () => {
         <Row className="mb-4">
           <Col md={6} className="mb-3 px-2">
             <Form.Group>
-              <Form.Label>Req Id</Form.Label>
-              <Form.Select
-                value={reqId}
-                onChange={(e) => setReqId(e.target.value)}
-              >
-                <option>Select Req Id</option>
-                <option value={"1"}>1</option>
-                <option value={"2"}>2</option>
-                <option value={"3"}>3</option>
+              <Form.Label>Planning Id</Form.Label>
+              <Form.Select value={reqId} onChange={(e) => setReqId(e.target.value)}>
+                <option value="">Select Planning Id</option>
+                {planIds.map((id, idx) => (
+                  <option key={idx} value={id}>{id}</option>
+                ))}
               </Form.Select>
+
             </Form.Group>
           </Col>
           <Col md={6} className="mb-3 px-2">
             <Form.Group>
               <Form.Label>Position/Role</Form.Label>
-              <Form.Select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-              >
-                <option>Select Role</option>
-                <option value={"Role_1"}>Role_1</option>
-                <option value={"Role_2"}>Role_2</option>
-                <option value={"Role_3"}>Role_3</option>
+              <Form.Select value={role} onChange={(e) => setRole(e.target.value)}>
+                <option value="">Select Role</option>
+                {positionRoles.map((r, idx) => (
+                  <option key={idx} value={r}>{r}</option>
+                ))}
               </Form.Select>
             </Form.Group>
           </Col>
@@ -228,13 +214,11 @@ const InterviewForm = () => {
           <Col md={6} className="mb-3 px-2">
             <Form.Group>
               <Form.Label>Screening Type</Form.Label>
-              <Form.Select
-                value={screeningType}
-                onChange={(e) => setScreeningType(e.target.value)}
-              >
-                <option value={""}>Select Screening Type</option>
-                <option value={"type1"}>type1</option>
-                <option value={"type2"}>type2</option>
+              <Form.Select value={screeningType} onChange={(e) => setScreeningType(e.target.value)}>
+                <option value="">Select Screening Type</option>
+                {screeningTypes.map((type, idx) => (
+                  <option key={idx} value={type}>{type}</option>
+                ))}
               </Form.Select>
             </Form.Group>
           </Col>
@@ -247,6 +231,7 @@ const InterviewForm = () => {
               <Form.Control
                 type="number"
                 placeholder="Enter number of rounds"
+                value={noOfRounds}
                 onChange={(e) => handleChangeNoOfRounds(e)}
               />
             </Form.Group>
@@ -275,15 +260,18 @@ const InterviewForm = () => {
                 parameters.map((param, index) => (
                   <div className="parameter-body" key={index}>
                     <Form.Select
-                      value={param.score_card || ""}
-                      onChange={(e) =>
-                        handleChange(index, "score_card", e.target.value)
-                      }
+                      value={param.score_card_name || ""}
+                      onChange={(e) => handleChange(index, "score_card_name", e.target.value)}
                     >
                       <option value="">Select</option>
-                      <option value="Coding written">Coding written</option>
-                      <option value="Technical round">Technical round</option>
+                      {scoreCards.map((card, idx) => (
+                        <option key={card.id} value={card.score_card_name}>
+                          {card.score_card_name}
+                        </option>
+                      ))}
+
                     </Form.Select>
+
                     <Form.Control
                       type="text"
                       value={param.options || ""}
@@ -363,7 +351,7 @@ const InterviewForm = () => {
                 ))
               ) : (
                 <center>
-                  <div>Select No of Interview Rounds</div>
+                  <div>Please enter the No of Interview Rounds </div>
                 </center>
               )}
             </div>

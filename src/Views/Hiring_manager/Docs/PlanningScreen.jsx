@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import JsonData from "../Hiring_manager_utils/JsonData";
 import { Card, Form, InputGroup, Button } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import Icons from "Utils/Icons";
 import FilterComponentPlanning from "./FilterComponentplanning";
-import { useCommonState, useDispatch } from "Components/CustomHooks";
+import { useCommonState, useCustomNavigate, useDispatch } from "Components/CustomHooks";
 import { HandleGetPlanningScreen } from "../Actions/HiringManagerAction";
+import axiosInstance from "Services/axiosInstance";
 
 const tableStyles = {
     headCells: {
@@ -20,12 +20,14 @@ const tableStyles = {
 
 // Default fields (uncommented ones)
 const defaultFields = [
+    "id",
     "job_position",
     "Tech",
     "JD",
     "Experience",
     "Designation",
     "Target"
+
 ];
 
 // All available fields (from API support)
@@ -41,12 +43,16 @@ const allFields = [
 ];
 
 export const PlanningScreen = () => {
-    const { jsonOnly } = JsonData();
+    const { commonState } = useCommonState();
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredData, setFilteredData] = useState([]);
     const [selectedFields, setSelectedFields] = useState(defaultFields);
     const { planningScreenState } = useCommonState();
     const dispatch = useDispatch();
+    const navigate = useCustomNavigate();
+
+    const handleFieldChange = (fields) => setSelectedFields(fields);
+    const handleReset = () => setSelectedFields(defaultFields);
 
     useEffect(() => {
         dispatch(HandleGetPlanningScreen({ fields: selectedFields }));
@@ -64,17 +70,57 @@ export const PlanningScreen = () => {
 
         setFilteredData(filtered);
     }, [planningScreenState?.reporting?.data, searchTerm, selectedFields]);
+  
+    const columns = [
+        ...selectedFields.map(field => ({
+            name: field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+            selector: row => row[field] ?? '-',
+            sortable: true
+        })),
+        {
+            name: "Actions",
+            cell: row => (
+                <div className="d-flex gap-2">
+                    <Button variant="outline-primary" size="sm" onClick={() => navigate(`/hiring_manager/planning/hiring_planning_form?edit_id=${row.id}`)}>
+                        {Icons.Edit}
+                        Edit
+                    </Button>
+                    <Button variant="outline-danger" size="sm" onClick={() => handleDelete(row.id)}>
+                        {Icons.Delete}
+                        Delete
+                    </Button>
+                </div>
+            ),
+            ignoreRowClick: true,
+            allowOverflow: true,
+            button: true
+        }
+    ];
 
-    // Generate columns dynamically from selectedFields
-    const columns = selectedFields.map(field => ({
-        name: field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-        selector: row => row[field] ?? '-',
-        sortable: true
-    }));
+    const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this record?")) return;
 
-    const handleFieldChange = (fields) => setSelectedFields(fields);
+        try {
+            const {data} = await axiosInstance.delete(
+                "hiring_plan/",
+                {
+                    data: {
+                        user_role: commonState?.app_data?.user_id || "",
+                        hiring_plan_id: id,
+                    },
+                }
+            );
 
-    const handleReset = () => setSelectedFields(defaultFields);
+            if (data?.error_code === 204) {
+                dispatch(HandleGetPlanningScreen({ fields: selectedFields }));
+            } else {
+                alert("Failed to delete. " + (data?.message || ""));
+            }
+        } catch (err) {
+            console.error("Delete Error:", err);
+            alert("Something went wrong while deleting.");
+        }
+    };
 
     return (
         <div className="h-100">
