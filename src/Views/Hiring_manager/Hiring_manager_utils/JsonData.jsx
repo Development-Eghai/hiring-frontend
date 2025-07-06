@@ -51,11 +51,16 @@ const JsonData = () => {
                     }
                 ]
             },
-            // {
-            //     name: 'Create Job Requisition',
-            //     route: 'create_job_requisition',
-            //     icon: Icons.Requisition
-            // },
+            {
+                name: 'Set approve screen',
+                route: 'set_approve_screen',
+                icon: Icons.Requisition
+            },
+            {
+                name: 'Upload',
+                route: 'upload_screen',
+                icon: Icons.Requisition
+            },
         ],
         home_cards: [
             {
