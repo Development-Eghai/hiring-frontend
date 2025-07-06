@@ -9,7 +9,6 @@ import axiosInstance from "Services/axiosInstance";
 const InterviewForm = () => {
   const [status, setStatus] = useState("rejected");
   const [parameters, setParameters] = useState([]);
-  const [loadingIndex, setLoadingIndex] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [rating, setRating] = useState(0);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -26,9 +25,8 @@ const InterviewForm = () => {
   const [screeningTypes, setScreeningTypes] = useState([]);
   const [scoreCards, setScoreCards] = useState([]);
 
-
-  const params = {
-    score_card: "",
+  const defaultParam = {
+    score_card_name: "",
     options: "",
     guideline: "",
     min_questions: "",
@@ -63,15 +61,12 @@ const InterviewForm = () => {
     fetchDropdownData();
   }, []);
 
-
   const handleChangeNoOfRounds = (e) => {
-    setNoOfRounds(e.target.value);
     const value = parseInt(e.target.value);
+    setNoOfRounds(e.target.value);
     if (!isNaN(value) && value > 0) {
-      const repeatedparams = Array.from({ length: value }, () => ({
-        ...params,
-      }));
-      setParameters(repeatedparams);
+      const repeatedParams = Array.from({ length: value }, () => ({ ...defaultParam }));
+      setParameters(repeatedParams);
     } else {
       setParameters([]);
     }
@@ -84,29 +79,13 @@ const InterviewForm = () => {
     setParameters(updated);
   };
 
-  const validateForm = () => {
-    if (
-      !reqId ||
-      !role ||
-      !techStacks ||
-      !screeningType ||
-      !noOfRounds ||
-      !feedbackText ||
-      rating === 0
-    ) {
-      toast.error("Please fill all required fields.");
-      return false;
-    }
-
-   
-
-    return true;
-  };
-
   const handleSubmit = async () => {
-    if (!validateForm()) return;
-
     setIsSubmitting(true);
+
+    const cleanedParameters = parameters.map((param) => ({
+      ...param,
+      feedback: param.feedback || "",
+    }));
 
     const formData = {
       req_id: reqId,
@@ -117,33 +96,25 @@ const InterviewForm = () => {
       final_rating: rating,
       status: status,
       feedback: feedbackText,
-      params: parameters,
+      params: cleanedParameters,
     };
 
     try {
-      const res = await axiosInstance.post(
-        "interview_design_screen/",
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const res = await axiosInstance.post("interview_design_screen/", formData, {
+        headers: { "Content-Type": "application/json" },
+      });
 
-      // Check for backend error even if request is "fulfilled"
       if (res.status >= 200 && res.status < 300) {
         toast.success("Form submitted successfully!");
         setShowConfirm(false);
-
-        // OPTIONAL: Reset form after success
+        // Reset form
         setReqId("");
         setRole("");
         setTechStacks("");
         setScreeningType("");
         setNoOfRounds("");
         setFeedbackText("");
-        setParameters([{}]);
+        setParameters([]);
         setRating(0);
         setStatus("rejected");
       } else {
@@ -151,10 +122,8 @@ const InterviewForm = () => {
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      if (error.response && error.response.data) {
-        toast.error(
-          error.response.data.detail || "Submission failed. Please try again."
-        );
+      if (error.response?.data) {
+        toast.error(error.response.data.detail || "Submission failed. Please try again.");
       } else {
         toast.error("Something went wrong while submitting the form.");
       }
@@ -165,17 +134,37 @@ const InterviewForm = () => {
 
   const handleShowConfirmation = (e) => {
     e.preventDefault();
-    if (validateForm()) {
+
+    if (
+      reqId &&
+      role &&
+      techStacks &&
+      screeningType &&
+      noOfRounds &&
+      parameters.length > 0 &&
+      parameters.every(
+        (param) =>
+          param.score_card_name &&
+          param.options &&
+          param.guideline &&
+          param.min_questions &&
+          param.screen_type &&
+          param.duration &&
+          param.mode
+      )
+    ) {
       setShowConfirm(true);
+    } else {
+      toast.error("Please fill in all required fields before submitting.");
     }
   };
 
   return (
-    <div className="interview-container">
+    <div className="interview-container p-3 bg-light rounded">
       <ToastContainer position="top-right" />
       <Form onSubmit={handleShowConfirmation}>
         <Row className="mb-4">
-          <Col md={6} className="mb-3 px-2">
+          <Col md={6} className="mb-3">
             <Form.Group>
               <Form.Label>Planning Id</Form.Label>
               <Form.Select value={reqId} onChange={(e) => setReqId(e.target.value)}>
@@ -184,10 +173,9 @@ const InterviewForm = () => {
                   <option key={idx} value={id}>{id}</option>
                 ))}
               </Form.Select>
-
             </Form.Group>
           </Col>
-          <Col md={6} className="mb-3 px-2">
+          <Col md={6} className="mb-3">
             <Form.Group>
               <Form.Label>Position/Role</Form.Label>
               <Form.Select value={role} onChange={(e) => setRole(e.target.value)}>
@@ -201,17 +189,18 @@ const InterviewForm = () => {
         </Row>
 
         <Row className="mb-4">
-          <Col md={6} className="mb-3 px-2">
+          <Col md={6} className="mb-3">
             <Form.Group>
               <Form.Label>Tech Stacks</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter tech stacks"
+                value={techStacks}
                 onChange={(e) => setTechStacks(e.target.value)}
               />
             </Form.Group>
           </Col>
-          <Col md={6} className="mb-3 px-2">
+          <Col md={6} className="mb-3">
             <Form.Group>
               <Form.Label>Screening Type</Form.Label>
               <Form.Select value={screeningType} onChange={(e) => setScreeningType(e.target.value)}>
@@ -225,188 +214,97 @@ const InterviewForm = () => {
         </Row>
 
         <Row className="mb-4">
-          <Col md={6} className="mb-3 px-2">
+          <Col md={6} className="mb-3">
             <Form.Group>
-              <Form.Label>No of Interview Round</Form.Label>
+              <Form.Label>No of Interview Rounds</Form.Label>
               <Form.Control
                 type="number"
                 placeholder="Enter number of rounds"
                 value={noOfRounds}
-                onChange={(e) => handleChangeNoOfRounds(e)}
+                onChange={handleChangeNoOfRounds}
               />
             </Form.Group>
           </Col>
         </Row>
 
-        <div className="interview-parameters ">
-          <div>
-            <div className="d-flex justify-content-between align-items-center px-2">
-              <h5 className="mb-3">Interview Parameters</h5>
+        <div className="interview-parameters">
+          <h5 className="mb-3 px-2">Interview Parameters</h5>
+          <div className="parameter-scroll-wrapper px-2">
+            <div className="parameter-header fw-bold bg-secondary text-white p-2 rounded d-flex justify-content-between">
+              <span>Score Card</span>
+              <span>Options</span>
+              <span>Guideline</span>
+              <span>Min Qs</span>
+              <span>Screening Type</span>
+              <span>Duration</span>
+              <span>Mode</span>
+              <span>Feedback</span>
             </div>
 
-            <div className="parameter-scroll-wrapper">
-              <div className="parameter-header">
-                <span>Score Card</span>
-                <span>Options</span>
-                <span>Guideline</span>
-                <span>Min Questions</span>
-                <span>Screening Type</span>
-                <span>Duration</span>
-                <span>Mode</span>
-                <span>Feedback</span>
-              </div>
-
-              {parameters.length > 0 ? (
-                parameters.map((param, index) => (
-                  <div className="parameter-body" key={index}>
-                    <Form.Select
-                      value={param.score_card_name || ""}
-                      onChange={(e) => handleChange(index, "score_card_name", e.target.value)}
-                    >
-                      <option value="">Select</option>
-                      {scoreCards.map((card, idx) => (
-                        <option key={card.id} value={card.score_card_name}>
-                          {card.score_card_name}
-                        </option>
-                      ))}
-
-                    </Form.Select>
-
-                    <Form.Control
-                      type="text"
-                      value={param.options || ""}
-                      onChange={(e) =>
-                        handleChange(index, "options", e.target.value)
-                      }
-                      placeholder="Option"
-                    />
-                    <Form.Control
-                      type="text"
-                      value={param.guideline || ""}
-                      onChange={(e) =>
-                        handleChange(index, "guideline", e.target.value)
-                      }
-                      placeholder="Guideline"
-                    />
-                    <Form.Control
-                      type="number"
-                      value={param.min_questions || ""}
-                      onChange={(e) =>
-                        handleChange(index, "min_questions", e.target.value)
-                      }
-                      placeholder="Min Qs"
-                    />
-                    <Form.Control
-                      type="text"
-                      value={param.screen_type || ""}
-                      onChange={(e) =>
-                        handleChange(index, "screen_type", e.target.value)
-                      }
-                      placeholder="Screening Type"
-                    />
-                    <Form.Control
-                      type="text"
-                      value={param.duration || ""}
-                      onChange={(e) =>
-                        handleChange(index, "duration", e.target.value)
-                      }
-                      placeholder="Duration"
-                    />
-                    <Form.Control
-                      type="text"
-                      value={param.mode || ""}
-                      onChange={(e) =>
-                        handleChange(index, "mode", e.target.value)
-                      }
-                      placeholder="Mode"
-                    />
-                    <Form.Control
-                      type="text"
-                      value={param.feedback || ""}
-                      onChange={(e) =>
-                        handleChange(index, "feedback", e.target.value)
-                      }
-                      placeholder="Feedback"
-                    />
-                    {/* <div className="d-flex gap-2">
-                    <Button
-                      variant="success"
-                      disabled={loadingIndex === index}
-                      onClick={() => handleSaveParameter(index)}
-                    >
-                      {loadingIndex === index ? (
-                        <Spinner animation="border" size="sm" />
-                      ) : (
-                        "✔"
-                      )}
-                    </Button>
-                    <Button
-                      variant="danger"
-                      onClick={() => handleRemoveParameter(index)}
-                    >
-                      🗑
-                    </Button>
-                  </div> */}
-                  </div>
-                ))
-              ) : (
-                <center>
-                  <div>Please enter the No of Interview Rounds </div>
-                </center>
-              )}
-            </div>
+            {parameters.length > 0 ? (
+              parameters.map((param, index) => (
+                <div className="parameter-body d-flex gap-2 mt-2" key={index}>
+                  <Form.Select
+                    value={param.score_card_name || ""}
+                    onChange={(e) => handleChange(index, "score_card_name", e.target.value)}
+                  >
+                    <option value="">Select</option>
+                    {scoreCards.map((card) => (
+                      <option key={card.id} value={card.score_card_name}>
+                        {card.score_card_name}
+                      </option>
+                    ))}
+                  </Form.Select>
+                  <Form.Control
+                    type="text"
+                    value={param.options || ""}
+                    onChange={(e) => handleChange(index, "options", e.target.value)}
+                    placeholder="Option"
+                  />
+                  <Form.Control
+                    type="text"
+                    value={param.guideline || ""}
+                    onChange={(e) => handleChange(index, "guideline", e.target.value)}
+                    placeholder="Guideline"
+                  />
+                  <Form.Control
+                    type="number"
+                    value={param.min_questions || ""}
+                    onChange={(e) => handleChange(index, "min_questions", e.target.value)}
+                    placeholder="Min Qs"
+                  />
+                  <Form.Control
+                    type="text"
+                    value={param.screen_type || ""}
+                    onChange={(e) => handleChange(index, "screen_type", e.target.value)}
+                    placeholder="Screen Type"
+                  />
+                  <Form.Control
+                    type="text"
+                    value={param.duration || ""}
+                    onChange={(e) => handleChange(index, "duration", e.target.value)}
+                    placeholder="Duration"
+                  />
+                  <Form.Control
+                    type="text"
+                    value={param.mode || ""}
+                    onChange={(e) => handleChange(index, "mode", e.target.value)}
+                    placeholder="Mode"
+                  />
+                  <Form.Control
+                    type="text"
+                    value={param.feedback || ""}
+                    onChange={(e) => handleChange(index, "feedback", e.target.value)}
+                    placeholder="Feedback"
+                  />
+                </div>
+              ))
+            ) : (
+              <p className="text-muted text-center">Please enter the number of interview rounds.</p>
+            )}
           </div>
         </div>
 
-        <div className="feedback-section">
-          <Row className="mt-5">
-            <Col md={3} className="mb-3">
-              <a href="#" className="feedback-guidelines">
-                Feedback sharing guidelines for interviewer
-              </a>
-            </Col>
-            <Col md={2} className="mb-3">
-              <Form.Label>Final Rating</Form.Label>
-              <div className="star-rating">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <span
-                    key={star}
-                    onClick={() => setRating(star)}
-                    style={{
-                      cursor: "pointer",
-                      color: rating >= star ? "#ffc107" : "#ccc",
-                      fontSize: "1.5rem",
-                    }}
-                  >
-                    ★
-                  </span>
-                ))}
-                <span className="ms-2">{rating}.0</span>
-              </div>
-            </Col>
-            <Col md={3} className="mb-3">
-              <Form.Label>Status</Form.Label>
-              <Form.Select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-              >
-                <option value="selected">Selected</option>
-                <option value="rejected">Rejected</option>
-                <option value="on_hold">On Hold</option>
-                <option value="cancelled">Cancelled</option>
-                <option value="no_show">No Show</option>
-              </Form.Select>
-            </Col>
-            <Col md={4} className="mb-3">
-              <Form.Label>Feedback</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter feedback"
-                onChange={(e) => setFeedbackText(e.target.value)}
-              />
-            </Col>
-          </Row>
-        </div>
         <div className="text-end mt-4">
           <Button variant="primary" type="submit" disabled={isSubmitting}>
             {isSubmitting ? <Spinner animation="border" size="sm" /> : "Submit"}
