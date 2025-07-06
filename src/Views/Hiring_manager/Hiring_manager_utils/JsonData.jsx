@@ -41,12 +41,12 @@ const JsonData = () => {
           },
 
           {
-            name: "Interview Calender",
+            name: "Set Approver Screen",
             route: "set_approve_screen",
             icon: Icons.Requisition,
           },
           {
-            name: "Resume Upload",
+            name: "Interview Calendar Screen",
             route: "upload_screen",
             icon: Icons.Requisition,
           },
