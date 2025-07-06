@@ -24,7 +24,7 @@ const AccordionItem = ({ title, children, isOpen, onClick }) => (
 );
 
 const RequisitionForm = (handleNext) => {
-  const {commonState} = useCommonState();
+  const { commonState } = useCommonState();
   const [openSection, setOpenSection] = useState(null);
   const [completedSections, setCompletedSections] = useState([]);
 
@@ -32,15 +32,14 @@ const RequisitionForm = (handleNext) => {
   const [externalDesc, setExternalDesc] = useState("");
 
   const [Reqid, setReqid] = useState([]);
-  const [planid,setPlanId] = useState([])
-  const [tempDetails,setTempDetails] = useState();
-  const [reqtempid,setreqtempid] = useState(localStorage.getItem("reqtempid"));
+  const [planid, setPlanId] = useState([]);
+  const [tempDetails, setTempDetails] = useState();
+  const [reqtempid, setreqtempid] = useState(localStorage.getItem("reqtempid"));
 
-
-  const [Competencies,setCompetencies] = useState([
+  const [Competencies, setCompetencies] = useState([
     {
-      id:Date.now(),
-      isNew:true,
+      id: Date.now(),
+      isNew: true,
       Competency: "",
       Library: "",
       Category: "",
@@ -50,11 +49,10 @@ const RequisitionForm = (handleNext) => {
     },
   ]);
 
-
-    const [questions,setQuestions] = useState([
+  const [questions, setQuestions] = useState([
     {
-      id:Date.now(),
-      isNew:true,
+      id: Date.now(),
+      isNew: true,
       Question: "",
       Required: "",
       Disqualifier: "",
@@ -64,16 +62,22 @@ const RequisitionForm = (handleNext) => {
     },
   ]);
 
-  
-  const [CompetenciesHeaders,setCompetenciesHeaders] = useState([{
+  const [CompetenciesHeaders, setCompetenciesHeaders] = useState([
+    {
       name: "Competency",
       width: "20%",
       cell: (row) =>
-        row.isNew ?  (
+        row.isNew ? (
           <Form.Control
             type="text"
             value={row.Competency}
-            onChange={(e) => handleCompetenciesInputChange(row.id,"Competency",e.target.value)}
+            onChange={(e) =>
+              handleCompetenciesInputChange(
+                row.id,
+                "Competency",
+                e.target.value
+              )
+            }
             placeholder="Competency"
           />
         ) : (
@@ -87,7 +91,9 @@ const RequisitionForm = (handleNext) => {
           <Form.Control
             type="text"
             value={row.Library}
-            onChange={(e) => handleCompetenciesInputChange(row.id,"Library",e.target.value)}
+            onChange={(e) =>
+              handleCompetenciesInputChange(row.id, "Library", e.target.value)
+            }
             placeholder="Library"
           />
         ) : (
@@ -102,7 +108,9 @@ const RequisitionForm = (handleNext) => {
           <Form.Control
             type="text"
             value={row.Category}
-            onChange={(e) => handleCompetenciesInputChange(row.id,"Category",e.target.value)}
+            onChange={(e) =>
+              handleCompetenciesInputChange(row.id, "Category", e.target.value)
+            }
             placeholder="Category"
           />
         ) : (
@@ -117,7 +125,13 @@ const RequisitionForm = (handleNext) => {
           <Form.Control
             type="text"
             value={row.ExpectedRating}
-            onChange={(e) => handleCompetenciesInputChange(row.id,"ExpectedRating",e.target.value)}
+            onChange={(e) =>
+              handleCompetenciesInputChange(
+                row.id,
+                "ExpectedRating",
+                e.target.value
+              )
+            }
             placeholder="Expected Rating"
           />
         ) : (
@@ -133,7 +147,9 @@ const RequisitionForm = (handleNext) => {
           <Form.Control
             type="text"
             value={row.Weight}
-            onChange={(e) => handleCompetenciesInputChange(row.id,"Weight",e.target.value)}
+            onChange={(e) =>
+              handleCompetenciesInputChange(row.id, "Weight", e.target.value)
+            }
             placeholder="Weight"
           />
         ) : (
@@ -142,20 +158,40 @@ const RequisitionForm = (handleNext) => {
     },
     {
       name: "Actions",
-    }])
+    },
+  ]);
 
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await axiosInstance.post(
+          "/get_plan_id_position_role/",
+          {},
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
 
+        setPlanId(response?.data?.data);
+      } catch (error) {
+        console.log(error, "errr");
+      }
+    }
+    fetchData();
+  }, []);
 
-
-  const [questionsHeader,setQuestionsHeader] = useState([{
+  const [questionsHeader, setQuestionsHeader] = useState([
+    {
       name: "Question",
       width: "20%",
       cell: (row) =>
-        row.isNew ?  (
+        row.isNew ? (
           <Form.Control
             type="text"
             value={row.Question}
-            onChange={(e) => handleQuestionInputChange(row.id,"Question",e.target.value)}
+            onChange={(e) =>
+              handleQuestionInputChange(row.id, "Question", e.target.value)
+            }
             placeholder="Question"
           />
         ) : (
@@ -169,7 +205,9 @@ const RequisitionForm = (handleNext) => {
           <Form.Control
             type="text"
             value={row.Required}
-            onChange={(e) => handleQuestionInputChange(row.id,"Required",e.target.value)}
+            onChange={(e) =>
+              handleQuestionInputChange(row.id, "Required", e.target.value)
+            }
             placeholder="Required"
           />
         ) : (
@@ -184,7 +222,9 @@ const RequisitionForm = (handleNext) => {
           <Form.Control
             type="text"
             value={row.Disqualifier}
-            onChange={(e) => handleQuestionInputChange(row.id,"Disqualifier",e.target.value)}
+            onChange={(e) =>
+              handleQuestionInputChange(row.id, "Disqualifier", e.target.value)
+            }
             placeholder="Disqualifier"
           />
         ) : (
@@ -199,7 +239,9 @@ const RequisitionForm = (handleNext) => {
           <Form.Control
             type="text"
             value={row.Score}
-            onChange={(e) => handleQuestionInputChange(row.id,"Score",e.target.value)}
+            onChange={(e) =>
+              handleQuestionInputChange(row.id, "Score", e.target.value)
+            }
             placeholder="Score"
           />
         ) : (
@@ -215,7 +257,9 @@ const RequisitionForm = (handleNext) => {
           <Form.Control
             type="text"
             value={row.Weight}
-            onChange={(e) => handleQuestionInputChange(row.id,"Weight",e.target.value)}
+            onChange={(e) =>
+              handleQuestionInputChange(row.id, "Weight", e.target.value)
+            }
             placeholder="Weight"
           />
         ) : (
@@ -224,107 +268,101 @@ const RequisitionForm = (handleNext) => {
     },
     {
       name: "Actions",
-    }])
+    },
+  ]);
 
+  async function fetch_reqs() {
+    try {
+      const idresponse = await axiosInstance.get("/reqs/ids/");
+      setReqid(idresponse?.data?.data);
 
-  useEffect(async () => {
-    const idresponse = await axiosInstance.get("/reqs/ids/");
-    setReqid(idresponse?.data?.data);
-    const response = await axiosInstance.post(
-      "/get_plan_id_position_role/",
-      {},
-      {
-        headers: { "Content-Type": "application/json" },
+      let gettempleteDetail;
+
+      if (reqtempid) {
+        gettempleteDetail = await axiosInstance.post(
+          "/get_requisition_by_id/",
+          {
+            req_id: reqtempid,
+          }
+        );
       }
-    );
 
-    if(response?.success){
-          setPlanId(response?.data?.data)
+      if (gettempleteDetail?.data?.error_code == 200) {
+        localStorage.removeItem("reqtempid")
+        const templeteDetails = gettempleteDetail?.data?.data;
+        const {
+          requisition_information,
+          position_information,
+          billing_details,
+          posting_details,
+          asset_details,
+        } = templeteDetails;
+
+        reset({
+          ...requisition_information,
+          ...position_information,
+          ...billing_details,
+          ...posting_details,
+          ...asset_details,
+          team_type_1: posting_details?.teams[0]?.team_type,
+          team_type_2: posting_details?.teams[1]?.team_type,
+          team_type_3: posting_details?.teams[2]?.team_type,
+          interview_teammate_1: posting_details?.interview_team[0]?.employee_id,
+          interview_teammate_2: posting_details?.interview_team[1]?.employee_id,
+        });
+      }
+    } catch (err) {
+      console.log(err?.message || "Something went wrong");
     }
-
-    let gettempleteDetail;
-    
-    if (reqtempid) {
-      console.log(reqtempid,"rekj")
-       gettempleteDetail = await axiosInstance.post(
-        "/get_requisition_by_id/",
-        {
-          req_id: reqtempid,
-        }
-      );
-    }
-
-  if(gettempleteDetail?.data?.error_code == 200){
-    // localStorage.removeItem("reqtempid")
-    const templeteDetails = gettempleteDetail?.data?.data;
-    const {requisition_information,position_information,billing_details,posting_details,asset_details} = templeteDetails;
-    console.log(posting_details?.teams[0]?.team_type,"htfhgv")
-
-    reset({
-      ...requisition_information,
-        ...position_information,
-        ...billing_details,
-        ...posting_details,
-        ...asset_details,
-        team_type_1:posting_details?.teams[0]?.team_type,
-        team_type_2:posting_details?.teams[1]?.team_type,
-        team_type_3:posting_details?.teams[2]?.team_type,
-        interview_teammate_1:posting_details?.interview_team[0]?.employee_id,
-        interview_teammate_2:posting_details?.interview_team[1]?.employee_id
-    })
-
   }
+
+  useEffect(() => {
+    fetch_reqs();
   }, []);
 
-
-
   const handleQuestionInputChange = (id, field, value) => {
-  setQuestions(prev =>
-    prev.map(row =>
-      row.id === id ? { ...row, [field]: value } : row
-    )
-  );
-};
+    setQuestions((prev) =>
+      prev.map((row) => (row.id === id ? { ...row, [field]: value } : row))
+    );
+  };
 
   const handleCompetenciesInputChange = (id, field, value) => {
-  setCompetencies(prev =>
-    prev.map(row =>
-      row.id === id ? { ...row, [field]: value } : row
-    )
-  );
-};
+    setCompetencies((prev) =>
+      prev.map((row) => (row.id === id ? { ...row, [field]: value } : row))
+    );
+  };
 
-    const handleQuestionAddRow = () => {
+  const handleQuestionAddRow = () => {
     setQuestions([
       ...questions,
-    {
-      id:Date.now(),
-      isNew:true,
-      Question: "",
-      Required: "",
-      Disqualifier: "",
-      Score: "",
-      Weight: "",
-      Actions: "select",
-    },
+      {
+        id: Date.now(),
+        isNew: true,
+        Question: "",
+        Required: "",
+        Disqualifier: "",
+        Score: "",
+        Weight: "",
+        Actions: "select",
+      },
     ]);
   };
-  
-  const handleCompentenciesAddRow =() => {
+
+  const handleCompentenciesAddRow = () => {
     setCompetencies([
       ...Competencies,
-    {
-      isNew:true,
-      id:Date.now(),
-      Competency: "",
-      Library: "",
-      Category: "",
-      ExpectedRating: "",
-      Weight: "",
-      Actions: "select",
-    },
+      {
+        isNew: true,
+        id: Date.now(),
+        Competency: "",
+        Library: "",
+        Category: "",
+        ExpectedRating: "",
+        Weight: "",
+        Actions: "select",
+      },
     ]);
-  }
+  };
 
   const toggleSection = (section) => {
     setOpenSection(openSection === section ? null : section);
@@ -337,31 +375,23 @@ const RequisitionForm = (handleNext) => {
     reset,
   } = useForm();
 
-  console.log(register,"hfskjs")
-  const onSubmit = (data) => {
-    console.log("Form Submitted", data);
-    const req_id = data?.req_id || ""
-    const plan_id = data?.plan_id || ""
+  const onSubmit = async (data) => {
+    // const req_id = data?.req_id || "";
+    const plan_id = data?.plan_id || "";
     const internal_title = data?.internal_title || "";
     const external_title = data?.external_title || "";
-    const hiring_plan_id_fk = data?.hiring_plan_id_fk || "";
     const job_position = data?.external_title || "";
-    const legal_entry = data?.legal_entry || ""
-    const buisness_unit = data?.buisness_unit || ""
-    const buisness_line = data?.buisness_line || ""
+    const legal_entry = data?.legal_entry || "";
+    const buisness_unit = data?.buisness_unit || "";
+    const buisness_line = data?.buisness_line || "";
     const division = data?.division || "";
     const department = data?.department || "";
     const location = data?.location || "";
     const band = data?.band || "";
     const sub_band = data?.sub_band || "";
     const working_model = data?.working_model || "";
-    const coordinator_name = data?.coordinator_name || "";
-    const coordinator_team = data?.coordinator_team || "";
-    const isg_team_name = data?.isg_team_name || "";
-    const interviewer_employee_id = data?.interviewer_employee_id || "";
     const geo_zone = data?.geo_zone || "";
     const employee_group = data?.employee_group || "";
-    const employee_sub_group = data?.employee_sub_group || "";
     const contract_start_date = data?.contract_start_date || "";
     const contract_end_date = data?.contract_end_date || "";
     const career_level = data?.career_level || "";
@@ -374,26 +404,21 @@ const RequisitionForm = (handleNext) => {
     const billing_type = data?.billing_type || "";
     const billing_start_date = data?.billing_start_date || "";
 
-
     const experience = data?.experience || "";
-    const qualification = data?.qualification || ""
+    const qualification = data?.qualification || "";
     const designation = data?.designation || "";
     const job_category = data?.job_category || "";
     const job_region = data?.job_region || "";
-    const internal_job_description = data?.internal_job_description || "";
-    const external_job_description = data?.external_job_description || "";
-    const ISG_team = data?.ISG_team ||"";
     const interview_teammate_1 = data?.interview_teammate_1 || "";
     const interview_teammate_2 = data?.interview_teammate_2 || "";
-    const team_type_1 = data?.team_type_1 || ""
-    const team_type_2 = data?.team_type_2 || ""
-    const team_type_3 = data?.team_type_3 || ""
+    const team_type_1 = data?.team_type_1 || "";
+    const team_type_2 = data?.team_type_2 || "";
+    const team_type_3 = data?.team_type_3 || "";
 
-    const laptop_needed = data?.laptop_needed || ""
-    const laptop_type = data?.laptop_type || ""
-    const additional_questions = data?.additional_questions || ""
+    const laptop_needed = data?.laptop_needed || "";
+    const laptop_type = data?.laptop_type || "";
+    const additional_questions = data?.additional_questions || "";
     const comments = data?.comments || "";
-
 
     // const formdata = {
     //   RequisitionID: "",
@@ -447,16 +472,16 @@ const RequisitionForm = (handleNext) => {
     // };
 
     const formdata = {
-      user_role : commonState?.app_data?.user_id || '',
+      user_role: commonState?.app_data?.user_id || "",
       PositionTitle: "Software Engineer1",
-      Planning_id : plan_id,
+      Planning_id: plan_id,
       Recruiter: "John Doe",
       HiringManager: 1,
       No_of_positions: 2,
       Status: "Pending Approval",
 
       requisition_information: {
-        req_id,
+        // req_id,
         plan_id,
       },
 
@@ -485,11 +510,11 @@ const RequisitionForm = (handleNext) => {
         // buisness_line,
         // buisness_unit,
       },
-      billing_details:{
+      billing_details: {
         billing_type,
         billing_start_date,
       },
-      posting_details:{
+      posting_details: {
         experience,
         qualification,
         designation,
@@ -500,41 +525,36 @@ const RequisitionForm = (handleNext) => {
         interview_teammate_2,
         internalDesc,
         externalDesc,
-        questions:{
-          question:questions?.Question || "",
-          required:questions?.Required || "",
-          disqualifier:questions?.Disqualifier || "",
-          score:questions?.Score || "",
-          Weight:questions?.Weight || "",
-        },
-        Competencies:{
-          competency:Competencies?.Competency || "",
-          library:Competencies?.Library || "",
-          category:Competencies?.Category || "",
-          expected_rating:Competencies?.ExpectedRating || "",
-          weight:Competencies?.Weight || "",
-        },
-        teams:[{team_type:team_type_1},{team_type:team_type_2},{team_type:team_type_3}],
-        interview_teammate:[{employee_id:interview_teammate_1},{employee_id:interview_teammate_2}]
+        questions,
+        Competencies,
+        teams: [
+          { team_type: team_type_1 },
+          { team_type: team_type_2 },
+          { team_type: team_type_3 },
+        ],
+        interview_teammate: [
+          { employee_id: interview_teammate_1 },
+          { employee_id: interview_teammate_2 },
+        ],
       },
-      asset_deatils:{
+      asset_deatils: {
         laptop_type,
         laptop_needed,
         additional_questions,
-        comments
+        comments,
       },
     };
 
-    const response = axiosInstance
+    const response = await axiosInstance
       .post("/api/jobrequisition/", formdata)
       .then((res) => console.log(res, "responseOfPostRequition"));
 
-      if(response.success){
-        handleNext()
-      }
-      if(response.success){
-        alert(response.message)
-      }
+    if (response) {
+      handleNext();
+    }
+    if (response) {
+      alert(response.message);
+    }
   };
 
   const handleRequisitionSubmit = () => {
@@ -558,12 +578,11 @@ const RequisitionForm = (handleNext) => {
           }`}
         >
           <div className="row">
-            <div className="mb-3 col-md-3">
+            {/* <div className="mb-3 col-md-3">
               <label className="form-label">
                 Req Id
                 <select
                   {...register("req_id")}
-
                   className="form-select"
                   onChange={handleRequisitionSubmit}
                   defaultValue=""
@@ -572,12 +591,12 @@ const RequisitionForm = (handleNext) => {
                     Select Req Id
                   </option>
                   {Reqid.length > 0 &&
-                    Reqid.map((ids) => (
-                      <option value={ids?.req_ids}>{ids?.req_ids}</option>
+                    Reqid.map((ids,ind) => (
+                      <option key={ind} value={ids?.req_ids}>{ids?.req_ids}</option>
                     ))}
                 </select>
               </label>
-            </div>
+            </div> */}
             <div className="mb-3 col-md-3">
               <label className="form-label">
                 Planning Id
@@ -590,8 +609,9 @@ const RequisitionForm = (handleNext) => {
                   <option value="" disabled>
                     Select Planning Id
                   </option>
-                  {planid.length > 0 && planid.map((val)=>(<option value={val}>{val}</option>))}
-                  </select>
+                  {planid.length > 0 &&
+                    planid.map((val,ind) => <option key={ind} value={val}>{val}</option>)}
+                </select>
               </label>
             </div>
           </div>
@@ -1066,7 +1086,7 @@ const RequisitionForm = (handleNext) => {
               <label className="form-label">
                 Required Score
                 <input
-                {...register("required_score")}
+                  {...register("required_score")}
                   type="text"
                   className="form-control"
                   placeholder="Enter Required Score"
@@ -1121,13 +1141,8 @@ const RequisitionForm = (handleNext) => {
               </div>
 
               <div className="col-md-4">
-                <label className="form-label">
-                  Team type:
-                </label>
-                <select
-                  {...register("team_type_2")}
-                  className="form-select"
-                >
+                <label className="form-label">Team type:</label>
+                <select {...register("team_type_2")} className="form-select">
                   <option value="">Select Team type</option>
                   <option value="ONB Coordinator name">Team 1</option>
                   <option value="Team 2">Team 2</option>
@@ -1139,7 +1154,9 @@ const RequisitionForm = (handleNext) => {
                   Team type: <span className="text-danger">*</span>
                 </label>
                 <select
-                  {...register("team_type_3", { required: "ISG Team is required" })}
+                  {...register("team_type_3", {
+                    required: "ISG Team is required",
+                  })}
                   className={`form-select ${
                     errors.team_type_3 ? "is-invalid" : ""
                   }`}
@@ -1318,4 +1335,3 @@ const RequisitionForm = (handleNext) => {
 };
 
 export default RequisitionForm;
-

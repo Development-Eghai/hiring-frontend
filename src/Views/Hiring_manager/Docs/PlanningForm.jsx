@@ -268,7 +268,7 @@ const PlanningForm = () => {
 
           .circle {
             stroke: #0d6efd;
-            stroke-linecap: round;
+            strokeLinecap: round;
             transition: stroke-dasharray 0.3s ease;
           }
 
