@@ -102,7 +102,7 @@ const JobRequisition = () => {
       </Card>
 
       {/* Footer */}
-      <div className="d-flex justify-content-end">
+      {/* <div className="d-flex justify-content-end">
         {activeStep < steps.length - 1 ? (
           <button className="btn btn-primary" onClick={handleNext}>
             Next
@@ -112,7 +112,7 @@ const JobRequisition = () => {
             Done
           </button>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -9,6 +9,7 @@ import { PlusCircle } from "react-bootstrap-icons";
 import { Button, Form } from "react-bootstrap";
 import axiosInstance from "Services/axiosInstance";
 import { useCommonState } from "Components/CustomHooks";
+import { useLocation, useNavigate } from "react-router-dom";
 const AccordionItem = ({ title, children, isOpen, onClick }) => (
   <div className="mb-2">
     <div
@@ -24,7 +25,9 @@ const AccordionItem = ({ title, children, isOpen, onClick }) => (
 );
 
 const RequisitionForm = (handleNext) => {
-  const { commonState } = useCommonState();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const {  commonState  } = useCommonState();
   const [openSection, setOpenSection] = useState(null);
   const [completedSections, setCompletedSections] = useState([]);
 
@@ -36,8 +39,14 @@ const RequisitionForm = (handleNext) => {
   const [tempDetails, setTempDetails] = useState();
   const [reqtempid, setreqtempid] = useState(localStorage.getItem("reqtempid"));
 
+  const isBuissnessReviewScreen = location.pathname === "/hiring_manager/buisness_review";
+    const isJobRequestionScreen = location.pathname === "/hiring_manager/job_requisition";
+
+
   const [Competencies, setCompetencies] = useState([
     {
+      id: Date.now(),
+      isNew: true,
       id: Date.now(),
       isNew: true,
       Competency: "",
@@ -53,6 +62,8 @@ const RequisitionForm = (handleNext) => {
     {
       id: Date.now(),
       isNew: true,
+      id: Date.now(),
+      isNew: true,
       Question: "",
       Required: "",
       Disqualifier: "",
@@ -62,7 +73,98 @@ const RequisitionForm = (handleNext) => {
     },
   ]);
 
-  const [CompetenciesHeaders, setCompetenciesHeaders] = useState([
+    const [questionsHeader, setQuestionsHeader] = useState([
+    {
+      name: "Question",
+      width: "20%",
+      cell: (row) =>
+        row.isNew ? (
+          <Form.Control
+            type="text"
+            value={row.Question}
+            onChange={(e) =>
+              handleQuestionInputChange(row.id, "Question", e.target.value)
+            }
+            placeholder="Question"
+          />
+        ) : (
+          row.Question
+        ),
+    },
+    {
+      name: "Required",
+      cell: (row) =>
+        row.isNew ? (
+          <Form.Control
+            type="text"
+            value={row.Required}
+            onChange={(e) =>
+              handleQuestionInputChange(row.id, "Required", e.target.value)
+            }
+            placeholder="Required"
+          />
+        ) : (
+          row.Required
+        ),
+    },
+    {
+      name: "Disqualifier",
+      width: "20%",
+      cell: (row) =>
+        row.isNew ? (
+          <Form.Control
+            type="text"
+            value={row.Disqualifier}
+            onChange={(e) =>
+              handleQuestionInputChange(row.id, "Disqualifier", e.target.value)
+            }
+            placeholder="Disqualifier"
+          />
+        ) : (
+          row.Disqualifier
+        ),
+    },
+    {
+      name: "Score",
+      width: "20%",
+      cell: (row) =>
+        row.isNew ? (
+          <Form.Control
+            type="text"
+            value={row.Score}
+            onChange={(e) =>
+              handleQuestionInputChange(row.id, "Score", e.target.value)
+            }
+            placeholder="Score"
+          />
+        ) : (
+          row.Score
+        ),
+    },
+
+    {
+      name: "Weight",
+      width: "20%",
+      cell: (row) =>
+        row.isNew ? (
+          <Form.Control
+            type="text"
+            value={row.Weight}
+            onChange={(e) =>
+              handleQuestionInputChange(row.id, "Weight", e.target.value)
+            }
+            placeholder="Weight"
+          />
+        ) : (
+          row.Weight
+        ),
+    },
+    {
+      name: "Actions",
+    },
+  ]);
+
+    const [CompetenciesHeaders, setCompetenciesHeaders] = useState([
     {
       name: "Competency",
       width: "20%",
@@ -180,96 +282,6 @@ const RequisitionForm = (handleNext) => {
     fetchData();
   }, []);
 
-  const [questionsHeader, setQuestionsHeader] = useState([
-    {
-      name: "Question",
-      width: "20%",
-      cell: (row) =>
-        row.isNew ? (
-          <Form.Control
-            type="text"
-            value={row.Question}
-            onChange={(e) =>
-              handleQuestionInputChange(row.id, "Question", e.target.value)
-            }
-            placeholder="Question"
-          />
-        ) : (
-          row.Question
-        ),
-    },
-    {
-      name: "Required",
-      cell: (row) =>
-        row.isNew ? (
-          <Form.Control
-            type="text"
-            value={row.Required}
-            onChange={(e) =>
-              handleQuestionInputChange(row.id, "Required", e.target.value)
-            }
-            placeholder="Required"
-          />
-        ) : (
-          row.Required
-        ),
-    },
-    {
-      name: "Disqualifier",
-      width: "20%",
-      cell: (row) =>
-        row.isNew ? (
-          <Form.Control
-            type="text"
-            value={row.Disqualifier}
-            onChange={(e) =>
-              handleQuestionInputChange(row.id, "Disqualifier", e.target.value)
-            }
-            placeholder="Disqualifier"
-          />
-        ) : (
-          row.Disqualifier
-        ),
-    },
-    {
-      name: "Score",
-      width: "20%",
-      cell: (row) =>
-        row.isNew ? (
-          <Form.Control
-            type="text"
-            value={row.Score}
-            onChange={(e) =>
-              handleQuestionInputChange(row.id, "Score", e.target.value)
-            }
-            placeholder="Score"
-          />
-        ) : (
-          row.Score
-        ),
-    },
-
-    {
-      name: "Weight",
-      width: "20%",
-      cell: (row) =>
-        row.isNew ? (
-          <Form.Control
-            type="text"
-            value={row.Weight}
-            onChange={(e) =>
-              handleQuestionInputChange(row.id, "Weight", e.target.value)
-            }
-            placeholder="Weight"
-          />
-        ) : (
-          row.Weight
-        ),
-    },
-    {
-      name: "Actions",
-    },
-  ]);
 
   async function fetch_reqs() {
     try {
@@ -345,6 +357,16 @@ const RequisitionForm = (handleNext) => {
         Weight: "",
         Actions: "select",
       },
+      {
+        id: Date.now(),
+        isNew: true,
+        Question: "",
+        Required: "",
+        Disqualifier: "",
+        Score: "",
+        Weight: "",
+        Actions: "select",
+      },
     ]);
   };
 
@@ -361,8 +383,19 @@ const RequisitionForm = (handleNext) => {
         Weight: "",
         Actions: "select",
       },
+      {
+        isNew: true,
+        id: Date.now(),
+        Competency: "",
+        Library: "",
+        Category: "",
+        ExpectedRating: "",
+        Weight: "",
+        Actions: "select",
+      },
     ]);
   };
+  
 
   const toggleSection = (section) => {
     setOpenSection(openSection === section ? null : section);
@@ -382,8 +415,8 @@ const RequisitionForm = (handleNext) => {
     const external_title = data?.external_title || "";
     const job_position = data?.external_title || "";
     const legal_entry = data?.legal_entry || "";
-    const buisness_unit = data?.buisness_unit || "";
     const buisness_line = data?.buisness_line || "";
+    const buisness_unit = data?.buisness_unit || "";
     const division = data?.division || "";
     const department = data?.department || "";
     const location = data?.location || "";
@@ -420,60 +453,10 @@ const RequisitionForm = (handleNext) => {
     const additional_questions = data?.additional_questions || "";
     const comments = data?.comments || "";
 
-    // const formdata = {
-    //   RequisitionID: "",
-    //   user_role: "",
-    //   PositionTitle: "",
-    //   Recruiter: "",
-    //   HiringManager: "",
-    //   No_of_positions: "",
-    //   status: "pending",
-    //   details: {
-    //     internal_title,
-    //     external_title,
-    //     hiring_plan_id_fk,
-    //     job_position,
-    //     division,
-    //     department,
-    //     location,
-    //     band,
-    //     sub_band,
-    //     working_model,
-    //     coordinator_name,
-    //     coordinator_team,
-    //     isg_team_name,
-    //     interviewer_employee_id,
-    //     geo_zone,
-    //     employee_group,
-    //     employee_sub_group,
-    //     contract_start_date,
-    //     contract_end_date,
-    //     career_level,
-    //     primary_skills,
-    //     secondary_skills,
-    //     requisition_type,
-    //     client_interview,
-    //     required_score,
-    //   },
-    //   billing_details: {
-    //     billing_type,
-    //     billing_start_date,
-    //   },
-    //   posting_details: {
-    //     experience,
-    //     designation,
-    //     job_category,
-    //     job_region,
-    //     internal_job_description,
-    //     external_job_description,
-    //   },
-    //   interview_team: [],
-    //   teams: [],
-    // };
-
     const formdata = {
       user_role: commonState?.app_data?.user_id || "",
       PositionTitle: "Software Engineer1",
+      Planning_id: plan_id,
       Planning_id: plan_id,
       Recruiter: "John Doe",
       HiringManager: 1,
@@ -542,20 +525,21 @@ const RequisitionForm = (handleNext) => {
         laptop_needed,
         additional_questions,
         comments,
+        comments,
       },
     };
 
     const response = await axiosInstance
       .post("/api/jobrequisition/", formdata)
-      .then((res) => console.log(res, "responseOfPostRequition"));
 
-    if (response) {
-      handleNext();
-    }
-    if (response) {
-      alert(response.message);
-    }
-  };
+      if(response && !response.data.success){
+        navigate("/hiring_manager/buisness_review")
+      }
+
+            if(response && !response.data.success){
+        alert(response.data.message)
+      }
+  }
 
   const handleRequisitionSubmit = () => {
     // Mark "requisition" as completed
@@ -563,6 +547,16 @@ const RequisitionForm = (handleNext) => {
       setCompletedSections([...completedSections, "requisition"]);
     }
   };
+
+  const handleApprove = async() => {
+    const response = await axiosInstance.post(
+          "/jobrequisition/approve_requisition/",
+          {
+            user_role,
+            req_id: reqtempid,
+          }
+        );
+  }
 
   return (
     <div style={{ maxHeight: "500px", overflowY: "auto" }}>
@@ -586,6 +580,10 @@ const RequisitionForm = (handleNext) => {
                   className="form-select"
                   onChange={handleRequisitionSubmit}
                   defaultValue=""
+                  disabled={
+                    isBuissnessReviewScreen
+          
+                  }
                 >
                   <option value="" disabled>
                     Select Req Id
@@ -605,6 +603,10 @@ const RequisitionForm = (handleNext) => {
                   className="form-select"
                   onBlur={handleRequisitionSubmit}
                   defaultValue=""
+                  disabled={
+                    isBuissnessReviewScreen
+          
+                  }
                 >
                   <option value="" disabled>
                     Select Planning Id
@@ -641,6 +643,9 @@ const RequisitionForm = (handleNext) => {
                   errors.internal_title ? "is-invalid" : ""
                 }`}
                 placeholder="Software Engineer"
+                disabled={
+                  isBuissnessReviewScreen
+                }
               />
               {errors.internal_title && (
                 <div className="invalid-feedback">
@@ -662,6 +667,9 @@ const RequisitionForm = (handleNext) => {
                   errors.external_title ? "is-invalid" : ""
                 }`}
                 placeholder="Software Engineer"
+                disabled={
+                  isBuissnessReviewScreen
+                }
               />
               {errors.external_title && (
                 <div className="invalid-feedback">
@@ -677,55 +685,106 @@ const RequisitionForm = (handleNext) => {
                 {...register("job_position")}
                 className="form-control"
                 placeholder="Software Engineer"
+                disabled={
+                  isBuissnessReviewScreen
+                }
               />
             </div>
 
             {/* Legal Entry */}
             <div className="col-md-3">
               <label className="form-label">Legal Entry</label>
-              <input {...register("legal_entry")} className="form-control" />
+              <input
+                {...register("legal_entry")}
+                className="form-control"
+                disabled={
+                  isBuissnessReviewScreen
+                }
+              />
             </div>
 
             {/* Business Line */}
             <div className="col-md-3">
               <label className="form-label">Business Line</label>
-              <input {...register("buisness_line")} className="form-control" />
+              <input
+                {...register("buisness_line")}
+                className="form-control"
+                disabled={
+                  isBuissnessReviewScreen
+                }
+              />
             </div>
 
             {/* Business Unit */}
             <div className="col-md-3">
               <label className="form-label">Business Unit</label>
-              <input {...register("buisness_unit")} className="form-control" />
+              <input
+                {...register("buisness_unit")}
+                className="form-control"
+                disabled={
+                  isBuissnessReviewScreen
+                }
+              />
             </div>
 
             {/* Division */}
             <div className="col-md-3">
               <label className="form-label">Division</label>
-              <input {...register("division")} className="form-control" />
+              <input
+                {...register("division")}
+                className="form-control"
+                disabled={
+                  isBuissnessReviewScreen
+                }
+              />
             </div>
 
             {/* Department */}
             <div className="col-md-3">
               <label className="form-label">Department</label>
-              <input {...register("department")} className="form-control" />
+              <input
+                {...register("department")}
+                className="form-control"
+                disabled={
+                  isBuissnessReviewScreen
+                }
+              />
             </div>
 
             {/* Location */}
             <div className="col-md-3">
               <label className="form-label">Location</label>
-              <input {...register("location")} className="form-control" />
+              <input
+                {...register("location")}
+                className="form-control"
+                disabled={
+                  isBuissnessReviewScreen
+                }
+              />
             </div>
 
             {/* Geo Zone */}
             <div className="col-md-3">
               <label className="form-label">Geo Zone</label>
-              <input {...register("geo_zone")} className="form-control" />
+              <input
+                {...register("geo_zone")}
+                className="form-control"
+                disabled={
+                  isBuissnessReviewScreen
+                }
+              />
             </div>
 
             {/* Employee Group */}
             <div className="col-md-3">
               <label className="form-label">Employee Group</label>
-              <input {...register("employee_group")} className="form-control" />
+              <input
+                {...register("employee_group")}
+                className="form-control"
+                disabled={
+                  isBuissnessReviewScreen
+                }
+              />
             </div>
 
             {/* Contract Start/End Date */}
@@ -737,6 +796,9 @@ const RequisitionForm = (handleNext) => {
                 type="date"
                 {...register("contract_start_date")}
                 className="form-control"
+                disabled={
+                  isBuissnessReviewScreen
+                }
               />
             </div>
 
@@ -748,13 +810,22 @@ const RequisitionForm = (handleNext) => {
                 type="date"
                 {...register("contract_end_date")}
                 className="form-control"
+                disabled={
+                  isBuissnessReviewScreen
+                }
               />
             </div>
 
             {/* Career Level */}
             <div className="col-md-3">
               <label className="form-label">Career Level</label>
-              <input {...register("career_level")} className="form-control" />
+              <input
+                {...register("career_level")}
+                className="form-control"
+                disabled={
+                  isBuissnessReviewScreen
+                }
+              />
             </div>
 
             {/* Band */}
@@ -765,6 +836,9 @@ const RequisitionForm = (handleNext) => {
               <select
                 {...register("band", { required: "Band is required" })}
                 className={`form-select ${errors.band ? "is-invalid" : ""}`}
+                disabled={
+                  isBuissnessReviewScreen
+                }
               >
                 <option value="">Select Band</option>
                 <option value="Band 1">Band 1</option>
@@ -783,6 +857,9 @@ const RequisitionForm = (handleNext) => {
               <select
                 {...register("sub_band", { required: "Sub Band is required" })}
                 className={`form-select ${errors.sub_band ? "is-invalid" : ""}`}
+                disabled={
+                  isBuissnessReviewScreen
+                }
               >
                 <option value="">Select Sub Band</option>
                 <option value="Sub Band A">Sub Band A</option>
@@ -807,6 +884,9 @@ const RequisitionForm = (handleNext) => {
                 className={`form-select ${
                   errors.primary_skills ? "is-invalid" : ""
                 }`}
+                disabled={
+                  isBuissnessReviewScreen
+                }
               >
                 <option value="">Select Skill</option>
                 <option value="React">React</option>
@@ -825,19 +905,34 @@ const RequisitionForm = (handleNext) => {
               <input
                 {...register("secondary_skills")}
                 className="form-control"
+                disabled={
+                  isBuissnessReviewScreen
+                }
               />
             </div>
 
             {/* Mode of Working */}
             <div className="col-md-3">
               <label className="form-label">Mode of Working</label>
-              <input {...register("working_model")} className="form-control" />
+              <input
+                {...register("working_model")}
+                className="form-control"
+                disabled={
+                  isBuissnessReviewScreen
+                }
+              />
             </div>
 
             {/* Client Interview */}
             <div className="col-md-3">
               <label className="form-label">Client Interview</label>
-              <select {...register("client_interview")} className="form-select">
+              <select
+                {...register("client_interview")}
+                className="form-select"
+                disabled={
+                  isBuissnessReviewScreen
+                }
+              >
                 <option value="">Select</option>
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
@@ -847,7 +942,13 @@ const RequisitionForm = (handleNext) => {
             {/* Requisition Type */}
             <div className="col-md-3">
               <label className="form-label">Requisition Type</label>
-              <select {...register("requisition_type")} className="form-select">
+              <select
+                {...register("requisition_type")}
+                className="form-select"
+                disabled={
+                  isBuissnessReviewScreen
+                }
+              >
                 <option value="">Select</option>
                 <option value="Type A">Type A</option>
                 <option value="Type B">Type B</option>
@@ -874,6 +975,10 @@ const RequisitionForm = (handleNext) => {
                   className={`form-select ${
                     errors.billing_type ? "is-invalid" : ""
                   }`}
+                  disabled={
+                    isBuissnessReviewScreen
+          
+                  }
                 >
                   <option value="">Select billing</option>
                   <option value="billing 1">billing 1</option>
@@ -892,6 +997,10 @@ const RequisitionForm = (handleNext) => {
                   type="date"
                   {...register("billing_start_date")}
                   className="form-control"
+                  disabled={
+                    isBuissnessReviewScreen
+          
+                  }
                 />
               </div>
             </div>
@@ -921,6 +1030,9 @@ const RequisitionForm = (handleNext) => {
                 className={`form-select ${
                   errors.experience ? "is-invalid" : ""
                 }`}
+                disabled={
+                  isBuissnessReviewScreen
+                }
               >
                 <option value="">Select Experience</option>
                 <option value="0-2 years">0-2 years</option>
@@ -945,6 +1057,9 @@ const RequisitionForm = (handleNext) => {
                 className={`form-select ${
                   errors.qualification ? "is-invalid" : ""
                 }`}
+                disabled={
+                  isBuissnessReviewScreen
+                }
               >
                 <option value="">Select Qualification</option>
                 <option value="B.Tech">B.Tech</option>
@@ -969,6 +1084,9 @@ const RequisitionForm = (handleNext) => {
                 className={`form-select ${
                   errors.designation ? "is-invalid" : ""
                 }`}
+                disabled={
+                  isBuissnessReviewScreen
+                }
               >
                 <option value="">Select Designation</option>
                 <option value="Developer">Developer</option>
@@ -993,6 +1111,9 @@ const RequisitionForm = (handleNext) => {
                 className={`form-select ${
                   errors.job_category ? "is-invalid" : ""
                 }`}
+                disabled={
+                  isBuissnessReviewScreen
+                }
               >
                 <option value="">Select Category</option>
                 <option value="Full-Time">Full-Time</option>
@@ -1017,6 +1138,9 @@ const RequisitionForm = (handleNext) => {
                 className={`form-select ${
                   errors.job_region ? "is-invalid" : ""
                 }`}
+                disabled={
+                  isBuissnessReviewScreen
+                }
               >
                 <option value="">Select Region</option>
                 <option value="India">India</option>
@@ -1044,6 +1168,9 @@ const RequisitionForm = (handleNext) => {
                 theme="snow"
                 placeholder="Enter your text here"
                 className="quill-editor"
+                readOnly={
+                  isBuissnessReviewScreen
+                }
               />
             </div>
 
@@ -1058,6 +1185,9 @@ const RequisitionForm = (handleNext) => {
                 theme="snow"
                 placeholder="Enter your text here"
                 className="quill-editor"
+                readOnly={
+                  isBuissnessReviewScreen
+                }
               />
             </div>
           </div>
@@ -1081,12 +1211,19 @@ const RequisitionForm = (handleNext) => {
               pagination
               responsive
               highlightOnHover
+              disabled={
+                isBuissnessReviewScreen
+              }
             />
             <div className="mb-3">
               <label className="form-label">
                 Required Score
                 <input
                   {...register("required_score")}
+                  disabled={
+                    isBuissnessReviewScreen
+          
+                  }
                   type="text"
                   className="form-control"
                   placeholder="Enter Required Score"
@@ -1104,6 +1241,7 @@ const RequisitionForm = (handleNext) => {
                 variant="link"
                 className="text-primary p-0 fw-bold text-decoration-none"
                 onClick={handleCompentenciesAddRow}
+                style={{}}
               >
                 <PlusCircle className="me-1" /> Add Competencies
               </Button>
@@ -1115,6 +1253,9 @@ const RequisitionForm = (handleNext) => {
               pagination
               responsive
               highlightOnHover
+              disabled={
+                isBuissnessReviewScreen
+              }
             />
             <div className="row">
               <div className="col-md-4">
@@ -1128,6 +1269,10 @@ const RequisitionForm = (handleNext) => {
                   className={`form-select ${
                     errors.team_type_1 ? "is-invalid" : ""
                   }`}
+                  disabled={
+                    isBuissnessReviewScreen
+          
+                  }
                 >
                   <option value="">Select Coordinator</option>
                   <option value="ONB Coordinator">Coordinator 1</option>
@@ -1142,7 +1287,14 @@ const RequisitionForm = (handleNext) => {
 
               <div className="col-md-4">
                 <label className="form-label">Team type:</label>
-                <select {...register("team_type_2")} className="form-select">
+                <select
+                  {...register("team_type_2")}
+                  className="form-select"
+                  disabled={
+                    isBuissnessReviewScreen
+          
+                  }
+                >
                   <option value="">Select Team type</option>
                   <option value="ONB Coordinator name">Team 1</option>
                   <option value="Team 2">Team 2</option>
@@ -1157,9 +1309,16 @@ const RequisitionForm = (handleNext) => {
                   {...register("team_type_3", {
                     required: "ISG Team is required",
                   })}
+                  {...register("team_type_3", {
+                    required: "ISG Team is required",
+                  })}
                   className={`form-select ${
                     errors.team_type_3 ? "is-invalid" : ""
                   }`}
+                  disabled={
+                    isBuissnessReviewScreen
+          
+                  }
                 >
                   <option value="">Select Team type</option>
                   <option value="ISG Team">ISG 1</option>
@@ -1186,6 +1345,10 @@ const RequisitionForm = (handleNext) => {
                   className={`form-select ${
                     errors.interview_teammate_1 ? "is-invalid" : ""
                   }`}
+                  disabled={
+                    isBuissnessReviewScreen
+          
+                  }
                 >
                   <option value="">Select Teammate</option>
                   <option value="EMP001">EMP001</option>
@@ -1210,6 +1373,8 @@ const RequisitionForm = (handleNext) => {
                   className={`form-select ${
                     errors.interview_teammate_2 ? "is-invalid" : ""
                   }`}
+                                    disabled={isBuissnessReviewScreen}
+
                 >
                   <option value="">Select Teammate</option>
                   <option value="EMP002">EMP002</option>
@@ -1242,6 +1407,9 @@ const RequisitionForm = (handleNext) => {
                 className={`form-select ${
                   errors.laptop_needed ? "is-invalid" : ""
                 }`}
+                disabled={
+                  isBuissnessReviewScreen
+                }
               >
                 <option value="">Select option</option>
                 <option value="Yes">Yes</option>
@@ -1265,6 +1433,9 @@ const RequisitionForm = (handleNext) => {
                 className={`form-select ${
                   errors.laptop_type ? "is-invalid" : ""
                 }`}
+                disabled={
+                  isBuissnessReviewScreen
+                }
               >
                 <option value="">Select type</option>
                 <option value="Windows">Windows</option>
@@ -1289,6 +1460,9 @@ const RequisitionForm = (handleNext) => {
                 className={`form-select ${
                   errors.additional_questions ? "is-invalid" : ""
                 }`}
+                disabled={
+                  isBuissnessReviewScreen
+                }
               >
                 <option value="">Select option</option>
                 <option value="Yes">Yes</option>
@@ -1313,6 +1487,9 @@ const RequisitionForm = (handleNext) => {
                   errors.comments ? "is-invalid" : ""
                 }`}
                 placeholder="Enter comments"
+                disabled={
+                  isBuissnessReviewScreen
+                }
               />
               {errors.comments && (
                 <div className="invalid-feedback">
@@ -1325,10 +1502,16 @@ const RequisitionForm = (handleNext) => {
 
         {/* Submit Button */}
         <div className="col-12 text-end">
-          <button className="btn btn-primary mt-3" type="submit">
+          {isJobRequestionScreen && <button className="btn btn-primary mt-3" type="submit">
             Submit
+          </button>}
+          {
+            isBuissnessReviewScreen && <button className="btn btn-primary mt-3" onClick={handleApprove}>
+            Approve it and Send to Recruiter
           </button>
-        </div>
+          }
+          
+        </div>  
       </form>
     </div>
   );

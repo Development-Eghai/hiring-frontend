@@ -48,6 +48,8 @@ function App() {
 
               <Route path="set_approve_screen" element={<SetApproveScreen/>}/>
               <Route path="upload_screen" element={<UploadScreen/>}/>
+              <Route path="buisness_review" element={<JobRequisition/>}/>
+
             </Route>
           </Route>
 
