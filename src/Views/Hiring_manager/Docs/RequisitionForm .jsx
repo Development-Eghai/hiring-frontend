@@ -532,7 +532,7 @@ const RequisitionForm = (handleNext) => {
     const response = await axiosInstance
       .post("/api/jobrequisition/", formdata)
 
-      if(response && !response.data.success){
+      if(response && response.data.success){
         navigate("/hiring_manager/buisness_review")
       }
 
