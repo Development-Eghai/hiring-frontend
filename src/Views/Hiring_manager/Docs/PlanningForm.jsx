@@ -6,6 +6,8 @@ import { Card, CardHeader } from "react-bootstrap";
 import CreatableSelect from "react-select/creatable";
 import SpinnerComponent from "Components/Spinner/Spinner";
 import axiosInstance from "Services/axiosInstance";
+import { useNavigate } from "react-router-dom";
+import { Modal, Button } from "react-bootstrap";
 
 import * as pdfjsLib from "pdfjs-dist";
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
@@ -52,6 +54,8 @@ const PlanningForm = () => {
   const [loading, setLoading] = useState(false);
   const [sections, setSections] = useState([]);
   const [is_edit, set_is_edit] = useState(null);
+  const navigate = useNavigate();
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const selectOptions = {
     job_position: ["Java Dev", "Python Dev", "UI/UX Designer"],
@@ -171,8 +175,7 @@ const PlanningForm = () => {
     setFormData({ ...formData, [name]: files ? files[0] : value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     const payload = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
       payload.append(key, value);
@@ -180,13 +183,26 @@ const PlanningForm = () => {
     if (is_edit) payload.append("hiring_plan_id", is_edit);
 
     try {
-      await axiosInstance[is_edit ? "put" : "post"]("/hiring_plan/", payload, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      toast.success("Form submitted successfully!");
-      setFormData(initialState);
+      const response = await axiosInstance[is_edit ? "put" : "post"](
+        "/hiring_plan/",
+        payload,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      if (response.data?.error_code === 201) {
+        toast.success("Form submitted successfully!");
+        setFormData(initialState);
+        setTimeout(() => {
+          navigate("/hiring_manager/planning");
+        }, 1500); 
+      } else {
+        toast.error(response.data?.message || "Something went wrong");
+      }
     } catch (err) {
-      toast.error("Failed to submit form. Please try again.");
+      toast.error(
+        err?.response?.data?.message ||
+          "Failed to submit form. Please try again."
+      );
     }
   };
 
@@ -411,7 +427,11 @@ const PlanningForm = () => {
             ))}
 
             <div className="text-end mt-4 mb-2">
-              <button type="submit" className="btn btn-primary px-5 py-2">
+              <button
+                type="button"
+                className="btn btn-primary px-5 py-2"
+                onClick={() => setShowConfirmModal(true)}
+              >
                 <i className="bi bi-send me-2"></i>{" "}
                 {is_edit ? "Update" : "Submit"}
               </button>
@@ -419,6 +439,37 @@ const PlanningForm = () => {
           </form>
         )}
       </Card>
+
+      <Modal
+        show={showConfirmModal}
+        onHide={() => setShowConfirmModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Submission</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to {is_edit ? "update" : "submit"} this hiring
+          plan?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setShowConfirmModal(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => {
+              setShowConfirmModal(false);
+              handleSubmit();
+            }}
+          >
+            Yes, {is_edit ? "Update" : "Submit"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
