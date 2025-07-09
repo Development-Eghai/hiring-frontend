@@ -5,7 +5,8 @@ export function LoginSuccessNavigateTo(user_role, navigate) {
 
         case "Recruiter":
             return navigate("/recruiter/dashboard");
-            
+        case "Buisness" :
+            return navigate("/business_ops/dashboard")
         default:
             break;
     }

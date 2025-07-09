@@ -1,6 +1,10 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { BuisnessLayout } from "Views/Business_ops/Business_ops_utils/BuisnessLayout";
+import BuisnessOpsDashboard from "Views/Business_ops/Docs/BuisnessOpsDashboard";
+import BuisnessOpsReview from "Views/Business_ops/Docs/BuisnessOpsReview";
+import JobBuisnessReview from "Views/Business_ops/Docs/JobRequisition";
 import Error from "Views/Common/Docs/error";
 import { InitializeProjectSetup } from "Views/Common/Docs/InitializeProjectSetup";
 import Login from "Views/Common/Docs/Login";
@@ -48,7 +52,6 @@ function App() {
 
               <Route path="set_approve_screen" element={<SetApproveScreen/>}/>
               <Route path="upload_screen" element={<UploadScreen/>}/>
-              <Route path="buisness_review" element={<JobRequisition/>}/>
 
             </Route>
           </Route>
@@ -61,8 +64,12 @@ function App() {
           </Route>
 
 
-          <Route path="/business_ops">
+          <Route path="/business_ops">  
+            <Route element={<BuisnessLayout />}>
+              <Route path="dashboard" element={<BuisnessOpsDashboard/>}/>
+              <Route path="buisness_review" element={<JobBuisnessReview/>}/>
 
+          </Route>
           </Route>
 
           <Route path="*" element={<Error />} />

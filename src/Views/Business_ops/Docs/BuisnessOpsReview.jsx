@@ -24,7 +24,7 @@ const AccordionItem = ({ title, children, isOpen, onClick }) => (
   </div>
 );
 
-const RequisitionForm = (handleNext) => {
+const BuisnessOpsReview = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const {  commonState  } = useCommonState();
@@ -1414,4 +1414,4 @@ const RequisitionForm = (handleNext) => {
   );
 };
 
-export default RequisitionForm;
+export default BuisnessOpsReview;
