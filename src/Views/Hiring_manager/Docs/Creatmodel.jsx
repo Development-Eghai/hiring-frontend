@@ -16,6 +16,7 @@ const Creatmodel = () => {
   const [formData, setFormData] = useState({
     hiring_plan_id: "",
     requisition_date: "",
+    due_requisition_date:"",
     requisition_template: "",
     no_of_openings: "",
   });
@@ -73,6 +74,7 @@ const Creatmodel = () => {
     const {
       hiring_plan_id,
       requisition_date,
+      due_requisition_date,
       requisition_template,
       no_of_openings,
     } = formData;
@@ -83,6 +85,7 @@ const Creatmodel = () => {
     if (
       !hiring_plan_id ||
       !requisition_date ||
+      !due_requisition_date ||
       !no_of_openings
     ) {
       setStatusMessage({
@@ -95,14 +98,15 @@ const Creatmodel = () => {
     const payload = {
       hiring_plan_id,
       requisition_date,
+      due_requisition_date,
       requisition_template,
       no_of_openings: parseInt(no_of_openings),
     };
 
     try {
       setLoading(true);
-      const res = await axios.put(
-        "https://api.pixeladvant.com/hiring_plan/",
+      const res = await axios.post(
+        "https://api.pixeladvant.com/manage-requisition/",
         payload
       );
 
@@ -114,9 +118,12 @@ const Creatmodel = () => {
         setFormData({
           hiring_plan_id: "",
           requisition_date: "",
+          due_requisition_date:"",
           requisition_template: "",
           no_of_openings: "",
         });
+        
+        res?.data?.data && localStorage.setItem("createrequisitiondata",JSON.stringify(res?.data?.data))
         navigate("/hiring_manager/job_requisition")
         // You can close modal after success if needed:
         // setTimeout(() => setShow(false), 1000);
@@ -178,7 +185,7 @@ const Creatmodel = () => {
             {/* Requisition Date */}
             <Form.Group className="mb-3">
               <Form.Label>
-                Date of Requisition <span className="text-danger">*</span>
+               start Date of Requisition <span className="text-danger">*</span>
               </Form.Label>
 
               <div
@@ -207,6 +214,32 @@ const Creatmodel = () => {
                     pointerEvents: "none",
                   }}
                 /> */}
+              </div>
+            </Form.Group>
+
+            {/* Requisition due Date */}
+            <Form.Group className="mb-3">
+              <Form.Label>
+               Due Date of Requisition <span className="text-danger">*</span>
+              </Form.Label>
+
+              <div
+                className="position-relative"
+                onClick={() =>
+                  document
+                    .getElementById("requisitionDueDateInput")
+                    ?.showPicker?.()
+                }
+                style={{ cursor: "pointer" }}
+              >
+                <Form.Control
+                  type="date"
+                  name="due_requisition_date"
+                  id="requisitionDueDateInput"
+                  value={formData.due_requisition_date}
+                  onChange={handleChange}
+                  
+                />
               </div>
             </Form.Group>
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm,Controller } from "react-hook-form";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -10,6 +10,9 @@ import { Button, Form } from "react-bootstrap";
 import axiosInstance from "Services/axiosInstance";
 import { useCommonState } from "Components/CustomHooks";
 import { useLocation, useNavigate } from "react-router-dom";
+import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
+
 const AccordionItem = ({ title, children, isOpen, onClick }) => (
   <div className="mb-2">
     <div
@@ -25,7 +28,6 @@ const AccordionItem = ({ title, children, isOpen, onClick }) => (
 );
 
 const RequisitionForm = (handleNext) => {
-  const location = useLocation();
   const navigate = useNavigate();
   const {  commonState  } = useCommonState();
   const [openSection, setOpenSection] = useState(null);
@@ -314,7 +316,7 @@ const RequisitionForm = (handleNext) => {
           ...billing_details,
           ...posting_details,
           ...asset_details,
-          team_type_1: posting_details?.teams[0]?.team_type,
+          team_name: posting_details?.teams[0]?.team_name,
           team_type_2: posting_details?.teams[1]?.team_type,
           team_type_3: posting_details?.teams[2]?.team_type,
           interview_teammate_1: posting_details?.interview_team[0]?.employee_id,
@@ -402,17 +404,19 @@ const RequisitionForm = (handleNext) => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
     reset,
   } = useForm();
 
+  const createrequisitiondata = localStorage.getItem("createrequisitiondata") ? JSON.parse(localStorage.getItem("createrequisitiondata")) : null;
+
   const onSubmit = async (data) => {
-    // const req_id = data?.req_id || "";
     const plan_id = data?.plan_id || "";
     const internal_title = data?.internal_title || "";
     const external_title = data?.external_title || "";
     const job_position = data?.external_title || "";
-    const legal_entry = data?.legal_entry || "";
+    const company_client_name = data?.company_client_name || "";
     const buisness_line = data?.buisness_line || "";
     const buisness_unit = data?.buisness_unit || "";
     const division = data?.division || "";
@@ -422,94 +426,82 @@ const RequisitionForm = (handleNext) => {
     const sub_band = data?.sub_band || "";
     const working_model = data?.working_model || "";
     const geo_zone = data?.geo_zone || "";
-    const employee_group = data?.employee_group || "";
-    const contract_start_date = data?.contract_start_date || "";
-    const contract_end_date = data?.contract_end_date || "";
+
     const career_level = data?.career_level || "";
-    const primary_skills = data?.primary_skills || "";
-    const secondary_skills = data?.secondary_skills || "";
     const requisition_type = data?.requisition_type || "";
     const client_interview = data?.client_interview || "";
     const required_score = data?.required_score || "";
 
+    const primary_skills = data?.primary_skills?.map((item) => item.value) || "";
+    const secondary_skills = data?.secondary_skills?.map((item) => item.value) || "";
+    
     const billing_type = data?.billing_type || "";
     const billing_start_date = data?.billing_start_date || "";
+    const billing_end_date = data?.billing_end_date || "";
+    const contract_start_date = data?.contract_start_date || "";
+    const contract_end_date = data?.contract_end_date || "";
 
-    const experience = data?.experience || "";
-    const qualification = data?.qualification || "";
-    const designation = data?.designation || "";
-    const job_category = data?.job_category || "";
-    const job_region = data?.job_region || "";
+    const experience = data?.experience?.map((item) => item.value)|| "";
+    const qualification = data?.qualification?.map((item) => item.value) || "";
+    const designation = data?.designation?.map((item) => item.value) || "";
+    const job_region = data?.job_region?.map((item) => item.value) || "";
     const interview_teammate_1 = data?.interview_teammate_1 || "";
     const interview_teammate_2 = data?.interview_teammate_2 || "";
-    const team_type_1 = data?.team_type_1 || "";
+    const team_name = data?.team_name || "";
     const team_type_2 = data?.team_type_2 || "";
     const team_type_3 = data?.team_type_3 || "";
 
     const laptop_needed = data?.laptop_needed || "";
     const laptop_type = data?.laptop_type || "";
-    const additional_questions = data?.additional_questions || "";
     const comments = data?.comments || "";
 
+    const newQuestions = questions.map(({ id, isNew, ...rest }) => rest)
+    const newCompentencies= Competencies.map(({ id, isNew, ...rest }) => rest)
+
     const formdata = {
-      user_role: commonState?.app_data?.user_id || "",
-      PositionTitle: "Software Engineer1",
-      Planning_id: plan_id,
-      Planning_id: plan_id,
-      Recruiter: "John Doe",
-      HiringManager: 1,
-      No_of_positions: 2,
-      Status: "Pending Approval",
 
-      requisition_information: {
-        // req_id,
-        plan_id,
-      },
-
+      ...createrequisitiondata,
       position_information: {
         internal_title,
         external_title,
         job_position,
-        legal_entry,
+        company_client_name,
         buisness_unit,
         buisness_line,
         division,
         department,
         location,
         geo_zone,
-        employee_group,
-        contract_start_date,
-        contract_end_date,
         career_level,
         band,
         sub_band,
-        primary_skills,
-        secondary_skills,
         working_model,
         client_interview,
         requisition_type,
-        // buisness_line,
-        // buisness_unit,
+      },
+      skills_required: {
+        primary_skills,
+        secondary_skills,
       },
       billing_details: {
         billing_type,
         billing_start_date,
+        billing_end_date,
+        contract_start_date,
+        contract_end_date,
       },
       posting_details: {
         experience,
         qualification,
         designation,
-        job_category,
         job_region,
         required_score,
-        interview_teammate_1,
-        interview_teammate_2,
         internalDesc,
         externalDesc,
-        questions,
-        Competencies,
+        questions:newQuestions,
+        Competencies:newCompentencies,
         teams: [
-          { team_type: team_type_1 },
+          { team_name: team_name },
           { team_type: team_type_2 },
           { team_type: team_type_3 },
         ],
@@ -521,8 +513,6 @@ const RequisitionForm = (handleNext) => {
       asset_deatils: {
         laptop_type,
         laptop_needed,
-        additional_questions,
-        comments,
         comments,
       },
     };
@@ -530,11 +520,8 @@ const RequisitionForm = (handleNext) => {
     const response = await axiosInstance
       .post("/api/jobrequisition/", formdata)
 
-      if(response && response.data.success){
-        navigate("/hiring_manager/buisness_review")
-      }
-
             if(response && !response.data.success){
+              localStorage.removeItem("createrequisitiondata")
         alert(response.data.message)
       }
   }
@@ -556,61 +543,127 @@ const RequisitionForm = (handleNext) => {
         );
   }
 
+  const jobPositions = [
+  "Software Engineer",
+  "Frontend Developer",
+  "Backend Developer",
+  "Full Stack Developer",
+  "Data Analyst",
+  "UI/UX Designer",
+  "DevOps Engineer",
+  "Product Manager",
+  "Quality Assurance Tester",
+  "Technical Support Specialist"
+];
+
+const locations = [
+  "New York",
+  "San Francisco",
+  "London",
+  "Berlin",
+  "Tokyo",
+  "Toronto",
+  "Bangalore",
+  "Sydney",
+  "Dubai",
+  "Singapore"
+];
+
+const geoZones = [
+  "North America",
+  "South America",
+  "Europe",
+  "Asia",
+  "Africa",
+  "Oceania",
+  "Middle East",
+  "Central America",
+  "Southeast Asia",
+  "Eastern Europe"
+];
+
+const requisitionTypes = [
+  "Part Time",
+  "Full Time",
+  "Contract",
+  "Internship"
+]
+
+const experienceOptions = [
+  { value: "0-2", label: "0-2 years" },
+  { value: "2-5", label: "2-5 years" },
+  { value: "5-10", label: "5-10 years" },
+  { value: "10+", label: "10+ years" },
+];
+
+const qualificationOptions = [
+  { value: "btech", label: "B.Tech" },
+  { value: "mtech", label: "M.Tech" },
+  { value: "bsc", label: "B.Sc" },
+  { value: "msc", label: "M.Sc" },
+  { value: "mba", label: "MBA" },
+];
+
+const designationOptions = [
+  { value: "software_engineer", label: "Software Engineer" },
+  { value: "senior_developer", label: "Senior Developer" },
+  { value: "team_lead", label: "Team Lead" },
+  { value: "project_manager", label: "Project Manager" },
+  { value: "technical_architect", label: "Technical Architect" },
+];
+
+const regionOptions = [
+  { value: "north_america", label: "North America" },
+  { value: "europe", label: "Europe" },
+  { value: "asia", label: "Asia" },
+  { value: "middle_east", label: "Middle East" },
+  { value: "australia", label: "Australia" },
+];
+
+const primarySkillsOptions = [
+  { value: "react", label: "React.js" },
+  { value: "node", label: "Node.js" },
+  { value: "python", label: "Python" },
+  { value: "java", label: "Java" },
+  { value: "dotnet", label: ".NET" },
+];
+
+const secondarySkillsOptions = [
+  { value: "docker", label: "Docker" },
+  { value: "aws", label: "AWS" },
+  { value: "graphql", label: "GraphQL" },
+  { value: "jenkins", label: "Jenkins" },
+  { value: "kubernetes", label: "Kubernetes" },
+];
+
+
+
   return (
     <div style={{ maxHeight: "500px", overflowY: "auto" }}>
       <form className="py-1 mt-2" onSubmit={handleSubmit(onSubmit)} noValidate>
-        <AccordionItem
-          title="Requisitions Information"
-          isOpen={openSection === "requisition"}
-          onClick={() => toggleSection("requisition")}
-          className={`accordion-title p-2 ${
-            completedSections.includes("requisition")
-              ? "bg-success text-white"
-              : "bg-primary text-white"
-          }`}
-        >
-          <div className="row">
-            {/* <div className="mb-3 col-md-3">
-              <label className="form-label">
-                Req Id
-                <select
-                  {...register("req_id")}
-                  className="form-select"
-                  onChange={handleRequisitionSubmit}
-                  defaultValue=""
-
-                >
-                  <option value="" disabled>
-                    Select Req Id
-                  </option>
-                  {Reqid.length > 0 &&
-                    Reqid.map((ids,ind) => (
-                      <option key={ind} value={ids?.req_ids}>{ids?.req_ids}</option>
-                    ))}
-                </select>
-              </label>
-            </div> */}
-            <div className="mb-3 col-md-3">
-              <label className="form-label">
-                Planning Id
-                <select
-                  {...register("plan_id")}
-                  className="form-select"
-                  onBlur={handleRequisitionSubmit}
-                  defaultValue=""
-
-                >
-                  <option value="" disabled>
-                    Select Planning Id
-                  </option>
-                  {planid.length > 0 &&
-                    planid.map((val,ind) => <option key={ind} value={val}>{val}</option>)}
-                </select>
-              </label>
-            </div>
+        <div className="row">
+          <div className="mb-3 col-md-3">
+            <label className="form-label">
+              Planning Id
+              <select
+                {...register("plan_id")}
+                className="form-select"
+                onBlur={handleRequisitionSubmit}
+                defaultValue=""
+              >
+                <option value="" disabled>
+                  Select Planning Id
+                </option>
+                {planid.length > 0 &&
+                  planid.map((val, ind) => (
+                    <option key={ind} value={val}>
+                      {val}
+                    </option>
+                  ))}
+              </select>
+            </label>
           </div>
-        </AccordionItem>
-
+        </div>
         <AccordionItem
           title="Position Information"
           isOpen={openSection === "position"}
@@ -635,7 +688,6 @@ const RequisitionForm = (handleNext) => {
                   errors.internal_title ? "is-invalid" : ""
                 }`}
                 placeholder="Software Engineer"
-
               />
               {errors.internal_title && (
                 <div className="invalid-feedback">
@@ -657,7 +709,6 @@ const RequisitionForm = (handleNext) => {
                   errors.external_title ? "is-invalid" : ""
                 }`}
                 placeholder="Software Engineer"
-
               />
               {errors.external_title && (
                 <div className="invalid-feedback">
@@ -669,127 +720,99 @@ const RequisitionForm = (handleNext) => {
             {/* Position */}
             <div className="col-md-3">
               <label className="form-label">Position</label>
-              <input
+              <select
                 {...register("job_position")}
-                className="form-control"
-                placeholder="Software Engineer"
-
-              />
+                className={`form-select ${
+                  errors.job_position ? "is-invalid" : ""
+                }`}
+              >
+                <option value="">Select Position</option>
+                {jobPositions.map((pos) => (
+                  <option value={pos}>{pos}</option>
+                ))}
+              </select>
+              {errors.job_position && (
+                <div className="invalid-feedback">
+                  {errors.job_position.message}
+                </div>
+              )}
             </div>
 
-            {/* Legal Entry */}
+            {/* company/client name */}
             <div className="col-md-3">
-              <label className="form-label">Legal Entry</label>
+              <label className="form-label">company/client name</label>
               <input
-                {...register("legal_entry")}
+                {...register("company_client_name")}
                 className="form-control"
-
               />
             </div>
 
             {/* Business Line */}
             <div className="col-md-3">
               <label className="form-label">Business Line</label>
-              <input
-                {...register("buisness_line")}
-                className="form-control"
-
-              />
+              <input {...register("buisness_line")} className="form-control" />
             </div>
 
             {/* Business Unit */}
             <div className="col-md-3">
               <label className="form-label">Business Unit</label>
-              <input
-                {...register("buisness_unit")}
-                className="form-control"
-
-              />
+              <input {...register("buisness_unit")} className="form-control" />
             </div>
 
             {/* Division */}
             <div className="col-md-3">
               <label className="form-label">Division</label>
-              <input
-                {...register("division")}
-                className="form-control"
-
-              />
+              <input {...register("division")} className="form-control" />
             </div>
 
             {/* Department */}
             <div className="col-md-3">
               <label className="form-label">Department</label>
-              <input
-                {...register("department")}
-                className="form-control"
-
-              />
+              <input {...register("department")} className="form-control" />
             </div>
 
             {/* Location */}
             <div className="col-md-3">
               <label className="form-label">Location</label>
-              <input
+              <select
                 {...register("location")}
-                className="form-control"
-
-              />
+                className={`form-select ${errors.location ? "is-invalid" : ""}`}
+              >
+                <option value="">Select Location</option>
+                {locations.map((loc) => (
+                  <option value={loc}>{loc}</option>
+                ))}
+              </select>
+              {errors.location && (
+                <div className="invalid-feedback">
+                  {errors.location.message}
+                </div>
+              )}
             </div>
 
             {/* Geo Zone */}
             <div className="col-md-3">
               <label className="form-label">Geo Zone</label>
-              <input
+              <select
                 {...register("geo_zone")}
-                className="form-control"
-
-              />
-            </div>
-
-            {/* Employee Group */}
-            <div className="col-md-3">
-              <label className="form-label">Employee Group</label>
-              <input
-                {...register("employee_group")}
-                className="form-control"
-
-              />
-            </div>
-
-            {/* Contract Start/End Date */}
-            <div className="col-md-3">
-              <label className="form-label">
-                Contract Start Date <small>(Only for Contractor)</small>
-              </label>
-              <input
-                type="date"
-                {...register("contract_start_date")}
-                className="form-control"
-
-              />
-            </div>
-
-            <div className="col-md-3">
-              <label className="form-label">
-                Contract End Date <small>(Only for Contractor)</small>
-              </label>
-              <input
-                type="date"
-                {...register("contract_end_date")}
-                className="form-control"
-
-              />
+                className={`form-select ${errors.geo_zone ? "is-invalid" : ""}`}
+              >
+                <option value="">Select Geo Zone</option>
+                {geoZones.map((zone) => (
+                  <option value={zone}>{zone}</option>
+                ))}
+              </select>
+              {errors.geo_zone && (
+                <div className="invalid-feedback">
+                  {errors.geo_zone.message}
+                </div>
+              )}
             </div>
 
             {/* Career Level */}
             <div className="col-md-3">
               <label className="form-label">Career Level</label>
-              <input
-                {...register("career_level")}
-                className="form-control"
-
-              />
+              <input {...register("career_level")} className="form-control" />
             </div>
 
             {/* Band */}
@@ -800,7 +823,6 @@ const RequisitionForm = (handleNext) => {
               <select
                 {...register("band", { required: "Band is required" })}
                 className={`form-select ${errors.band ? "is-invalid" : ""}`}
-
               >
                 <option value="">Select Band</option>
                 <option value="Band 1">Band 1</option>
@@ -819,7 +841,6 @@ const RequisitionForm = (handleNext) => {
               <select
                 {...register("sub_band", { required: "Sub Band is required" })}
                 className={`form-select ${errors.sub_band ? "is-invalid" : ""}`}
-
               >
                 <option value="">Select Sub Band</option>
                 <option value="Sub Band A">Sub Band A</option>
@@ -833,7 +854,7 @@ const RequisitionForm = (handleNext) => {
             </div>
 
             {/* Primary Skills */}
-            <div className="col-md-3">
+            {/* <div className="col-md-3">
               <label className="form-label">
                 Primary Skills <span className="text-danger">*</span>
               </label>
@@ -844,7 +865,6 @@ const RequisitionForm = (handleNext) => {
                 className={`form-select ${
                   errors.primary_skills ? "is-invalid" : ""
                 }`}
-
               >
                 <option value="">Select Skill</option>
                 <option value="React">React</option>
@@ -855,54 +875,109 @@ const RequisitionForm = (handleNext) => {
                   {errors.primary_skills.message}
                 </div>
               )}
-            </div>
+            </div> */}
 
             {/* Secondary Skills */}
-            <div className="col-md-3">
+            {/* <div className="col-md-3">
               <label className="form-label">Secondary Skills</label>
               <input
                 {...register("secondary_skills")}
                 className="form-control"
-
               />
-            </div>
+            </div> */}
 
             {/* Mode of Working */}
             <div className="col-md-3">
               <label className="form-label">Mode of Working</label>
-              <input
-                {...register("working_model")}
-                className="form-control"
-
-              />
+              <input {...register("working_model")} className="form-control" />
             </div>
 
             {/* Client Interview */}
             <div className="col-md-3">
               <label className="form-label">Client Interview</label>
-              <select
-                {...register("client_interview")}
-                className="form-select"
-
-              >
+              <select {...register("client_interview")} className="form-select">
                 <option value="">Select</option>
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
+                <option value="TBD">TBD</option>
               </select>
             </div>
 
             {/* Requisition Type */}
             <div className="col-md-3">
               <label className="form-label">Requisition Type</label>
-              <select
-                {...register("requisition_type")}
-                className="form-select"
-
-              >
-                <option value="">Select</option>
-                <option value="Type A">Type A</option>
-                <option value="Type B">Type B</option>
+              <select {...register("requisition_type")} className="form-select">
+                <option value="">Select Requisition Type</option>
+                {requisitionTypes.map((typ) => (
+                  <option value={typ}>{typ}</option>
+                ))}
               </select>
+            </div>
+          </div>
+        </AccordionItem>
+
+        <AccordionItem
+          title="Skills Required"
+          isOpen={openSection === "skillsreq"}
+          onClick={() => toggleSection("skillsreq")}
+        >
+          <div className="row">
+            <div className="d-flex">
+              {/* primary skills */}
+              <div className="col-md-3">
+                <label className="form-label">
+                  Primary Skills<span className="text-danger">*</span>
+                </label>
+                <Controller
+                  className={`form-select ${
+                    errors.primary_skills ? "is-invalid" : ""
+                  }`}
+                  name="primary_skills"
+                  control={control}
+                  render={({ field }) => (
+                    <CreatableSelect
+                      {...field}
+                      isMulti
+                      options={primarySkillsOptions}
+                      classNamePrefix="react-select"
+                      placeholder="Select Primary skills"
+                    />
+                  )}
+                />
+                {errors.primary_skills && (
+                  <div className="invalid-feedback">
+                    {errors.primary_skills.message}
+                  </div>
+                )}
+              </div>
+
+              {/* secondary skills */}
+              <div className="col-md-3">
+                <label className="form-label">
+                  Secondary Skills<span className="text-danger">*</span>
+                </label>
+                <Controller
+                  className={`form-select ${
+                    errors.secondary_skills ? "is-invalid" : ""
+                  }`}
+                  name="secondary_skills"
+                  control={control}
+                  render={({ field }) => (
+                    <CreatableSelect
+                      {...field}
+                      isMulti
+                      options={secondarySkillsOptions}
+                      classNamePrefix="react-select"
+                      placeholder="Select Secondary skills"
+                    />
+                  )}
+                />
+                {errors.secondary_skills && (
+                  <div className="invalid-feedback">
+                    {errors.secondary_skills.message}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </AccordionItem>
@@ -914,6 +989,7 @@ const RequisitionForm = (handleNext) => {
         >
           <div className="row">
             <div className="d-flex">
+              {/* billing type */}
               <div className="col-md-3">
                 <label className="form-label">
                   Billing Type<span className="text-danger">*</span>
@@ -925,7 +1001,6 @@ const RequisitionForm = (handleNext) => {
                   className={`form-select ${
                     errors.billing_type ? "is-invalid" : ""
                   }`}
-
                 >
                   <option value="">Select billing</option>
                   <option value="billing 1">billing 1</option>
@@ -938,15 +1013,51 @@ const RequisitionForm = (handleNext) => {
                 )}
               </div>
 
+              {/* Billing Start Date */}
               <div className="col-md-3">
                 <label className="form-label">Billing Start Date :</label>
                 <input
                   type="date"
                   {...register("billing_start_date")}
                   className="form-control"
-
                 />
               </div>
+
+              {/* Billing End Date */}
+              <div className="col-md-3">
+                <label className="form-label">Billing End Date :</label>
+                <input
+                  type="date"
+                  {...register("billing_end_date")}
+                  className="form-control"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="row">
+            {/* Contract Start Date */}
+            <div className="col-md-3">
+              <label className="form-label">
+                Contract Start Date <small>(Only for Contractor)</small>
+              </label>
+              <input
+                type="date"
+                {...register("contract_start_date")}
+                className="form-control"
+              />
+            </div>
+            {/* Contract End Date */}
+
+            <div className="col-md-3">
+              <label className="form-label">
+                Contract End Date <small>(Only for Contractor)</small>
+              </label>
+              <input
+                type="date"
+                {...register("contract_end_date")}
+                className="form-control"
+              />
             </div>
           </div>
         </AccordionItem>
@@ -967,19 +1078,22 @@ const RequisitionForm = (handleNext) => {
               <label className="form-label">
                 Experience<span className="text-danger">*</span>
               </label>
-              <select
-                {...register("experience", {
-                  required: "Experience is required",
-                })}
+              <Controller
                 className={`form-select ${
                   errors.experience ? "is-invalid" : ""
                 }`}
-
-              >
-                <option value="">Select Experience</option>
-                <option value="0-2 years">0-2 years</option>
-                <option value="2-5 years">2-5 years</option>
-              </select>
+                name="experience"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    isMulti
+                    options={experienceOptions}
+                    classNamePrefix="react-select"
+                    placeholder="Select experience"
+                  />
+                )}
+              />
               {errors.experience && (
                 <div className="invalid-feedback">
                   {errors.experience.message}
@@ -992,19 +1106,22 @@ const RequisitionForm = (handleNext) => {
               <label className="form-label">
                 Qualification<span className="text-danger">*</span>
               </label>
-              <select
-                {...register("qualification", {
-                  required: "Qualification is required",
-                })}
+              <Controller
                 className={`form-select ${
-                  errors.qualification ? "is-invalid" : ""
+                  errors.experience ? "is-invalid" : ""
                 }`}
-
-              >
-                <option value="">Select Qualification</option>
-                <option value="B.Tech">B.Tech</option>
-                <option value="MBA">MBA</option>
-              </select>
+                name="qualification"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    isMulti
+                    options={qualificationOptions}
+                    classNamePrefix="react-select"
+                    placeholder="Select Qualification"
+                  />
+                )}
+              />
               {errors.qualification && (
                 <div className="invalid-feedback">
                   {errors.qualification.message}
@@ -1017,47 +1134,25 @@ const RequisitionForm = (handleNext) => {
               <label className="form-label">
                 Designation<span className="text-danger">*</span>
               </label>
-              <select
-                {...register("designation", {
-                  required: "Designation is required",
-                })}
+              <Controller
                 className={`form-select ${
                   errors.designation ? "is-invalid" : ""
                 }`}
-
-              >
-                <option value="">Select Designation</option>
-                <option value="Developer">Developer</option>
-                <option value="Manager">Manager</option>
-              </select>
+                name="designation"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    isMulti
+                    options={designationOptions}
+                    classNamePrefix="react-select"
+                    placeholder="Select Designation"
+                  />
+                )}
+              />
               {errors.designation && (
                 <div className="invalid-feedback">
                   {errors.designation.message}
-                </div>
-              )}
-            </div>
-
-            {/* Job Category */}
-            <div className="col-md-3 mb-3">
-              <label className="form-label">
-                Job Category<span className="text-danger">*</span>
-              </label>
-              <select
-                {...register("job_category", {
-                  required: "Job Category is required",
-                })}
-                className={`form-select ${
-                  errors.job_category ? "is-invalid" : ""
-                }`}
-
-              >
-                <option value="">Select Category</option>
-                <option value="Full-Time">Full-Time</option>
-                <option value="Part-Time">Part-Time</option>
-              </select>
-              {errors.job_category && (
-                <div className="invalid-feedback">
-                  {errors.job_category.message}
                 </div>
               )}
             </div>
@@ -1067,19 +1162,22 @@ const RequisitionForm = (handleNext) => {
               <label className="form-label">
                 Job Region<span className="text-danger">*</span>
               </label>
-              <select
-                {...register("job_region", {
-                  required: "Job Region is required",
-                })}
+              <Controller
                 className={`form-select ${
                   errors.job_region ? "is-invalid" : ""
                 }`}
-
-              >
-                <option value="">Select Region</option>
-                <option value="India">India</option>
-                <option value="US">US</option>
-              </select>
+                name="job_region"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    isMulti
+                    options={regionOptions}
+                    classNamePrefix="react-select"
+                    placeholder="Select Job Region"
+                  />
+                )}
+              />
               {errors.job_region && (
                 <div className="invalid-feedback">
                   {errors.job_region.message}
@@ -1102,7 +1200,6 @@ const RequisitionForm = (handleNext) => {
                 theme="snow"
                 placeholder="Enter your text here"
                 className="quill-editor"
-
               />
             </div>
 
@@ -1117,7 +1214,6 @@ const RequisitionForm = (handleNext) => {
                 theme="snow"
                 placeholder="Enter your text here"
                 className="quill-editor"
-
               />
             </div>
           </div>
@@ -1141,14 +1237,12 @@ const RequisitionForm = (handleNext) => {
               pagination
               responsive
               highlightOnHover
-
             />
             <div className="mb-3">
               <label className="form-label">
                 Required Score
                 <input
                   {...register("required_score")}
-
                   type="text"
                   className="form-control"
                   placeholder="Enter Required Score"
@@ -1178,40 +1272,34 @@ const RequisitionForm = (handleNext) => {
               pagination
               responsive
               highlightOnHover
-
             />
             <div className="row">
               <div className="col-md-4">
                 <label className="form-label">
-                  Team Type: <span className="text-danger">*</span>
+                  Team name: <span className="text-danger">*</span>
                 </label>
                 <select
-                  {...register("team_type_1", {
+                  {...register("team_name", {
                     required: "Team type is required",
                   })}
                   className={`form-select ${
-                    errors.team_type_1 ? "is-invalid" : ""
+                    errors.team_name ? "is-invalid" : ""
                   }`}
-
                 >
                   <option value="">Select Coordinator</option>
                   <option value="ONB Coordinator">Coordinator 1</option>
                   <option value="Coordinator 2">Coordinator 2</option>
                 </select>
-                {errors.team_type_1 && (
+                {errors.team_name && (
                   <div className="invalid-feedback">
-                    {errors.team_type_1.message}
+                    {errors.team_name.message}
                   </div>
                 )}
               </div>
 
               <div className="col-md-4">
                 <label className="form-label">Team type:</label>
-                <select
-                  {...register("team_type_2")}
-                  className="form-select"
-
-                >
+                <select {...register("team_type_2")} className="form-select">
                   <option value="">Select Team type</option>
                   <option value="ONB Coordinator name">Team 1</option>
                   <option value="Team 2">Team 2</option>
@@ -1232,7 +1320,6 @@ const RequisitionForm = (handleNext) => {
                   className={`form-select ${
                     errors.team_type_3 ? "is-invalid" : ""
                   }`}
-
                 >
                   <option value="">Select Team type</option>
                   <option value="ISG Team">ISG 1</option>
@@ -1259,7 +1346,6 @@ const RequisitionForm = (handleNext) => {
                   className={`form-select ${
                     errors.interview_teammate_1 ? "is-invalid" : ""
                   }`}
-
                 >
                   <option value="">Select Teammate</option>
                   <option value="EMP001">EMP001</option>
@@ -1284,7 +1370,6 @@ const RequisitionForm = (handleNext) => {
                   className={`form-select ${
                     errors.interview_teammate_2 ? "is-invalid" : ""
                   }`}
-
                 >
                   <option value="">Select Teammate</option>
                   <option value="EMP002">EMP002</option>
@@ -1317,7 +1402,6 @@ const RequisitionForm = (handleNext) => {
                 className={`form-select ${
                   errors.laptop_needed ? "is-invalid" : ""
                 }`}
-
               >
                 <option value="">Select option</option>
                 <option value="Yes">Yes</option>
@@ -1341,7 +1425,6 @@ const RequisitionForm = (handleNext) => {
                 className={`form-select ${
                   errors.laptop_type ? "is-invalid" : ""
                 }`}
-
               >
                 <option value="">Select type</option>
                 <option value="Windows">Windows</option>
@@ -1354,30 +1437,7 @@ const RequisitionForm = (handleNext) => {
                 </div>
               )}
             </div>
-            <div className="col-md-3">
-              <label className="form-label">
-                Any Other Additional Questions:{" "}
-                <span className="text-danger">*</span>
-              </label>
-              <select
-                {...register("additional_questions", {
-                  required: "Please specify if there are additional questions",
-                })}
-                className={`form-select ${
-                  errors.additional_questions ? "is-invalid" : ""
-                }`}
 
-              >
-                <option value="">Select option</option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-              </select>
-              {errors.additional_questions && (
-                <div className="invalid-feedback">
-                  {errors.additional_questions.message}
-                </div>
-              )}
-            </div>
             <div className="col-md-3">
               <label className="form-label">
                 Comments: <span className="text-danger">*</span>
@@ -1391,7 +1451,6 @@ const RequisitionForm = (handleNext) => {
                   errors.comments ? "is-invalid" : ""
                 }`}
                 placeholder="Enter comments"
-
               />
               {errors.comments && (
                 <div className="invalid-feedback">
@@ -1404,11 +1463,10 @@ const RequisitionForm = (handleNext) => {
 
         {/* Submit Button */}
         <div className="col-12 text-end">
-<button className="btn btn-primary mt-3" type="submit">
+          <button className="btn btn-primary mt-3" type="submit">
             Submit
           </button>
-          
-        </div>  
+        </div>
       </form>
     </div>
   );
