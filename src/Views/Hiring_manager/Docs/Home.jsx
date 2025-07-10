@@ -151,6 +151,7 @@ export const Home = () => {
   const handleEdit = (row) => {
     console.log("Edit clicked:", row);
     // open edit modal or navigate to edit page
+    navigate("/hiring_manager/job_requisition", { state: row });
   };
 
   const confirmDelete = (row) => {

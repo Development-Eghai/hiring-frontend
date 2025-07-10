@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useForm,Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -29,7 +29,7 @@ const AccordionItem = ({ title, children, isOpen, onClick }) => (
 
 const RequisitionForm = (handleNext) => {
   const navigate = useNavigate();
-  const {  commonState  } = useCommonState();
+  const { commonState } = useCommonState();
   const [openSection, setOpenSection] = useState(null);
   const [completedSections, setCompletedSections] = useState([]);
 
@@ -41,19 +41,19 @@ const RequisitionForm = (handleNext) => {
   const [tempDetails, setTempDetails] = useState();
   const [reqtempid, setreqtempid] = useState(localStorage.getItem("reqtempid"));
 
-  const user_role = commonState?.app_data?.user_role
-  
+  const routelocation = useLocation();
+
+  const {user_role,user_id} = commonState?.app_data;
+   
   const [Competencies, setCompetencies] = useState([
     {
       id: Date.now(),
       isNew: true,
-      id: Date.now(),
-      isNew: true,
-      Competency: "",
-      Library: "",
-      Category: "",
+      competency: "",
+      library: "",
+      category: "",
       ExpectedRating: "",
-      Weight: "",
+      weight: "",
       Actions: "select",
     },
   ]);
@@ -62,18 +62,18 @@ const RequisitionForm = (handleNext) => {
     {
       id: Date.now(),
       isNew: true,
-      id: Date.now(),
-      isNew: true,
-      Question: "",
-      Required: "",
-      Disqualifier: "",
-      Score: "",
-      Weight: "",
+      question: "",
+      required: "",
+      disqualifier: "",
+      score: "",
+      weight: "",
       Actions: "select",
     },
   ]);
 
-    const [questionsHeader, setQuestionsHeader] = useState([
+  console.log(questions,"sdfds")
+
+  const [questionsHeader, setQuestionsHeader] = useState([
     {
       name: "Question",
       width: "20%",
@@ -81,14 +81,14 @@ const RequisitionForm = (handleNext) => {
         row.isNew ? (
           <Form.Control
             type="text"
-            value={row.Question}
+            value={row.question}
             onChange={(e) =>
-              handleQuestionInputChange(row.id, "Question", e.target.value)
+              handleQuestionInputChange(row.id, "question", e.target.value)
             }
             placeholder="Question"
           />
         ) : (
-          row.Question
+          row.question
         ),
     },
     {
@@ -97,14 +97,14 @@ const RequisitionForm = (handleNext) => {
         row.isNew ? (
           <Form.Control
             type="text"
-            value={row.Required}
+            value={row.required}
             onChange={(e) =>
-              handleQuestionInputChange(row.id, "Required", e.target.value)
+              handleQuestionInputChange(row.id, "required", e.target.value)
             }
             placeholder="Required"
           />
         ) : (
-          row.Required
+          row.required
         ),
     },
     {
@@ -114,14 +114,14 @@ const RequisitionForm = (handleNext) => {
         row.isNew ? (
           <Form.Control
             type="text"
-            value={row.Disqualifier}
+            value={row.disqualifier}
             onChange={(e) =>
-              handleQuestionInputChange(row.id, "Disqualifier", e.target.value)
+              handleQuestionInputChange(row.id, "disqualifier", e.target.value)
             }
             placeholder="Disqualifier"
           />
         ) : (
-          row.Disqualifier
+          row.disqualifier
         ),
     },
     {
@@ -131,14 +131,14 @@ const RequisitionForm = (handleNext) => {
         row.isNew ? (
           <Form.Control
             type="text"
-            value={row.Score}
+            value={row.score}
             onChange={(e) =>
-              handleQuestionInputChange(row.id, "Score", e.target.value)
+              handleQuestionInputChange(row.id, "score", e.target.value)
             }
             placeholder="Score"
           />
         ) : (
-          row.Score
+          row.score
         ),
     },
 
@@ -149,14 +149,14 @@ const RequisitionForm = (handleNext) => {
         row.isNew ? (
           <Form.Control
             type="text"
-            value={row.Weight}
+            value={row.weight}
             onChange={(e) =>
-              handleQuestionInputChange(row.id, "Weight", e.target.value)
+              handleQuestionInputChange(row.id, "weight", e.target.value)
             }
             placeholder="Weight"
           />
         ) : (
-          row.Weight
+          row.weight
         ),
     },
     {
@@ -164,59 +164,59 @@ const RequisitionForm = (handleNext) => {
     },
   ]);
 
-    const [CompetenciesHeaders, setCompetenciesHeaders] = useState([
+  const [CompetenciesHeaders, setCompetenciesHeaders] = useState([
     {
-      name: "Competency",
+      name: "competency",
       width: "20%",
       cell: (row) =>
         row.isNew ? (
           <Form.Control
             type="text"
-            value={row.Competency}
+            value={row.competency}
             onChange={(e) =>
               handleCompetenciesInputChange(
                 row.id,
-                "Competency",
+                "competency",
                 e.target.value
               )
             }
-            placeholder="Competency"
+            placeholder="competency"
           />
         ) : (
-          row.Competency
+          row.competency
         ),
     },
     {
-      name: "Library",
+      name: "library",
       cell: (row) =>
         row.isNew ? (
           <Form.Control
             type="text"
-            value={row.Library}
+            value={row.library}
             onChange={(e) =>
-              handleCompetenciesInputChange(row.id, "Library", e.target.value)
+              handleCompetenciesInputChange(row.id, "library", e.target.value)
             }
-            placeholder="Library"
+            placeholder="library"
           />
         ) : (
-          row.Library
+          row.library
         ),
     },
     {
-      name: "Category",
+      name: "category",
       width: "20%",
       cell: (row) =>
         row.isNew ? (
           <Form.Control
             type="text"
-            value={row.Category}
+            value={row.category}
             onChange={(e) =>
-              handleCompetenciesInputChange(row.id, "Category", e.target.value)
+              handleCompetenciesInputChange(row.id, "category", e.target.value)
             }
-            placeholder="Category"
+            placeholder="category"
           />
         ) : (
-          row.Category
+          row.category
         ),
     },
     {
@@ -226,18 +226,18 @@ const RequisitionForm = (handleNext) => {
         row.isNew ? (
           <Form.Control
             type="text"
-            value={row.ExpectedRating}
+            value={row.expected_rating}
             onChange={(e) =>
               handleCompetenciesInputChange(
                 row.id,
-                "ExpectedRating",
+                "expected_rating",
                 e.target.value
               )
             }
             placeholder="Expected Rating"
           />
         ) : (
-          row.ExpectedRating
+          row.expected_rating
         ),
     },
 
@@ -248,14 +248,14 @@ const RequisitionForm = (handleNext) => {
         row.isNew ? (
           <Form.Control
             type="text"
-            value={row.Weight}
+            value={row.weight}
             onChange={(e) =>
-              handleCompetenciesInputChange(row.id, "Weight", e.target.value)
+              handleCompetenciesInputChange(row.id, "weight", e.target.value)
             }
             placeholder="Weight"
           />
         ) : (
-          row.Weight
+          row.weight
         ),
     },
     {
@@ -282,7 +282,6 @@ const RequisitionForm = (handleNext) => {
     fetchData();
   }, []);
 
-
   async function fetch_reqs() {
     try {
       const idresponse = await axiosInstance.get("/reqs/ids/");
@@ -300,27 +299,69 @@ const RequisitionForm = (handleNext) => {
       }
 
       if (gettempleteDetail?.data?.error_code == 200) {
-        localStorage.removeItem("reqtempid")
+        localStorage.removeItem("reqtempid");
         const templeteDetails = gettempleteDetail?.data?.data;
         const {
+          Planning_id,
+          user_role,
+          HiringManager,
+          PositionTitle,
           requisition_information,
           position_information,
           billing_details,
           posting_details,
-          asset_details,
+          asset_deatils,
+          skills_required,
         } = templeteDetails;
 
+        const { internalDesc, externalDesc, questions, Competencies } =
+          posting_details;
+
+        const { primary_skills, secondary_skills } = skills_required;
+
+        let formattedPrimarySkills;
+            if (primary_skills) {
+               formattedPrimarySkills = primary_skills.map((item) => ({
+                label: item,
+                value: item,
+              }));
+            }
+          
+        let formattedSecondarySkills;
+              if (secondary_skills) {
+               formattedSecondarySkills = secondary_skills.map((item) => ({
+                label: item,
+                value: item,
+              }));
+            }
+        
+        setInternalDesc(internalDesc);
+        setExternalDesc(externalDesc);
+        setCompetencies(
+          Competencies.map((c) => ({ ...c, isNew: true, id: Date.now() }))
+        );
+        setQuestions(
+          questions.map((q) => ({ ...q, isNew: true, id: Date.now() }))
+        );
+        
+
         reset({
+          plan_id: Planning_id,
+          user_role,
+          HiringManager,
+          PositionTitle,
           ...requisition_information,
+          primary_skills:formattedPrimarySkills,
+          secondary_skills:formattedSecondarySkills,
           ...position_information,
           ...billing_details,
           ...posting_details,
-          ...asset_details,
-          team_name: posting_details?.teams[0]?.team_name,
-          team_type_2: posting_details?.teams[1]?.team_type,
-          team_type_3: posting_details?.teams[2]?.team_type,
-          interview_teammate_1: posting_details?.interview_team[0]?.employee_id,
-          interview_teammate_2: posting_details?.interview_team[1]?.employee_id,
+          ...asset_deatils,
+          // team_name: posting_details?.teams[0]?.team_name,
+          // team_type_2: posting_details?.teams[1]?.team_type,
+          // team_type_3: posting_details?.teams[2]?.team_type,
+          // interview_teammate_1: posting_details?.interview_team[0]?.employee_id,
+          // interview_teammate_2: posting_details?.interview_team[1]?.employee_id,
         });
       }
     } catch (err) {
@@ -330,7 +371,16 @@ const RequisitionForm = (handleNext) => {
 
   useEffect(() => {
     fetch_reqs();
-  }, []);
+  }, [reqtempid]);
+
+  useEffect(() => {
+    let edit_req_id;
+    if (routelocation.state) {
+      edit_req_id = routelocation?.state?.id;
+    }
+    setreqtempid(edit_req_id);
+    console.log(reqtempid, "zsdsasds");
+  }, [reqtempid]);
 
   const handleQuestionInputChange = (id, field, value) => {
     setQuestions((prev) =>
@@ -350,21 +400,11 @@ const RequisitionForm = (handleNext) => {
       {
         id: Date.now(),
         isNew: true,
-        Question: "",
-        Required: "",
-        Disqualifier: "",
-        Score: "",
-        Weight: "",
-        Actions: "select",
-      },
-      {
-        id: Date.now(),
-        isNew: true,
-        Question: "",
-        Required: "",
-        Disqualifier: "",
-        Score: "",
-        Weight: "",
+        question: "",
+        required: "",
+        disqualifier: "",
+        score: "",
+        weight: "",
         Actions: "select",
       },
     ]);
@@ -376,26 +416,15 @@ const RequisitionForm = (handleNext) => {
       {
         isNew: true,
         id: Date.now(),
-        Competency: "",
-        Library: "",
-        Category: "",
-        ExpectedRating: "",
-        Weight: "",
-        Actions: "select",
-      },
-      {
-        isNew: true,
-        id: Date.now(),
-        Competency: "",
-        Library: "",
-        Category: "",
-        ExpectedRating: "",
-        Weight: "",
-        Actions: "select",
+        competency: "",
+        library: "",
+        category: "",
+        expected_rating: "",
+        weight: "",
+        Actions: "select",  
       },
     ]);
   };
-  
 
   const toggleSection = (section) => {
     setOpenSection(openSection === section ? null : section);
@@ -409,16 +438,21 @@ const RequisitionForm = (handleNext) => {
     reset,
   } = useForm();
 
-  const createrequisitiondata = localStorage.getItem("createrequisitiondata") ? JSON.parse(localStorage.getItem("createrequisitiondata")) : null;
+  const createrequisitiondata = localStorage.getItem("createrequisitiondata")
+    ? JSON.parse(localStorage.getItem("createrequisitiondata"))
+    : null;
+
+    console.log(createrequisitiondata,"sdcdscdscds")
 
   const onSubmit = async (data) => {
-    const plan_id = data?.plan_id || "";
+    console.log("dcascasas");
+    const Planning_id = data?.plan_id || "";
     const internal_title = data?.internal_title || "";
     const external_title = data?.external_title || "";
     const job_position = data?.external_title || "";
     const company_client_name = data?.company_client_name || "";
-    const buisness_line = data?.buisness_line || "";
-    const buisness_unit = data?.buisness_unit || "";
+    const business_line = data?.business_line || "";
+    const business_unit = data?.business_unit || "";
     const division = data?.division || "";
     const department = data?.department || "";
     const location = data?.location || "";
@@ -432,42 +466,47 @@ const RequisitionForm = (handleNext) => {
     const client_interview = data?.client_interview || "";
     const required_score = data?.required_score || "";
 
-    const primary_skills = data?.primary_skills?.map((item) => item.value) || "";
-    const secondary_skills = data?.secondary_skills?.map((item) => item.value) || "";
-    
+    const primary_skills =
+      data?.primary_skills?.map((item) => item.value) || [];
+    const secondary_skills =
+      data?.secondary_skills?.map((item) => item.value) || [];
+
     const billing_type = data?.billing_type || "";
     const billing_start_date = data?.billing_start_date || "";
     const billing_end_date = data?.billing_end_date || "";
     const contract_start_date = data?.contract_start_date || "";
     const contract_end_date = data?.contract_end_date || "";
 
-    const experience = data?.experience?.map((item) => item.value)|| "";
+    const experience = data?.experience?.map((item) => item.value) || "";
     const qualification = data?.qualification?.map((item) => item.value) || "";
     const designation = data?.designation?.map((item) => item.value) || "";
     const job_region = data?.job_region?.map((item) => item.value) || "";
-    const interview_teammate_1 = data?.interview_teammate_1 || "";
-    const interview_teammate_2 = data?.interview_teammate_2 || "";
-    const team_name = data?.team_name || "";
-    const team_type_2 = data?.team_type_2 || "";
-    const team_type_3 = data?.team_type_3 || "";
+    // const interview_teammate_1 = data?.interview_teammate_1 || "";
+    // const interview_teammate_2 = data?.interview_teammate_2 || "";
+    // const team_name = data?.team_name || "";
+    // const team_type_2 = data?.team_type_2 || "";
+    // const team_type_3 = data?.team_type_3 || "";
 
     const laptop_needed = data?.laptop_needed || "";
     const laptop_type = data?.laptop_type || "";
     const comments = data?.comments || "";
 
-    const newQuestions = questions.map(({ id, isNew, ...rest }) => rest)
-    const newCompentencies= Competencies.map(({ id, isNew, ...rest }) => rest)
+    const newQuestions = questions.map(({ id, isNew, ...rest }) => rest);
+    const newCompentencies = Competencies.map(({ id, isNew, ...rest }) => rest);
 
     const formdata = {
-
-      ...createrequisitiondata,
+      user_role: user_id,
+      requisition_id: reqtempid,
+      Planning_id,
+      HiringManager: user_id,
+      PositionTitle: job_position,
       position_information: {
         internal_title,
         external_title,
         job_position,
         company_client_name,
-        buisness_unit,
-        buisness_line,
+        business_unit,
+        business_line,
         division,
         department,
         location,
@@ -498,17 +537,17 @@ const RequisitionForm = (handleNext) => {
         required_score,
         internalDesc,
         externalDesc,
-        questions:newQuestions,
-        Competencies:newCompentencies,
-        teams: [
-          { team_name: team_name },
-          { team_type: team_type_2 },
-          { team_type: team_type_3 },
-        ],
-        interview_teammate: [
-          { employee_id: interview_teammate_1 },
-          { employee_id: interview_teammate_2 },
-        ],
+        questions: newQuestions,
+        Competencies: newCompentencies,
+        // teams: [
+        //   { team_name: team_name },
+        //   { team_type: team_type_2 },
+        //   { team_type: team_type_3 },
+        // ],
+        // interview_teammate: [
+        //   { employee_id: interview_teammate_1 },
+        //   { employee_id: interview_teammate_2 },
+        // ],
       },
       asset_deatils: {
         laptop_type,
@@ -517,14 +556,33 @@ const RequisitionForm = (handleNext) => {
       },
     };
 
-    const response = await axiosInstance
-      .post("/api/jobrequisition/", formdata)
+    if (reqtempid) {
+      console.log("entered");
+      const response = await axiosInstance.put(
+        "/api/jobrequisition/update-requisition/",
+        formdata
+      );
 
-            if(response && !response.data.success){
-              localStorage.removeItem("createrequisitiondata")
-        alert(response.data.message)
+      if (response && response.data.success) {
+        localStorage.removeItem("createrequisitiondata");
+        alert(response?.data?.message);
+        navigate("/hiring_manager/home");
       }
-  }
+    }
+
+    if (!reqtempid) {
+      const response = await axiosInstance.post(
+        "/api/jobrequisition/",
+        formdata
+      );
+
+      if (response && response?.data?.success) {
+        localStorage.removeItem("createrequisitiondata");
+        alert(response?.data?.message);
+        navigate("/hiring_manager/home");
+      }
+    }
+  };
 
   const handleRequisitionSubmit = () => {
     // Mark "requisition" as completed
@@ -533,110 +591,103 @@ const RequisitionForm = (handleNext) => {
     }
   };
 
-  const handleApprove = async() => {
+  const handleApprove = async () => {
     const response = await axiosInstance.post(
-          "/jobrequisition/approve_requisition/",
-          {
-            user_role,
-            req_id: reqtempid,
-          }
-        );
-  }
+      "/jobrequisition/approve_requisition/",
+      {
+        user_role,
+        req_id: reqtempid,
+      }
+    );
+  };
 
   const jobPositions = [
-  "Software Engineer",
-  "Frontend Developer",
-  "Backend Developer",
-  "Full Stack Developer",
-  "Data Analyst",
-  "UI/UX Designer",
-  "DevOps Engineer",
-  "Product Manager",
-  "Quality Assurance Tester",
-  "Technical Support Specialist"
-];
+    "Software Engineer",
+    "Frontend Developer",
+    "Backend Developer",
+    "Full Stack Developer",
+    "Data Analyst",
+    "UI/UX Designer",
+    "DevOps Engineer",
+    "Product Manager",
+    "Quality Assurance Tester",
+    "Technical Support Specialist",
+  ];
 
-const locations = [
-  "New York",
-  "San Francisco",
-  "London",
-  "Berlin",
-  "Tokyo",
-  "Toronto",
-  "Bangalore",
-  "Sydney",
-  "Dubai",
-  "Singapore"
-];
+  const locations = [
+    "New York",
+    "San Francisco",
+    "London",
+    "Berlin",
+    "Tokyo",
+    "Toronto",
+    "Bangalore",
+    "Sydney",
+    "Dubai",
+    "Singapore",
+  ];
 
-const geoZones = [
-  "North America",
-  "South America",
-  "Europe",
-  "Asia",
-  "Africa",
-  "Oceania",
-  "Middle East",
-  "Central America",
-  "Southeast Asia",
-  "Eastern Europe"
-];
+  const geoZones = [
+    "North America",
+    "South America",
+    "Europe",
+    "Asia",
+    "Africa",
+    "Oceania",
+    "Middle East",
+    "Central America",
+    "Southeast Asia",
+    "Eastern Europe",
+  ];
 
-const requisitionTypes = [
-  "Part Time",
-  "Full Time",
-  "Contract",
-  "Internship"
-]
+  const requisitionTypes = ["Part Time", "Full Time", "Contract", "Internship"];
 
-const experienceOptions = [
-  { value: "0-2", label: "0-2 years" },
-  { value: "2-5", label: "2-5 years" },
-  { value: "5-10", label: "5-10 years" },
-  { value: "10+", label: "10+ years" },
-];
+  const experienceOptions = [
+    { value: "0-2", label: "0-2 years" },
+    { value: "2-5", label: "2-5 years" },
+    { value: "5-10", label: "5-10 years" },
+    { value: "10+", label: "10+ years" },
+  ];
 
-const qualificationOptions = [
-  { value: "btech", label: "B.Tech" },
-  { value: "mtech", label: "M.Tech" },
-  { value: "bsc", label: "B.Sc" },
-  { value: "msc", label: "M.Sc" },
-  { value: "mba", label: "MBA" },
-];
+  const qualificationOptions = [
+    { value: "btech", label: "B.Tech" },
+    { value: "mtech", label: "M.Tech" },
+    { value: "bsc", label: "B.Sc" },
+    { value: "msc", label: "M.Sc" },
+    { value: "mba", label: "MBA" },
+  ];
 
-const designationOptions = [
-  { value: "software_engineer", label: "Software Engineer" },
-  { value: "senior_developer", label: "Senior Developer" },
-  { value: "team_lead", label: "Team Lead" },
-  { value: "project_manager", label: "Project Manager" },
-  { value: "technical_architect", label: "Technical Architect" },
-];
+  const designationOptions = [
+    { value: "software_engineer", label: "Software Engineer" },
+    { value: "senior_developer", label: "Senior Developer" },
+    { value: "team_lead", label: "Team Lead" },
+    { value: "project_manager", label: "Project Manager" },
+    { value: "technical_architect", label: "Technical Architect" },
+  ];
 
-const regionOptions = [
-  { value: "north_america", label: "North America" },
-  { value: "europe", label: "Europe" },
-  { value: "asia", label: "Asia" },
-  { value: "middle_east", label: "Middle East" },
-  { value: "australia", label: "Australia" },
-];
+  const regionOptions = [
+    { value: "north_america", label: "North America" },
+    { value: "europe", label: "Europe" },
+    { value: "asia", label: "Asia" },
+    { value: "middle_east", label: "Middle East" },
+    { value: "australia", label: "Australia" },
+  ];
 
-const primarySkillsOptions = [
-  { value: "react", label: "React.js" },
-  { value: "node", label: "Node.js" },
-  { value: "python", label: "Python" },
-  { value: "java", label: "Java" },
-  { value: "dotnet", label: ".NET" },
-];
+  const primarySkillsOptions = [
+    { value: "react", label: "React.js" },
+    { value: "node", label: "Node.js" },
+    { value: "python", label: "Python" },
+    { value: "java", label: "Java" },
+    { value: "dotnet", label: ".NET" },
+  ];
 
-const secondarySkillsOptions = [
-  { value: "docker", label: "Docker" },
-  { value: "aws", label: "AWS" },
-  { value: "graphql", label: "GraphQL" },
-  { value: "jenkins", label: "Jenkins" },
-  { value: "kubernetes", label: "Kubernetes" },
-];
-
-
+  const secondarySkillsOptions = [
+    { value: "docker", label: "Docker" },
+    { value: "aws", label: "AWS" },
+    { value: "graphql", label: "GraphQL" },
+    { value: "jenkins", label: "Jenkins" },
+    { value: "kubernetes", label: "Kubernetes" },
+  ];
 
   return (
     <div style={{ maxHeight: "500px", overflowY: "auto" }}>
@@ -750,13 +801,13 @@ const secondarySkillsOptions = [
             {/* Business Line */}
             <div className="col-md-3">
               <label className="form-label">Business Line</label>
-              <input {...register("buisness_line")} className="form-control" />
+              <input {...register("business_line")} className="form-control" />
             </div>
 
             {/* Business Unit */}
             <div className="col-md-3">
               <label className="form-label">Business Unit</label>
-              <input {...register("buisness_unit")} className="form-control" />
+              <input {...register("business_unit")} className="form-control" />
             </div>
 
             {/* Division */}
@@ -895,12 +946,21 @@ const secondarySkillsOptions = [
             {/* Client Interview */}
             <div className="col-md-3">
               <label className="form-label">Client Interview</label>
-              <select {...register("client_interview")} className="form-select">
+              <select {...register("client_interview",{
+                    required: "Please select a Client interview",
+                  })}                   className={`form-select ${
+                    errors.client_interview ? "is-invalid" : ""
+                  }`}>
                 <option value="">Select</option>
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
                 <option value="TBD">TBD</option>
               </select>
+                    {errors.client_interview && (
+                  <div className="invalid-feedback">
+                    {errors.client_interview.message}
+                  </div>
+                )}
             </div>
 
             {/* Requisition Type */}
@@ -1018,9 +1078,18 @@ const secondarySkillsOptions = [
                 <label className="form-label">Billing Start Date :</label>
                 <input
                   type="date"
-                  {...register("billing_start_date")}
-                  className="form-control"
+                  {...register("billing_start_date", {
+                    required: "Billing Start date is required",
+                  })}
+                    className={`form-control ${
+                    errors.billing_start_date ? "is-invalid" : ""
+                  }`}
                 />
+                                {errors.billing_start_date && (
+                  <div className="invalid-feedback">
+                    {errors.billing_start_date.message}
+                  </div>
+                )}
               </div>
 
               {/* Billing End Date */}
@@ -1028,9 +1097,17 @@ const secondarySkillsOptions = [
                 <label className="form-label">Billing End Date :</label>
                 <input
                   type="date"
-                  {...register("billing_end_date")}
-                  className="form-control"
-                />
+                  {...register("billing_end_date", {
+                    required: "billing end date is required",
+                  })}
+                    className={`form-control ${
+                    errors.billing_end_date ? "is-invalid" : ""
+                  }`}                />
+                                {errors.billing_end_date && (
+                  <div className="invalid-feedback">
+                    {errors.billing_end_date.message}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -1043,9 +1120,17 @@ const secondarySkillsOptions = [
               </label>
               <input
                 type="date"
-                {...register("contract_start_date")}
-                className="form-control"
-              />
+                {...register("contract_start_date", {
+                    required: "Contract Start date is required",
+                  })}
+ className={`form-control ${
+                    errors.contract_start_date ? "is-invalid" : ""
+                  }`}              />
+                                              {errors.contract_start_date && (
+                  <div className="invalid-feedback">
+                    {errors.contract_start_date.message}
+                  </div>
+                )}
             </div>
             {/* Contract End Date */}
 
@@ -1055,9 +1140,17 @@ const secondarySkillsOptions = [
               </label>
               <input
                 type="date"
-                {...register("contract_end_date")}
-                className="form-control"
-              />
+                {...register("contract_end_date", {
+                    required: "Contract end date is required",
+                  })}
+ className={`form-control ${
+                    errors.contract_end_date ? "is-invalid" : ""
+                  }`}              />
+                                              {errors.contract_end_date && (
+                  <div className="invalid-feedback">
+                    {errors.contract_end_date.message}
+                  </div>
+                )}
             </div>
           </div>
         </AccordionItem>
@@ -1273,7 +1366,7 @@ const secondarySkillsOptions = [
               responsive
               highlightOnHover
             />
-            <div className="row">
+            {/* <div className="row">
               <div className="col-md-4">
                 <label className="form-label">
                   Team name: <span className="text-danger">*</span>
@@ -1314,9 +1407,6 @@ const secondarySkillsOptions = [
                   {...register("team_type_3", {
                     required: "ISG Team is required",
                   })}
-                  {...register("team_type_3", {
-                    required: "ISG Team is required",
-                  })}
                   className={`form-select ${
                     errors.team_type_3 ? "is-invalid" : ""
                   }`}
@@ -1331,9 +1421,9 @@ const secondarySkillsOptions = [
                   </div>
                 )}
               </div>
-            </div>
+            </div> */}
 
-            <div className="row mt-3">
+            {/* <div className="row mt-3">
               <div className="col-md-4">
                 <label className="form-label">
                   Interview Teammate 1 (Emp ID):{" "}
@@ -1381,7 +1471,7 @@ const secondarySkillsOptions = [
                   </div>
                 )}
               </div>
-            </div>
+            </div> */}
           </div>
         </AccordionItem>
 
@@ -1464,7 +1554,7 @@ const secondarySkillsOptions = [
         {/* Submit Button */}
         <div className="col-12 text-end">
           <button className="btn btn-primary mt-3" type="submit">
-            Submit
+            {reqtempid ? "update" : "Submit"}
           </button>
         </div>
       </form>
