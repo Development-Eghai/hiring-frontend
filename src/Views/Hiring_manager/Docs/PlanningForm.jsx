@@ -189,7 +189,7 @@ const PlanningForm = () => {
         { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      if (response.data?.error_code === 201) {
+      if (response.data?.error_code === 200) {
         toast.success("Form submitted successfully!");
         setFormData(initialState);
         setTimeout(() => {

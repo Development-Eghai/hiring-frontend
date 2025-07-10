@@ -42,12 +42,12 @@ const JsonData = () => {
 
           {
             name: "Set Approver Screen",
-            route: "set_approve_screen",
+            route: "planning/set_approve_screen",
             icon: Icons.Requisition,
           },
           {
             name: "Interview Calendar Screen",
-            route: "upload_screen",
+            route: "planning/upload_screen",
             icon: Icons.Requisition,
           },
 

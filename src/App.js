@@ -46,12 +46,13 @@ function App() {
                 <Route path="interviewer_bandwidth" element={<InterviewBandwith />} />
                 <Route path="stage_alert_and_responsibility_settings" element={<ResponsibilitySetting />} />
                 <Route path="customised_column_and_settings" element={<CustomizeFieldLabels />} />
+                <Route path="set_approve_screen" element={<SetApproveScreen/>}/>
+              <Route path="upload_screen" element={<UploadScreen/>}/>
               </Route>
               <Route path="create_job_requisition" element={<Home />} />
               <Route path="job_requisition" element={<JobRequisition/>}/>
 
-              <Route path="set_approve_screen" element={<SetApproveScreen/>}/>
-              <Route path="upload_screen" element={<UploadScreen/>}/>
+              
 
             </Route>
           </Route>
