@@ -5,6 +5,7 @@ import { Modal, Button, Form } from "react-bootstrap";
 
 export const RecruiterDashboard = () => {
   const [tableData, setTableData] = useState([]);
+  const [candidateData, setCandidateData] = useState([]);
 
   const RecuiterTableHeadings = [
     "S.no",
@@ -38,88 +39,39 @@ export const RecruiterDashboard = () => {
     "action",
   ];
 
-  const dummyCandidates = [
-    {
-      "Req ID": "REQ001",
-      "Candidate Id": "CAND1001",
-      "Candidate Name": "John Doe",
-      "Applied Postion": "Frontend Developer",
-      "Time in Stage": "2 days",
-      "JD From applied Position": "Build UI components using React",
-      "CV/Resume": "johndoe_resume.pdf",
-      "Cover Letter": "johndoe_cover.pdf",
-      "Candidate current stage": "Technical Interview",
-      "Candidate Next Stage": "HR Round",
-      "Overall Stage": "In Progress",
-      "final stage": "Pending",
-      Source: "LinkedIn",
-      action: "View",
-    },
-    {
-      "Req ID": "REQ002",
-      "Candidate Id": "CAND1002",
-      "Candidate Name": "Jane Smith",
-      "Applied Postion": "Backend Developer",
-      "Time in Stage": "1 week",
-      "JD From applied Position": "Develop APIs with Node.js",
-      "CV/Resume": "janesmith_resume.pdf",
-      "Cover Letter": "janesmith_cover.pdf",
-      "Candidate current stage": "HR Round",
-      "Candidate Next Stage": "Offer",
-      "Overall Stage": "In Progress",
-      "final stage": "Pending",
-      Source: "Naukri",
-      action: "View",
-    },
-    {
-      "Req ID": "REQ003",
-      "Candidate Id": "CAND1003",
-      "Candidate Name": "Arjun Patel",
-      "Applied Postion": "Full Stack Developer",
-      "Time in Stage": "3 days",
-      "JD From applied Position": "React and Express-based apps",
-      "CV/Resume": "arjunpatel_resume.pdf",
-      "Cover Letter": "arjunpatel_cover.pdf",
-      "Candidate current stage": "Resume Screening",
-      "Candidate Next Stage": "Technical Interview",
-      "Overall Stage": "Screening",
-      "final stage": "Pending",
-      Source: "Referral",
-      action: "View",
-    },
-    {
-      "Req ID": "REQ004",
-      "Candidate Id": "CAND1004",
-      "Candidate Name": "Sara Lee",
-      "Applied Postion": "UI/UX Designer",
-      "Time in Stage": "5 days",
-      "JD From applied Position": "Design wireframes and prototypes",
-      "CV/Resume": "saralee_resume.pdf",
-      "Cover Letter": "saralee_cover.pdf",
-      "Candidate current stage": "Design Task",
-      "Candidate Next Stage": "Design Review",
-      "Overall Stage": "In Progress",
-      "final stage": "Pending",
-      Source: "Company Website",
-      action: "View",
-    },
-    {
-      "Req ID": "REQ005",
-      "Candidate Id": "CAND1005",
-      "Candidate Name": "Mohit Kumar",
-      "Applied Postion": "DevOps Engineer",
-      "Time in Stage": "6 days",
-      "JD From applied Position": "CI/CD pipeline setup",
-      "CV/Resume": "mohitkumar_resume.pdf",
-      "Cover Letter": "mohitkumar_cover.pdf",
-      "Candidate current stage": "Initial Screening",
-      "Candidate Next Stage": "Technical Interview",
-      "Overall Stage": "In Progress",
-      "final stage": "Pending",
-      Source: "Indeed",
-      action: "View",
-    },
-  ];
+  const fetchCandidateData = async (reqId) => {
+    try {
+      const response = await axios.post(
+        "https://api.pixeladvant.com/api/candidates/interview-details/",
+        { req_id: reqId }
+      );
+
+      if (response.data.success && Array.isArray(response.data.data)) {
+        const formatted = response.data.data.map((item) => ({
+          "Req ID": item.Req_ID,
+          "Candidate Id": item.Candidate_Id,
+          "Candidate Name": item.Candidate_Name,
+          "Applied Postion": item.Applied_Position,
+          "Time in Stage": item.Time_in_Stage,
+          "JD From applied Position": item.JD_From_applied_Position,
+          "CV/Resume": item.CV_Resume,
+          "Cover Letter": item.Cover_Letter,
+          "Candidate current stage": item.Candidate_current_stage,
+          "Candidate Next Stage": item.Candidate_Next_Stage,
+          "Overall Stage": item.Overall_Stage,
+          "final stage": item.Final_stage,
+          Source: item.Source,
+          action: "View",
+        }));
+        setCandidateData(formatted);
+      } else {
+        setCandidateData([]);
+      }
+    } catch (err) {
+      console.error("Error fetching candidate data", err);
+      setCandidateData([]);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -214,7 +166,11 @@ export const RecruiterDashboard = () => {
               <tbody className="p-2">
                 {tableData.length > 0 ? (
                   tableData.map((data, idx) => (
-                    <tr key={idx}>
+                    <tr
+                      key={idx}
+                      onClick={() => fetchCandidateData(data?.reqId)}
+                      style={{ cursor: "pointer" }}
+                    >
                       <th scope="row">{data?.sno}</th>
                       <td>{data?.planningId}</td>
                       <td>{data?.reqId}</td>
@@ -324,6 +280,8 @@ export const RecruiterDashboard = () => {
 
         <div className="card rounded-3 border-0 shadow-sm p-2 mt-5">
           <div className="card-body p-0 card overflow-auto">
+              <h5 className="p-3">Candidate List</h5>
+
             <table
               className="table mb-0 table-bordered table-striped"
               style={{ minWidth: "1200px" }}
@@ -336,13 +294,24 @@ export const RecruiterDashboard = () => {
                 </tr>
               </thead>
               <tbody className="p-2">
-                {dummyCandidates.map((data, idx) => (
-                  <tr key={idx}>
-                    {CandidateTableHeading.map((col, i) => (
-                      <td key={i}>{data[col]}</td>
-                    ))}
+                {candidateData.length > 0 ? (
+                  candidateData.map((data, idx) => (
+                    <tr key={idx}>
+                      {CandidateTableHeading.map((col, i) => (
+                        <td key={i}>{data[col]}</td>
+                      ))}
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={CandidateTableHeading.length}
+                      className="text-center"
+                    >
+                      No data found
+                    </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
