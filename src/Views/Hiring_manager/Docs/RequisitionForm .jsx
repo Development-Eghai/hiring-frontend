@@ -43,8 +43,8 @@ const RequisitionForm = (handleNext) => {
 
   const routelocation = useLocation();
 
-  const {user_role,user_id} = commonState?.app_data;
-   
+  const { user_role, user_id } = commonState?.app_data;
+
   const [Competencies, setCompetencies] = useState([
     {
       id: Date.now(),
@@ -54,7 +54,7 @@ const RequisitionForm = (handleNext) => {
       category: "",
       ExpectedRating: "",
       weight: "",
-      Actions: "select",
+      requisition: reqtempid || null,
     },
   ]);
 
@@ -67,11 +67,11 @@ const RequisitionForm = (handleNext) => {
       disqualifier: "",
       score: "",
       weight: "",
-      Actions: "select",
+      requisition: reqtempid || null,
     },
   ]);
 
-  console.log(questions,"sdfds")
+  console.log(questions, "sdfds");
 
   const [questionsHeader, setQuestionsHeader] = useState([
     {
@@ -263,6 +263,12 @@ const RequisitionForm = (handleNext) => {
     },
   ]);
 
+  useEffect(()=>{
+    reset({
+      plan_id:createrequisitiondata?.hiring_plan_id
+    })
+  },[])
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -314,27 +320,68 @@ const RequisitionForm = (handleNext) => {
           skills_required,
         } = templeteDetails;
 
-        const { internalDesc, externalDesc, questions, Competencies } =
-          posting_details;
+        const {
+          internalDesc,
+          externalDesc,
+          questions,
+          Competencies,
+          experience,
+          qualification,
+          designation,
+          job_region,
+        } = posting_details;
 
         const { primary_skills, secondary_skills } = skills_required;
 
         let formattedPrimarySkills;
-            if (primary_skills) {
-               formattedPrimarySkills = primary_skills.map((item) => ({
-                label: item,
-                value: item,
-              }));
-            }
-          
+        if (primary_skills) {
+          formattedPrimarySkills = primary_skills.map((item) => ({
+            label: item,
+            value: item,
+          }));
+        }
+
         let formattedSecondarySkills;
-              if (secondary_skills) {
-               formattedSecondarySkills = secondary_skills.map((item) => ({
-                label: item,
-                value: item,
-              }));
-            }
-        
+        if (secondary_skills) {
+          formattedSecondarySkills = secondary_skills.map((item) => ({
+            label: item,
+            value: item,
+          }));
+        }
+
+        let formattedexperience;
+        if (experience) {
+          formattedexperience = experience.map((item) => ({
+            label: item,
+            value: item,
+          }));
+        }
+
+        let formattedqualification;
+        if (qualification) {
+          formattedqualification = qualification.map((item) => ({
+            label: item,
+            value: item,
+          }));
+        }
+
+        let formattedjobregion;
+        if (job_region) {
+          formattedjobregion = job_region.map((item) => ({
+            label: item,
+            value: item,
+          }));
+        }
+
+        let formatteddesignation;
+        if (designation) {
+          console.log(designation, "adada");
+          formatteddesignation = designation.map((item) => ({
+            label: item,
+            value: item,
+          }));
+        }
+
         setInternalDesc(internalDesc);
         setExternalDesc(externalDesc);
         setCompetencies(
@@ -343,19 +390,21 @@ const RequisitionForm = (handleNext) => {
         setQuestions(
           questions.map((q) => ({ ...q, isNew: true, id: Date.now() }))
         );
-        
 
         reset({
           plan_id: Planning_id,
           user_role,
           HiringManager,
           PositionTitle,
+          primary_skills: formattedPrimarySkills,
+          secondary_skills: formattedSecondarySkills,
+          experience: formattedexperience,
+          designation: formatteddesignation,
+          job_region: formattedjobregion,
+          qualification: formattedqualification,
           ...requisition_information,
-          primary_skills:formattedPrimarySkills,
-          secondary_skills:formattedSecondarySkills,
           ...position_information,
           ...billing_details,
-          ...posting_details,
           ...asset_deatils,
           // team_name: posting_details?.teams[0]?.team_name,
           // team_type_2: posting_details?.teams[1]?.team_type,
@@ -405,7 +454,7 @@ const RequisitionForm = (handleNext) => {
         disqualifier: "",
         score: "",
         weight: "",
-        Actions: "select",
+        requisition: reqtempid || null,
       },
     ]);
   };
@@ -421,7 +470,7 @@ const RequisitionForm = (handleNext) => {
         category: "",
         expected_rating: "",
         weight: "",
-        Actions: "select",  
+        requisition: reqtempid || null,
       },
     ]);
   };
@@ -442,7 +491,7 @@ const RequisitionForm = (handleNext) => {
     ? JSON.parse(localStorage.getItem("createrequisitiondata"))
     : null;
 
-    console.log(createrequisitiondata,"sdcdscdscds")
+  console.log(createrequisitiondata, "sdcdscdscds");
 
   const onSubmit = async (data) => {
     console.log("dcascasas");
@@ -643,34 +692,34 @@ const RequisitionForm = (handleNext) => {
   const requisitionTypes = ["Part Time", "Full Time", "Contract", "Internship"];
 
   const experienceOptions = [
-    { value: "0-2", label: "0-2 years" },
-    { value: "2-5", label: "2-5 years" },
-    { value: "5-10", label: "5-10 years" },
-    { value: "10+", label: "10+ years" },
+    { value: "0-2", label: "0-2" },
+    { value: "2-5 years", label: "2-5 years" },
+    { value: "5-10 years", label: "5-10 years" },
+    { value: "10+ years", label: "10+ years" },
   ];
 
   const qualificationOptions = [
-    { value: "btech", label: "B.Tech" },
-    { value: "mtech", label: "M.Tech" },
-    { value: "bsc", label: "B.Sc" },
-    { value: "msc", label: "M.Sc" },
-    { value: "mba", label: "MBA" },
+    { value: "btech", label: "btech" },
+    { value: "mtech", label: "mtech" },
+    { value: "B.Sc", label: "B.Sc" },
+    { value: "M.Sc", label: "M.Sc" },
+    { value: "MBA", label: "MBA" },
   ];
 
   const designationOptions = [
-    { value: "software_engineer", label: "Software Engineer" },
-    { value: "senior_developer", label: "Senior Developer" },
-    { value: "team_lead", label: "Team Lead" },
-    { value: "project_manager", label: "Project Manager" },
-    { value: "technical_architect", label: "Technical Architect" },
+    { value: "software_engineer", label: "software_engineer" },
+    { value: "senior_developer", label: "senior_developer" },
+    { value: "team_lead", label: "team_lead" },
+    { value: "project_manager", label: "project_manager" },
+    { value: "technical_architect", label: "technical_architect" },
   ];
 
   const regionOptions = [
-    { value: "north_america", label: "North America" },
-    { value: "europe", label: "Europe" },
-    { value: "asia", label: "Asia" },
-    { value: "middle_east", label: "Middle East" },
-    { value: "australia", label: "Australia" },
+    { value: "north_america", label: "north_america" },
+    { value: "Europe", label: "Europe" },
+    { value: "Asia", label: "Asia" },
+    { value: "middle_east", label: "middle_east" },
+    { value: "australia", label: "australia" },
   ];
 
   const primarySkillsOptions = [
@@ -701,6 +750,7 @@ const RequisitionForm = (handleNext) => {
                 className="form-select"
                 onBlur={handleRequisitionSubmit}
                 defaultValue=""
+                disabled
               >
                 <option value="" disabled>
                   Select Planning Id
@@ -946,21 +996,24 @@ const RequisitionForm = (handleNext) => {
             {/* Client Interview */}
             <div className="col-md-3">
               <label className="form-label">Client Interview</label>
-              <select {...register("client_interview",{
-                    required: "Please select a Client interview",
-                  })}                   className={`form-select ${
-                    errors.client_interview ? "is-invalid" : ""
-                  }`}>
+              <select
+                {...register("client_interview", {
+                  required: "Please select a Client interview",
+                })}
+                className={`form-select ${
+                  errors.client_interview ? "is-invalid" : ""
+                }`}
+              >
                 <option value="">Select</option>
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
                 <option value="TBD">TBD</option>
               </select>
-                    {errors.client_interview && (
-                  <div className="invalid-feedback">
-                    {errors.client_interview.message}
-                  </div>
-                )}
+              {errors.client_interview && (
+                <div className="invalid-feedback">
+                  {errors.client_interview.message}
+                </div>
+              )}
             </div>
 
             {/* Requisition Type */}
@@ -1081,11 +1134,11 @@ const RequisitionForm = (handleNext) => {
                   {...register("billing_start_date", {
                     required: "Billing Start date is required",
                   })}
-                    className={`form-control ${
+                  className={`form-control ${
                     errors.billing_start_date ? "is-invalid" : ""
                   }`}
                 />
-                                {errors.billing_start_date && (
+                {errors.billing_start_date && (
                   <div className="invalid-feedback">
                     {errors.billing_start_date.message}
                   </div>
@@ -1100,10 +1153,11 @@ const RequisitionForm = (handleNext) => {
                   {...register("billing_end_date", {
                     required: "billing end date is required",
                   })}
-                    className={`form-control ${
+                  className={`form-control ${
                     errors.billing_end_date ? "is-invalid" : ""
-                  }`}                />
-                                {errors.billing_end_date && (
+                  }`}
+                />
+                {errors.billing_end_date && (
                   <div className="invalid-feedback">
                     {errors.billing_end_date.message}
                   </div>
@@ -1121,16 +1175,17 @@ const RequisitionForm = (handleNext) => {
               <input
                 type="date"
                 {...register("contract_start_date", {
-                    required: "Contract Start date is required",
-                  })}
- className={`form-control ${
-                    errors.contract_start_date ? "is-invalid" : ""
-                  }`}              />
-                                              {errors.contract_start_date && (
-                  <div className="invalid-feedback">
-                    {errors.contract_start_date.message}
-                  </div>
-                )}
+                  required: "Contract Start date is required",
+                })}
+                className={`form-control ${
+                  errors.contract_start_date ? "is-invalid" : ""
+                }`}
+              />
+              {errors.contract_start_date && (
+                <div className="invalid-feedback">
+                  {errors.contract_start_date.message}
+                </div>
+              )}
             </div>
             {/* Contract End Date */}
 
@@ -1141,16 +1196,17 @@ const RequisitionForm = (handleNext) => {
               <input
                 type="date"
                 {...register("contract_end_date", {
-                    required: "Contract end date is required",
-                  })}
- className={`form-control ${
-                    errors.contract_end_date ? "is-invalid" : ""
-                  }`}              />
-                                              {errors.contract_end_date && (
-                  <div className="invalid-feedback">
-                    {errors.contract_end_date.message}
-                  </div>
-                )}
+                  required: "Contract end date is required",
+                })}
+                className={`form-control ${
+                  errors.contract_end_date ? "is-invalid" : ""
+                }`}
+              />
+              {errors.contract_end_date && (
+                <div className="invalid-feedback">
+                  {errors.contract_end_date.message}
+                </div>
+              )}
             </div>
           </div>
         </AccordionItem>

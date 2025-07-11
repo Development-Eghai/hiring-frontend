@@ -21,6 +21,8 @@ import Creatmodel from "./Creatmodel";
 
 const DEFAULT_FIELDS = [
   "id",
+  "Requisition_id",
+  "Planning_id",
   "job_position",
   "Recruiter",
   "division",
@@ -195,14 +197,21 @@ export const Home = () => {
     setShowConfirmModal(false);
     setRowToDelete(null);
   };
-  const filteredData = (hiringManagerState?.reporting?.data || []).filter(
-    (row) =>
-      selectedFields.some((field) =>
-        String(row[field] || "")
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase())
-      )
-  );
+const filteredData = (hiringManagerState?.reporting?.data || [])
+  .filter((row) =>
+    selectedFields.some((field) =>
+      String(row[field] || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+    )
+  )
+  .map((row) => ({
+    ...row,
+    Requisition_id: row.id,
+  }));
+
+
+  console.log(filteredData,"aas")
 
   return (
     <div className="h-100">
