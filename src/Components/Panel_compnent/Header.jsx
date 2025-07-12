@@ -80,7 +80,7 @@ const Header = ({ offcanvasOn, offcanvasOnButton }) => {
       <>
         <div className="row align-items-center py-2 border-bottom">
           <div className="col-md-3">
-            <h4 className="fw-bold">Recruiter_Dashboard</h4>
+            <h4 className="fw-bold">Recruiter Dashboard</h4>
           </div>
 
           <div className="col-md-6 d-flex justify-content-center"></div>
