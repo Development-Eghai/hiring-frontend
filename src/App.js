@@ -23,6 +23,7 @@ import UploadScreen from "Views/Hiring_manager/Docs/UploadScreen";
 import { Layout } from "Views/Hiring_manager/Hiring_manager_utils/Layout";
 import CandidateScreen from "Views/Recruiter/Docs/CandidateScreen";
 import { RecruiterDashboard } from "Views/Recruiter/Docs/RecuirmentDashboard";
+import ScheduleInteview from "Views/Recruiter/Docs/ScheduleInteview";
 import { RecruiterLayout } from "Views/Recruiter/Recruiter_utils/layout";
 
 
@@ -62,6 +63,7 @@ function App() {
           <Route path="/recruiter">
           <Route element={<RecruiterLayout />}>
           <Route path="dashboard" element={<RecruiterDashboard/>}/>
+          <Route path="schedule_inteview" element={<ScheduleInteview/>}/>
           <Route path="candidate" element={<CandidateScreen/>}/>
           </Route>
           </Route>
