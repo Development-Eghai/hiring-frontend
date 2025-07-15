@@ -2,15 +2,18 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Modal, Button, Form } from "react-bootstrap";
 // import PaginationWithLimit from "../Recruiter_utils/PaginationRecruiter";
+import RecruiterHeader from "../Recruiter_utils/Navbar";
 
 export const RecruiterDashboard = () => {
   const [tableData, setTableData] = useState([]);
   const [candidateData, setCandidateData] = useState([]);
 
+  console.log(tableData,"uyi")
   const RecuiterTableHeadings = [
     "S.no",
     "Planning ID",
     "Req ID",
+    // "Client ID",
     "Client Name",
     "Job Title",
     "Hiring Manager",
@@ -81,6 +84,8 @@ export const RecruiterDashboard = () => {
           { user_role: 2 }
         );
 
+        console.log(response?.data?.data,"caa")
+
         if (response?.data?.success && Array.isArray(response.data.data)) {
           const formatted = response.data.data.map((item, index) => ({
             sno: index + 1,
@@ -107,6 +112,7 @@ export const RecruiterDashboard = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [modalSourceinput,setModalSourceinput] = useState("");
   const [cvFiles, setCvFiles] = useState([]);
 
   const handleFileChange = (e) => {
@@ -149,6 +155,7 @@ export const RecruiterDashboard = () => {
 
   return (
     <div className="h-100">
+      <RecruiterHeader/>
       <div className="row">
         <div className="card rounded-3 border-0 shadow-sm p-2 mt-5">
           <div className="card-body p-0 card overflow-auto">
@@ -254,6 +261,14 @@ export const RecruiterDashboard = () => {
                   </ul>
                 </div>
               )}
+              <Form.Group className="col-5">
+                <Form.Label>Select Source</Form.Label>
+                <Form.Control
+                  type="text"
+                  onChange={(e)=>setModalSourceinput(e.target.value)}
+                />
+              </Form.Group>
+              
 
               {selectedRow && (
                 <div className="mt-4">
