@@ -63,7 +63,7 @@ function App() {
           <Route path="/recruiter">
           <Route element={<RecruiterLayout />}>
           <Route path="dashboard" element={<RecruiterDashboard/>}/>
-          <Route path="schedule_inteview" element={<ScheduleInteview/>}/>
+          <Route path="schedule_interview" element={<ScheduleInteview/>}/>
           <Route path="candidate" element={<CandidateScreen/>}/>
           </Route>
           </Route>
