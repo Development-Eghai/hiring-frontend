@@ -384,3 +384,9 @@
   overflow-y: scroll;
 }
 
+
+
+.custom-modal-width {
+  max-width: 80% !important;
+  width: 80% !important;
+}

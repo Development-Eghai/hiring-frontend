@@ -43,9 +43,9 @@ function App() {
               <Route path="planning" >
                 <Route index element={<PlanningScreen />} />
                 <Route path="hiring_planning_form" element={<PlanningForm />} />
-                <Route path="interview_design_screen" element={<InterviewDesignScreen />} />
+                <Route path="interview_design_dashboard/interview_design_screen" element={<InterviewDesignScreen />} />
                 <Route path="interview_design_dashboard" element={<InterviewDesignDashboard />} />
-                <Route path="interviewer_bandwidth" element={<InterviewBandwith />} />
+                <Route path="interview_design_dashboard/interviewer_bandwidth" element={<InterviewBandwith />} />
                 <Route path="stage_alert_and_responsibility_settings" element={<ResponsibilitySetting />} />
                 <Route path="customised_column_and_settings" element={<CustomizeFieldLabels />} />
                 <Route path="set_approve_screen" element={<SetApproveScreen/>}/>
