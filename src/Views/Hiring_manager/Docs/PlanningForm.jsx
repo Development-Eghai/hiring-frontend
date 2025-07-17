@@ -46,6 +46,52 @@ const initialState = {
   github_link: "",
 };
 
+const fieldRequirements = {
+  job_position: "mandatory",
+  no_of_openings: "mandatory",
+  tech_stacks: "mandatory",
+  jd_details: "mandatory",
+  experience_range: "mandatory",
+  designation: "mandatory",
+  target_companies: "not_mandatory",
+  compensation: "mandatory",
+  location: "mandatory",
+  working_model: "mandatory",
+  job_type: "mandatory",
+  role_type: "mandatory",
+  mode_of_working: "mandatory",
+  relocation: "not_mandatory",
+  relocation_amount: "not_mandatory",
+  domain: "not_mandatory",
+  domain_name: "not_mandatory",
+  education_qualification: "mandatory",
+  travel_opportunities: "mandatory",
+  visa_requirements: "not_mandatory",
+  visa_country: "not_mandatory",
+  visa_type: "not_mandatory",
+  background_verification: "mandatory",
+  shift_timings: "mandatory",
+  communication_language: "mandatory",
+  citizen_requirement: "mandatory",
+  job_health_requirements: "mandatory",
+  career_gap: "mandatory",
+  language_proficiency: "mandatory",
+  social_media_links: "mandatory",
+  github_link: "not_mandatory",
+};
+
+const getLabelWithAsterisk = (name, label) => {
+  const requirement = fieldRequirements[name];
+  if (requirement === "mandatory") {
+    return (
+      <span>
+        {label} <span style={{ color: "red" }}>*</span>
+      </span>
+    );
+  }
+  return label;
+};
+
 const PlanningForm = () => {
   const queryParams = new URLSearchParams(window.location.search);
   const edit_id = queryParams.get("edit_id");
@@ -87,7 +133,7 @@ const PlanningForm = () => {
         fields: [
           { name: "job_position", label: "Job Role" },
           { name: "no_of_openings", label: "Number of Openings" },
-          { name: "tech_stacks", label: "Tech Stacks" },
+          { name: "tech_stacks", label: "Tech Stack" },
           { name: "jd_details", label: "Job Description" },
           { name: "experience_range", label: "Experience Range" },
           { name: "designation", label: "Designation" },
@@ -175,7 +221,20 @@ const PlanningForm = () => {
     setFormData({ ...formData, [name]: files ? files[0] : value });
   };
 
+  const validateForm = () => {
+    for (const key of Object.keys(fieldRequirements)) {
+      if (fieldRequirements[key] === "mandatory" && !formData[key]) {
+        toast.error("Please fill all mandatory fields.");
+        return false;
+      }
+    }
+    return true;
+  };
+
   const handleSubmit = async () => {
+    const isValid = validateForm();
+    if (!isValid) return;
+
     const payload = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
       payload.append(key, value);
@@ -194,7 +253,7 @@ const PlanningForm = () => {
         setFormData(initialState);
         setTimeout(() => {
           navigate("/hiring_manager/planning");
-        }, 1500); 
+        }, 1500);
       } else {
         toast.error(response.data?.message || "Something went wrong");
       }
@@ -207,8 +266,8 @@ const PlanningForm = () => {
   };
 
   const renderInput = (label, name, type = "text") => (
-    <div className="mb-3 col-md-6" key={name}>
-      <label className="form-label">{label}</label>
+    <div className="mb-3 col-md-5 mx-5" key={name}>
+      <label className="form-label">{getLabelWithAsterisk(name, label)}</label>
       {type === "textarea" ? (
         <textarea
           name={name}
@@ -233,8 +292,8 @@ const PlanningForm = () => {
   );
 
   const renderSelect = (label, name, options) => (
-    <div className="mb-3 col-md-6" key={name}>
-      <label className="form-label">{label}</label>
+    <div className="mb-3 col-md-5 mx-5" key={name}>
+      <label className="form-label">{getLabelWithAsterisk(name, label)}</label>
       <select
         name={name}
         value={formData[name] || ""}
@@ -253,8 +312,8 @@ const PlanningForm = () => {
   );
 
   const renderCreatableSelect = (label, name, optionsList = []) => (
-    <div className="mb-3 col-md-6" key={name}>
-      <label className="form-label">{label}</label>
+    <div className="mb-3 col-md-5 mx-5" key={name}>
+      <label className="form-label">{getLabelWithAsterisk(name, label)}</label>
       <CreatableSelect
         isClearable
         onChange={(newValue) =>
@@ -271,8 +330,10 @@ const PlanningForm = () => {
   );
 
   const renderJobDescriptionField = () => (
-    <div className="mb-3 col-md-12">
-      <label className="form-label">Job Description (Upload or Type)</label>
+    <div className="mb-3 col-md-11 mx-5">
+      <label className="form-label">
+        {getLabelWithAsterisk("jd_details", "Job Description (Upload or Type)")}
+      </label>
       <input
         type="file"
         accept=".doc,.docx,.pdf,.txt"
@@ -391,7 +452,7 @@ const PlanningForm = () => {
                     }`}
                     data-bs-parent="#planningAccordion"
                   >
-                    <div className="accordion-body row">
+                    <div className="accordion-body gap-2 col row">
                       {section.fields.map(({ name, label }) => (
                         <React.Fragment key={name}>
                           {[

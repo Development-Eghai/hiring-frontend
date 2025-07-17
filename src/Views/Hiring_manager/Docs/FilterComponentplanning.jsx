@@ -35,7 +35,7 @@ const FilterComponentPlanning = ({ allFields, selectedFields, onFieldChange, onR
                 setTempFields(selectedFields);
                 setShow(true);
             }}>
-                {Icons.Filter} Filter
+                {Icons.Filter} Display Options
             </Button>
 
             <Modal show={show} onHide={() => setShow(false)} centered size="lg">
