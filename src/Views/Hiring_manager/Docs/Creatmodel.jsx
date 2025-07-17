@@ -15,8 +15,9 @@ const Creatmodel = () => {
 
   const [formData, setFormData] = useState({
     hiring_plan_id: "",
+    client_name: "",
     requisition_date: "",
-    due_requisition_date:"",
+    due_requisition_date: "",
     requisition_template: "",
     no_of_openings: "",
   });
@@ -72,21 +73,22 @@ const Creatmodel = () => {
 
   const handleSubmit = async () => {
     const {
-      hiring_plan_id,
+      hiring_plan_id = "",
+      client_name,
       requisition_date,
       due_requisition_date,
       requisition_template,
       no_of_openings,
     } = formData;
-    
-    if(requisition_template){
-      localStorage.setItem("reqtempid",requisition_template)
+
+    if (requisition_template) {
+      localStorage.setItem("reqtempid", requisition_template);
     }
     if (
-      !hiring_plan_id ||
       !requisition_date ||
       !due_requisition_date ||
-      !no_of_openings
+      !no_of_openings ||
+      !client_name
     ) {
       setStatusMessage({
         type: "danger",
@@ -94,12 +96,13 @@ const Creatmodel = () => {
       });
       return;
     }
-    
+
     const payload = {
       hiring_plan_id,
       requisition_date,
       due_requisition_date,
       requisition_template,
+      client_name,
       no_of_openings: parseInt(no_of_openings),
     };
 
@@ -118,13 +121,17 @@ const Creatmodel = () => {
         setFormData({
           hiring_plan_id: "",
           requisition_date: "",
-          due_requisition_date:"",
+          due_requisition_date: "",
           requisition_template: "",
           no_of_openings: "",
         });
-        
-        res?.data?.data && localStorage.setItem("createrequisitiondata",JSON.stringify(res?.data?.data))
-        navigate("/hiring_manager/job_requisition")
+
+        res?.data?.data &&
+          localStorage.setItem(
+            "createrequisitiondata",
+            JSON.stringify(res?.data?.data)
+          );
+        navigate("/hiring_manager/job_requisition");
         // You can close modal after success if needed:
         // setTimeout(() => setShow(false), 1000);
       } else {
@@ -157,16 +164,14 @@ const Creatmodel = () => {
         dialogClassName="modal-390"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Manage Job Requisition</Modal.Title>
+          <Modal.Title>Create Job Requisition</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           <Form>
             {/* Planning ID */}
             <Form.Group className="mb-3">
-              <Form.Label>
-                Planning ID <span className="text-danger">*</span>
-              </Form.Label>
+              <Form.Label>Planning ID</Form.Label>
               <Form.Select
                 name="hiring_plan_id"
                 value={formData.hiring_plan_id}
@@ -182,10 +187,24 @@ const Creatmodel = () => {
               </Form.Select>
             </Form.Group>
 
+            {/*client name */}
+            <Form.Group className="mb-3">
+              <Form.Label>
+                Client name <span className="text-danger">*</span>
+              </Form.Label>
+              <Form.Control
+                type="text"
+                name="client_name"
+                value={formData.client_name}
+                onChange={handleChange}
+                placeholder="Enter client name"
+              />
+            </Form.Group>
+
             {/* Requisition Date */}
             <Form.Group className="mb-3">
               <Form.Label>
-               start Date of Requisition <span className="text-danger">*</span>
+                Date of Requisition <span className="text-danger">*</span>
               </Form.Label>
 
               <div
@@ -202,25 +221,16 @@ const Creatmodel = () => {
                   name="requisition_date"
                   id="requisitionDateInput"
                   value={formData.requisition_date}
+                  min={new Date().toISOString().split("T")[0]}
                   onChange={handleChange}
-                  
                 />
-                {/* <FaCalendarAlt
-                  className="position-absolute text-muted"
-                  style={{
-                    right: "1rem",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    pointerEvents: "none",
-                  }}
-                /> */}
               </div>
             </Form.Group>
 
             {/* Requisition due Date */}
             <Form.Group className="mb-3">
               <Form.Label>
-               Due Date of Requisition <span className="text-danger">*</span>
+                Due Date of Requisition <span className="text-danger">*</span>
               </Form.Label>
 
               <div
@@ -237,8 +247,11 @@ const Creatmodel = () => {
                   name="due_requisition_date"
                   id="requisitionDueDateInput"
                   value={formData.due_requisition_date}
+                  min={
+                    formData.requisition_date ||
+                    new Date().toISOString().split("T")[0]
+                  }
                   onChange={handleChange}
-                  
                 />
               </div>
             </Form.Group>
@@ -265,9 +278,7 @@ const Creatmodel = () => {
 
             {/* No of Openings */}
             <Form.Group className="mb-3">
-              <Form.Label>
-                Number of Openings <span className="text-danger">*</span>
-              </Form.Label>
+              <Form.Label>Number of Openings</Form.Label>
               <Form.Control
                 type="number"
                 name="no_of_openings"
@@ -280,13 +291,13 @@ const Creatmodel = () => {
         </Modal.Body>
 
         <Modal.Footer className="flex-column">
-          {/* {statusMessage && (
+          {statusMessage && (
             <div
               className={`text-${statusMessage.type} w-100 text-center mb-2`}
             >
               {statusMessage.text}
             </div>
-          )} */}
+          )}
           <Button
             variant="primary"
             className="w-100"

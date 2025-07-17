@@ -16,6 +16,8 @@ const CandidateScreen = () => {
     "Req ID",
     "Candidate Id",
     "Candidate Name",
+    "Email",
+    "Phone number",
     "Applied Postion",
     "Time in Stage",
     "View Details",
@@ -23,6 +25,7 @@ const CandidateScreen = () => {
     "Candidate current stage",
     "Candidate Next Stage",
     "Source",
+    "Status",
     "action",
   ];
 
@@ -199,6 +202,8 @@ const CandidateScreen = () => {
                             <th>{data?.Req_ID}</th>
                             <td>{data?.Candidate_Id}</td>
                             <td>{data?.Candidate_Name}</td>
+                            <td>{data?.email || ""}</td>
+                            <td>{data?.Phone_no}</td>
                             <td>{data?.Applied_Position}</td>
                             <td>{data?.Time_in_Stage}</td>
 

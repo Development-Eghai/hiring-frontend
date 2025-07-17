@@ -12,6 +12,7 @@ import { useCommonState } from "Components/CustomHooks";
 import { useLocation, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
+import { ToastContainer, toast } from "react-toastify";
 
 const AccordionItem = ({ title, children, isOpen, onClick }) => (
   <div className="mb-2">
@@ -263,11 +264,11 @@ const RequisitionForm = (handleNext) => {
     },
   ]);
 
-  useEffect(()=>{
+  useEffect(() => {
     reset({
-      plan_id:createrequisitiondata?.hiring_plan_id
-    })
-  },[])
+      plan_id: createrequisitiondata?.hiring_plan_id,
+    });
+  }, []);
 
   useEffect(() => {
     async function fetchData() {
@@ -487,11 +488,16 @@ const RequisitionForm = (handleNext) => {
     reset,
   } = useForm();
 
+  console.log(errors, "uyvu");
   const createrequisitiondata = localStorage.getItem("createrequisitiondata")
     ? JSON.parse(localStorage.getItem("createrequisitiondata"))
     : null;
 
-  console.log(createrequisitiondata, "sdcdscdscds");
+  const onError = (errors) => {
+    if (Object.keys(errors).length > 0) {
+      toast.error("Please fill all required fields");
+    }
+  };
 
   const onSubmit = async (data) => {
     console.log("dcascasas");
@@ -740,8 +746,34 @@ const RequisitionForm = (handleNext) => {
 
   return (
     <div style={{ maxHeight: "500px", overflowY: "auto" }}>
-      <form className="py-1 mt-2" onSubmit={handleSubmit(onSubmit)} noValidate>
+      <ToastContainer />
+      <form
+        className="py-1 mt-2"
+        onSubmit={handleSubmit(onSubmit, onError)}
+        noValidate
+      >
         <div className="row">
+          <div className="mb-3 col-md-3">
+            <label className="form-label">
+              Requisition Id
+              <select
+                {...register("req_id")}
+                className="form-select"
+                onBlur={handleRequisitionSubmit}
+                defaultValue=""
+              >
+                <option value="" disabled>
+                  Select Requisition Id
+                </option>
+                {planid.length > 0 &&
+                  planid.map((val, ind) => (
+                    <option key={ind} value={val}>
+                      {val}
+                    </option>
+                  ))}
+              </select>
+            </label>
+          </div>
           <div className="mb-3 col-md-3">
             <label className="form-label">
               Planning Id
@@ -750,7 +782,6 @@ const RequisitionForm = (handleNext) => {
                 className="form-select"
                 onBlur={handleRequisitionSubmit}
                 defaultValue=""
-                disabled
               >
                 <option value="" disabled>
                   Select Planning Id
@@ -803,9 +834,7 @@ const RequisitionForm = (handleNext) => {
                 External Job Title<span className="text-danger">*</span>
               </label>
               <input
-                {...register("external_title", {
-                  required: "External Job Title is required",
-                })}
+                {...register("external_title")}
                 className={`form-control ${
                   errors.external_title ? "is-invalid" : ""
                 }`}
@@ -822,7 +851,9 @@ const RequisitionForm = (handleNext) => {
             <div className="col-md-3">
               <label className="form-label">Position</label>
               <select
-                {...register("job_position")}
+                {...register("job_position", {
+                  required: "Job position required",
+                })}
                 className={`form-select ${
                   errors.job_position ? "is-invalid" : ""
                 }`}
@@ -876,7 +907,7 @@ const RequisitionForm = (handleNext) => {
             <div className="col-md-3">
               <label className="form-label">Location</label>
               <select
-                {...register("location")}
+                {...register("location", { required: "Location is required" })}
                 className={`form-select ${errors.location ? "is-invalid" : ""}`}
               >
                 <option value="">Select Location</option>
@@ -895,7 +926,7 @@ const RequisitionForm = (handleNext) => {
             <div className="col-md-3">
               <label className="form-label">Geo Zone</label>
               <select
-                {...register("geo_zone")}
+                {...register("geo_zone", { required: "Geo zone is required" })}
                 className={`form-select ${errors.geo_zone ? "is-invalid" : ""}`}
               >
                 <option value="">Select Geo Zone</option>
@@ -940,7 +971,7 @@ const RequisitionForm = (handleNext) => {
                 Sub Band <span className="text-danger">*</span>
               </label>
               <select
-                {...register("sub_band", { required: "Sub Band is required" })}
+                {...register("sub_band")}
                 className={`form-select ${errors.sub_band ? "is-invalid" : ""}`}
               >
                 <option value="">Select Sub Band</option>
@@ -1019,7 +1050,12 @@ const RequisitionForm = (handleNext) => {
             {/* Requisition Type */}
             <div className="col-md-3">
               <label className="form-label">Requisition Type</label>
-              <select {...register("requisition_type")} className="form-select">
+              <select
+                {...register("requisition_type", {
+                  required: "Requision type is required",
+                })}
+                className="form-select"
+              >
                 <option value="">Select Requisition Type</option>
                 {requisitionTypes.map((typ) => (
                   <option value={typ}>{typ}</option>
@@ -1039,14 +1075,18 @@ const RequisitionForm = (handleNext) => {
               {/* primary skills */}
               <div className="col-md-3">
                 <label className="form-label">
-                  Primary Skills<span className="text-danger">*</span>
+                  Primary Skills <span className="text-danger">*</span>
                 </label>
+
                 <Controller
-                  className={`form-select ${
-                    errors.primary_skills ? "is-invalid" : ""
-                  }`}
                   name="primary_skills"
                   control={control}
+                  rules={{
+                    validate: (value) =>
+                      value && value.length > 0
+                        ? true
+                        : "Primary skills required",
+                  }}
                   render={({ field }) => (
                     <CreatableSelect
                       {...field}
@@ -1054,11 +1094,14 @@ const RequisitionForm = (handleNext) => {
                       options={primarySkillsOptions}
                       classNamePrefix="react-select"
                       placeholder="Select Primary skills"
+                      onChange={(val) => field.onChange(val)}
+                      className={errors.primary_skills ? "is-invalid" : ""}
                     />
                   )}
                 />
+
                 {errors.primary_skills && (
-                  <div className="invalid-feedback">
+                  <div className="invalid-feedback d-block">
                     {errors.primary_skills.message}
                   </div>
                 )}
@@ -1066,9 +1109,7 @@ const RequisitionForm = (handleNext) => {
 
               {/* secondary skills */}
               <div className="col-md-3">
-                <label className="form-label">
-                  Secondary Skills<span className="text-danger">*</span>
-                </label>
+                <label className="form-label">Secondary Skills</label>
                 <Controller
                   className={`form-select ${
                     errors.secondary_skills ? "is-invalid" : ""
@@ -1131,9 +1172,7 @@ const RequisitionForm = (handleNext) => {
                 <label className="form-label">Billing Start Date :</label>
                 <input
                   type="date"
-                  {...register("billing_start_date", {
-                    required: "Billing Start date is required",
-                  })}
+                  {...register("billing_start_date")}
                   className={`form-control ${
                     errors.billing_start_date ? "is-invalid" : ""
                   }`}
@@ -1150,9 +1189,7 @@ const RequisitionForm = (handleNext) => {
                 <label className="form-label">Billing End Date :</label>
                 <input
                   type="date"
-                  {...register("billing_end_date", {
-                    required: "billing end date is required",
-                  })}
+                  {...register("billing_end_date")}
                   className={`form-control ${
                     errors.billing_end_date ? "is-invalid" : ""
                   }`}
@@ -1174,9 +1211,7 @@ const RequisitionForm = (handleNext) => {
               </label>
               <input
                 type="date"
-                {...register("contract_start_date", {
-                  required: "Contract Start date is required",
-                })}
+                {...register("contract_start_date")}
                 className={`form-control ${
                   errors.contract_start_date ? "is-invalid" : ""
                 }`}
@@ -1195,9 +1230,7 @@ const RequisitionForm = (handleNext) => {
               </label>
               <input
                 type="date"
-                {...register("contract_end_date", {
-                  required: "Contract end date is required",
-                })}
+                {...register("contract_end_date")}
                 className={`form-control ${
                   errors.contract_end_date ? "is-invalid" : ""
                 }`}
@@ -1225,14 +1258,16 @@ const RequisitionForm = (handleNext) => {
             {/* Experience */}
             <div className="col-md-3 mb-3">
               <label className="form-label">
-                Experience<span className="text-danger">*</span>
+                Experience <span className="text-danger">*</span>
               </label>
+
               <Controller
-                className={`form-select ${
-                  errors.experience ? "is-invalid" : ""
-                }`}
                 name="experience"
                 control={control}
+                rules={{
+                  validate: (value) =>
+                    value && value.length > 0 ? true : "Experience is required",
+                }}
                 render={({ field }) => (
                   <CreatableSelect
                     {...field}
@@ -1240,11 +1275,14 @@ const RequisitionForm = (handleNext) => {
                     options={experienceOptions}
                     classNamePrefix="react-select"
                     placeholder="Select experience"
+                    onChange={(val) => field.onChange(val)}
+                    className={errors.experience ? "is-invalid" : ""}
                   />
                 )}
               />
+
               {errors.experience && (
-                <div className="invalid-feedback">
+                <div className="invalid-feedback d-block">
                   {errors.experience.message}
                 </div>
               )}
@@ -1253,14 +1291,18 @@ const RequisitionForm = (handleNext) => {
             {/* Qualification */}
             <div className="col-md-3 mb-3">
               <label className="form-label">
-                Qualification<span className="text-danger">*</span>
+                Qualification <span className="text-danger">*</span>
               </label>
+
               <Controller
-                className={`form-select ${
-                  errors.experience ? "is-invalid" : ""
-                }`}
                 name="qualification"
                 control={control}
+                rules={{
+                  validate: (value) =>
+                    value && value.length > 0
+                      ? true
+                      : "Qualification is required",
+                }}
                 render={({ field }) => (
                   <CreatableSelect
                     {...field}
@@ -1268,11 +1310,14 @@ const RequisitionForm = (handleNext) => {
                     options={qualificationOptions}
                     classNamePrefix="react-select"
                     placeholder="Select Qualification"
+                    onChange={(val) => field.onChange(val)}
+                    className={errors.qualification ? "is-invalid" : ""}
                   />
                 )}
               />
+
               {errors.qualification && (
-                <div className="invalid-feedback">
+                <div className="invalid-feedback d-block">
                   {errors.qualification.message}
                 </div>
               )}
@@ -1281,14 +1326,18 @@ const RequisitionForm = (handleNext) => {
             {/* Designation */}
             <div className="col-md-3 mb-3">
               <label className="form-label">
-                Designation<span className="text-danger">*</span>
+                Designation <span className="text-danger">*</span>
               </label>
+
               <Controller
-                className={`form-select ${
-                  errors.designation ? "is-invalid" : ""
-                }`}
                 name="designation"
                 control={control}
+                rules={{
+                  validate: (value) =>
+                    value && value.length > 0
+                      ? true
+                      : "Designation is required",
+                }}
                 render={({ field }) => (
                   <CreatableSelect
                     {...field}
@@ -1296,11 +1345,14 @@ const RequisitionForm = (handleNext) => {
                     options={designationOptions}
                     classNamePrefix="react-select"
                     placeholder="Select Designation"
+                    onChange={(val) => field.onChange(val)}
+                    className={errors.designation ? "is-invalid" : ""}
                   />
                 )}
               />
+
               {errors.designation && (
-                <div className="invalid-feedback">
+                <div className="invalid-feedback d-block">
                   {errors.designation.message}
                 </div>
               )}
@@ -1309,14 +1361,16 @@ const RequisitionForm = (handleNext) => {
             {/* Job Region */}
             <div className="col-md-3 mb-3">
               <label className="form-label">
-                Job Region<span className="text-danger">*</span>
+                Job Region <span className="text-danger">*</span>
               </label>
+
               <Controller
-                className={`form-select ${
-                  errors.job_region ? "is-invalid" : ""
-                }`}
                 name="job_region"
                 control={control}
+                rules={{
+                  validate: (value) =>
+                    value && value.length > 0 ? true : "Job region is required",
+                }}
                 render={({ field }) => (
                   <CreatableSelect
                     {...field}
@@ -1324,11 +1378,14 @@ const RequisitionForm = (handleNext) => {
                     options={regionOptions}
                     classNamePrefix="react-select"
                     placeholder="Select Job Region"
+                    onChange={(val) => field.onChange(val)}
+                    className={errors.job_region ? "is-invalid" : ""}
                   />
                 )}
               />
+
               {errors.job_region && (
-                <div className="invalid-feedback">
+                <div className="invalid-feedback d-block">
                   {errors.job_region.message}
                 </div>
               )}
@@ -1366,7 +1423,7 @@ const RequisitionForm = (handleNext) => {
               />
             </div>
           </div>
-          <div>
+          {/* <div>
             <div className="d-flex justify-content-between align-items-center mb-2">
               <label className="form-label fw-bold">
                 Questions<span className="text-danger">*</span> :
@@ -1399,9 +1456,9 @@ const RequisitionForm = (handleNext) => {
                 />
               </label>
             </div>
-          </div>
+          </div> */}
           <div>
-            <div className="d-flex justify-content-between align-items-center mb-2">
+            {/* <div className="d-flex justify-content-between align-items-center mb-2">
               <label className="form-label fw-bold">
                 Competencies<span className="text-danger">*</span> :
               </label>
@@ -1413,15 +1470,15 @@ const RequisitionForm = (handleNext) => {
               >
                 <PlusCircle className="me-1" /> Add Competencies
               </Button>
-            </div>
-            <DataTable
+            </div> */}
+            {/* <DataTable
               title="Competencies"
               columns={CompetenciesHeaders}
               data={Competencies}
               pagination
               responsive
               highlightOnHover
-            />
+            /> */}
             {/* <div className="row">
               <div className="col-md-4">
                 <label className="form-label">

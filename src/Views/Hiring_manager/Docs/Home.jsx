@@ -21,6 +21,7 @@ import Creatmodel from "./Creatmodel";
 
 const DEFAULT_FIELDS = [
   "id",
+  "Client_name",
   "Requisition_id",
   "Planning_id",
   "job_position",
@@ -77,7 +78,7 @@ const ALL_FIELDS = [
   "Interview Format",
   "Social Media",
   "Language Proficiency",
-];
+].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
 
 const tableStyles = {
   headCells: {
@@ -197,21 +198,20 @@ export const Home = () => {
     setShowConfirmModal(false);
     setRowToDelete(null);
   };
-const filteredData = (hiringManagerState?.reporting?.data || [])
-  .filter((row) =>
-    selectedFields.some((field) =>
-      String(row[field] || "")
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
+  const filteredData = (hiringManagerState?.reporting?.data || [])
+    .filter((row) =>
+      selectedFields.some((field) =>
+        String(row[field] || "")
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      )
     )
-  )
-  .map((row) => ({
-    ...row,
-    Requisition_id: row.id,
-  }));
+    .map((row) => ({
+      ...row,
+      Requisition_id: row.id,
+    }));
 
-
-  console.log(filteredData,"aas")
+  console.log(filteredData, "aas");
 
   return (
     <div className="h-100">
