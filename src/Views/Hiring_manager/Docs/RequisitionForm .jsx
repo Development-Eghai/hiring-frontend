@@ -376,7 +376,6 @@ const RequisitionForm = (handleNext) => {
 
         let formatteddesignation;
         if (designation) {
-          console.log(designation, "adada");
           formatteddesignation = designation.map((item) => ({
             label: item,
             value: item,
@@ -488,7 +487,8 @@ const RequisitionForm = (handleNext) => {
     reset,
   } = useForm();
 
-  console.log(errors, "uyvu");
+  console.log(errors,"zdfds")
+
   const createrequisitiondata = localStorage.getItem("createrequisitiondata")
     ? JSON.parse(localStorage.getItem("createrequisitiondata"))
     : null;
@@ -500,7 +500,6 @@ const RequisitionForm = (handleNext) => {
   };
 
   const onSubmit = async (data) => {
-    console.log("dcascasas");
     const Planning_id = data?.plan_id || "";
     const internal_title = data?.internal_title || "";
     const external_title = data?.external_title || "";
@@ -551,7 +550,7 @@ const RequisitionForm = (handleNext) => {
 
     const formdata = {
       user_role: user_id,
-      requisition_id: reqtempid,
+      requisition_id: reqtempid || createrequisitiondata?.RequisitionID,
       Planning_id,
       HiringManager: user_id,
       PositionTitle: job_position,
@@ -610,9 +609,6 @@ const RequisitionForm = (handleNext) => {
         comments,
       },
     };
-
-    if (reqtempid) {
-      console.log("entered");
       const response = await axiosInstance.put(
         "/api/jobrequisition/update-requisition/",
         formdata
@@ -623,20 +619,6 @@ const RequisitionForm = (handleNext) => {
         alert(response?.data?.message);
         navigate("/hiring_manager/home");
       }
-    }
-
-    if (!reqtempid) {
-      const response = await axiosInstance.post(
-        "/api/jobrequisition/",
-        formdata
-      );
-
-      if (response && response?.data?.success) {
-        localStorage.removeItem("createrequisitiondata");
-        alert(response?.data?.message);
-        navigate("/hiring_manager/home");
-      }
-    }
   };
 
   const handleRequisitionSubmit = () => {
@@ -754,46 +736,13 @@ const RequisitionForm = (handleNext) => {
       >
         <div className="row">
           <div className="mb-3 col-md-3">
-            <label className="form-label">
-              Requisition Id
-              <select
-                {...register("req_id")}
-                className="form-select"
-                onBlur={handleRequisitionSubmit}
-                defaultValue=""
-              >
-                <option value="" disabled>
-                  Select Requisition Id
-                </option>
-                {planid.length > 0 &&
-                  planid.map((val, ind) => (
-                    <option key={ind} value={val}>
-                      {val}
-                    </option>
-                  ))}
-              </select>
-            </label>
+              <p>Requisition Id:{" "}{ reqtempid || createrequisitiondata?.RequisitionID}</p>
           </div>
           <div className="mb-3 col-md-3">
             <label className="form-label">
               Planning Id
-              <select
-                {...register("plan_id")}
-                className="form-select"
-                onBlur={handleRequisitionSubmit}
-                defaultValue=""
-              >
-                <option value="" disabled>
-                  Select Planning Id
-                </option>
-                {planid.length > 0 &&
-                  planid.map((val, ind) => (
-                    <option key={ind} value={val}>
-                      {val}
-                    </option>
-                  ))}
-              </select>
             </label>
+
           </div>
         </div>
         <AccordionItem
@@ -806,7 +755,7 @@ const RequisitionForm = (handleNext) => {
               : "bg-primary text-white"
           }`}
         >
-          <div className="row">
+          <div className="row d-flex gap-3">
             {/* Internal Job Title */}
             <div className="col-md-3">
               <label className="form-label">
@@ -818,7 +767,7 @@ const RequisitionForm = (handleNext) => {
                 })}
                 className={`form-control ${
                   errors.internal_title ? "is-invalid" : ""
-                }`}
+                }`}x
                 placeholder="Software Engineer"
               />
               {errors.internal_title && (
@@ -1051,9 +1000,7 @@ const RequisitionForm = (handleNext) => {
             <div className="col-md-3">
               <label className="form-label">Requisition Type</label>
               <select
-                {...register("requisition_type", {
-                  required: "Requision type is required",
-                })}
+                {...register("requisition_type")}
                 className="form-select"
               >
                 <option value="">Select Requisition Type</option>
@@ -1070,8 +1017,7 @@ const RequisitionForm = (handleNext) => {
           isOpen={openSection === "skillsreq"}
           onClick={() => toggleSection("skillsreq")}
         >
-          <div className="row">
-            <div className="d-flex">
+          <div className="row d-flex gap-3">
               {/* primary skills */}
               <div className="col-md-3">
                 <label className="form-label">
@@ -1132,7 +1078,6 @@ const RequisitionForm = (handleNext) => {
                   </div>
                 )}
               </div>
-            </div>
           </div>
         </AccordionItem>
 
@@ -1141,8 +1086,7 @@ const RequisitionForm = (handleNext) => {
           isOpen={openSection === "billing"}
           onClick={() => toggleSection("billing")}
         >
-          <div className="row">
-            <div className="d-flex">
+          <div className="row d-flex gap-3">
               {/* billing type */}
               <div className="col-md-3">
                 <label className="form-label">
@@ -1200,10 +1144,9 @@ const RequisitionForm = (handleNext) => {
                   </div>
                 )}
               </div>
-            </div>
           </div>
 
-          <div className="row">
+          <div className="row d-flex gap-3">
             {/* Contract Start Date */}
             <div className="col-md-3">
               <label className="form-label">
@@ -1254,7 +1197,7 @@ const RequisitionForm = (handleNext) => {
               : "bg-primary text-white"
           }`}
         >
-          <div className="row py-3">
+          <div className="row py-3 d-flex gap-3">
             {/* Experience */}
             <div className="col-md-3 mb-3">
               <label className="form-label">
@@ -1593,7 +1536,7 @@ const RequisitionForm = (handleNext) => {
           isOpen={openSection === "asset"}
           onClick={() => toggleSection("asset")}
         >
-          <div className="row mt-3">
+          <div className="row mt-3 d-flex gap-3"  >
             <div className="col-md-3">
               <label className="form-label">
                 Laptop Needed: <span className="text-danger">*</span>

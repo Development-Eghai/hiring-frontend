@@ -4,6 +4,7 @@ import { FaCalendarAlt } from "react-icons/fa";
 import axios from "axios";
 import Icons from "Utils/Icons"; // Adjust path as needed
 import { useNavigate } from "react-router-dom";
+import { useCommonState } from "Components/CustomHooks";
 
 const Creatmodel = () => {
   const [show, setShow] = useState(false);
@@ -13,6 +14,8 @@ const Creatmodel = () => {
   const [statusMessage, setStatusMessage] = useState(null); // ✅ For inline message
   const navigate = useNavigate();
 
+  const { commonState } = useCommonState();
+  const { user_role, user_id } = commonState?.app_data;
   const [formData, setFormData] = useState({
     hiring_plan_id: "",
     client_name: "",
@@ -99,6 +102,7 @@ const Creatmodel = () => {
 
     const payload = {
       hiring_plan_id,
+      HiringManager:user_id,
       requisition_date,
       due_requisition_date,
       requisition_template,
@@ -109,7 +113,7 @@ const Creatmodel = () => {
     try {
       setLoading(true);
       const res = await axios.post(
-        "https://api.pixeladvant.com/manage-requisition/",
+        "https://api.pixeladvant.com/api/jobrequisition/",
         payload
       );
 
