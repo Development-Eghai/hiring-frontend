@@ -11,7 +11,9 @@ import Login from "Views/Common/Docs/Login";
 import CustomizeFieldLabels from "Views/Hiring_manager/Docs/CustomisedColoum";
 import CustomisedColoum from "Views/Hiring_manager/Docs/CustomisedColoum";
 import { Home } from "Views/Hiring_manager/Docs/Home";
+import InterviewBandwidth from "Views/Hiring_manager/Docs/InterviewBandwith";
 import InterviewBandwith from "Views/Hiring_manager/Docs/InterviewBandwith";
+import InterviewBandwidthDashboard from "Views/Hiring_manager/Docs/InterviewBandwithDashboard";
 import InterviewDesignDashboard from "Views/Hiring_manager/Docs/InterviewDesignDashboard";
 import InterviewDesignScreen from "Views/Hiring_manager/Docs/InterviewDesignScreen";
 import JobRequisition from "Views/Hiring_manager/Docs/JobRequisition";
@@ -43,9 +45,10 @@ function App() {
               <Route path="planning" >
                 <Route index element={<PlanningScreen />} />
                 <Route path="hiring_planning_form" element={<PlanningForm />} />
-                <Route path="interview_design_dashboard/interview_design_screen" element={<InterviewDesignScreen />} />
+                <Route path="interview_design_screen" element={<InterviewDesignScreen />} />
                 <Route path="interview_design_dashboard" element={<InterviewDesignDashboard />} />
-                <Route path="interview_design_dashboard/interviewer_bandwidth" element={<InterviewBandwith />} />
+                <Route path="interviewer_bandwidth" element={<InterviewBandwidth />} />
+                <Route path="interviewer_bandwidth_dashboard" element={<InterviewBandwidthDashboard />} />
                 <Route path="stage_alert_and_responsibility_settings" element={<ResponsibilitySetting />} />
                 <Route path="customised_column_and_settings" element={<CustomizeFieldLabels />} />
                 <Route path="set_approve_screen" element={<SetApproveScreen/>}/>

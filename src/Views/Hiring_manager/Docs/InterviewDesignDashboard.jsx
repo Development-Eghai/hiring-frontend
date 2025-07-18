@@ -123,98 +123,20 @@ const InterviewDesignDashboard = () => {
       },
     ];
 
-    const staticColumns = [
-      {
-        name: "Planning ID",
-        selector: (row) => row.planning_id,
-        sortable: true,
-        wrap: true,
-      },
-      {
-        name: "Req ID",
-        selector: (row) => row.req_id,
-        sortable: true,
-        wrap: true,
-      },
-      {
-        name: "Required Candidate",
-        selector: (row) => row.required_candidate,
-        sortable: true,
-        wrap: true,
-      },
-      {
-        name: "Decline Adjust Count",
-        selector: (row) => row.decline_adjust_count,
-        sortable: true,
-        wrap: true,
-      },
-      {
-        name: "Total Candidate Pipeline",
-        selector: (row) => row.total_candidate_pipline,
-        sortable: true,
-        wrap: true,
-      },
-      {
-        name: "Total Interviews Needed",
-        selector: (row) => row.total_interviews_needed,
-        sortable: true,
-        wrap: true,
-      },
-      {
-        name: "Total Interview Hours",
-        selector: (row) => row.total_interview_hrs,
-        sortable: true,
-        wrap: true,
-      },
-      {
-        name: "Working Hrs / Week",
-        selector: (row) => row.working_hrs_per_week,
-        sortable: true,
-        wrap: true,
-      },
-      {
-        name: "Total Interview Weeks",
-        selector: (row) => row.total_interview_weeks,
-        sortable: true,
-        wrap: true,
-      },
-      {
-        name: "No. of Interviewer Needed",
-        selector: (row) => row.no_of_interviewer_need,
-        sortable: true,
-        wrap: true,
-      },
-      {
-        name: "Leave Adjustment",
-        selector: (row) => row.leave_adjustment,
-        sortable: true,
-        wrap: true,
-      },
-    ];
+    
 
-    setBandwidthData(staticData);
-    setBandwidthColumns(staticColumns);
+    
   };
 
   useEffect(() => {
     fetchInterviewDesigns();
   }, []);
 
-  useEffect(() => {
-    fetchInterviewDesigns();
-    fetchInterviewBandwidth();
-  }, []);
+ 
 
-  const navigate = useNavigate();
+ 
 
-  const handleNavigate = () => {
-    navigate("interview_design_screen");
-  };
-
-  const handlebandwidthNavigate = () => {
-    navigate("interviewer_bandwidth");
-  };
-
+ 
   return (
     <div className="interview-table-wrapper">
       <div className="scroll-container bg-white rounded p-2">
@@ -222,11 +144,7 @@ const InterviewDesignDashboard = () => {
           <div className="col ">
             <h5 className="fw-bold mb-0">Interview Design Dashboard</h5>
           </div>
-          <div className="col text-end  ">
-            <Button variant="primary" onClick={handleNavigate}>
-              + Create Interview Design Screen
-            </Button>
-          </div>
+          
         </div>
         <DataTable
           columns={columns}
@@ -267,54 +185,7 @@ const InterviewDesignDashboard = () => {
         />
       </div>
 
-      <div className="scroll-container bg-white rounded p-2 mt-3">
-        <div className="row col-12 d-flex justify-content-between align-items-center mb-2 px-2 py-3">
-          <div className="col ">
-            <h5 className="fw-bold mb-0">Interview Bandwith Dashboard</h5>
-          </div>
-          <div className="col text-end  ">
-            <Button variant="primary" onClick={handlebandwidthNavigate}>
-              + Create Interview Bandwith
-            </Button>
-          </div>
-        </div>
-        <DataTable
-          columns={bandwidthColumns}
-          data={bandwidthData}
-          striped
-          dense
-          persistTableHead
-          customStyles={{
-            tableWrapper: {
-              style: {
-                display: "block",
-                maxWidth: "100%",
-                overflowY: "auto",
-                overflowX: "auto",
-              },
-            },
-            headCells: {
-              style: {
-                backgroundColor: "#e8edff",
-                fontWeight: "600",
-                fontSize: "14px",
-                color: "#1d1d1f",
-                paddingTop: "20px",
-                paddingBottom: "20px",
-                whiteSpace: "nowrap",
-              },
-            },
-            cells: {
-              style: {
-                fontSize: "14px",
-                paddingTop: "15px",
-                paddingBottom: "15px",
-                whiteSpace: "nowrap",
-              },
-            },
-          }}
-        />
-      </div>
+      
     </div>
   );
 };
