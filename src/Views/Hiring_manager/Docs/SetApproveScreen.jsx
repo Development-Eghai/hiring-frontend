@@ -16,18 +16,87 @@ import "react-toastify/dist/ReactToastify.css";
 const SetApproveScreen = () => {
   const [approvers, setApprovers] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [editMode, setEditMode] = useState(false);
+  const [step, setStep] = useState(1);
+  const [loadingClient, setLoadingClient] = useState(false);
+  
 
-  const [formData, setFormData] = useState({
-    id: null,
-    hiring_plan: "PL0001",
-    role: "",
-    first_name: "",
-    last_name: "",
-    email: "",
-    contact_number: "",
-    job_title: "",
-    set_as_approver: "Yes",
+  const [dropdownOptions, setDropdownOptions] = useState({
+    requisition_id: [],
+    plan_id: [],
+  });
+
+  const fetchDropdownData = async () => {
+    try {
+      const res = await axiosInstance.get(
+        "https://api.pixeladvant.com/design_screen_list_data/"
+      );
+      if (res.data.success) {
+        setDropdownOptions({
+          requisition_id: res.data.data.requisition_id || [],
+          plan_id: res.data.data.plan_id || [],
+        });
+      } else {
+        toast.error(res.data.message || "Failed to load dropdown data.");
+      }
+    } catch (error) {
+      console.error("Dropdown fetch error:", error);
+      toast.error("Failed to fetch dropdown data.");
+    }
+  };
+
+  useEffect(() => {
+    fetchApprovers();
+    fetchDropdownData();
+  }, []);
+
+  const fetchClientDetails = async (req_id, plan_id) => {
+    if (!req_id || !plan_id) return;
+    setLoadingClient(true); // start loading
+
+    try {
+      const res = await axiosInstance.post(
+        "https://api.pixeladvant.com/api/client-lookup/",
+        {
+          req_id,
+          plan_id,
+        }
+      );
+
+      if (res.data.success) {
+        const { client_name, client_id } = res.data.data;
+        setFormState((prev) => ({
+          ...prev,
+          client_name,
+          client_id,
+        }));
+      } else {
+        toast.error(res.data.message || "Failed to retrieve client details.");
+      }
+    } catch (err) {
+      console.error("Error fetching client data:", err);
+      toast.error("Error fetching client information.");
+    } finally {
+      setLoadingClient(false); // stop loading
+    }
+  };
+
+  const [formState, setFormState] = useState({
+    req_id: "",
+    planning_id: "",
+    client_name: "",
+    client_id: "",
+    no_of_approvers: 1,
+    approvers: [
+      {
+        role: "",
+        job_title: "",
+        first_name: "",
+        last_name: "",
+        email: "",
+        contact_number: "",
+        set_as_approver: "Yes",
+      },
+    ],
   });
 
   const fetchApprovers = async () => {
@@ -48,83 +117,95 @@ const SetApproveScreen = () => {
     fetchApprovers();
   }, []);
 
-  const handleInputChange = (e) => {
+  const handleMainChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const updatedState = { ...formState, [name]: value };
+    setFormState(updatedState);
+
+    // Check and fetch client info if both req_id and planning_id are set
+    if (
+      (name === "req_id" && updatedState.planning_id) ||
+      (name === "planning_id" && updatedState.req_id)
+    ) {
+      fetchClientDetails(
+        name === "req_id" ? value : updatedState.req_id,
+        name === "planning_id" ? value : updatedState.planning_id
+      );
+    }
+  };
+
+  const handleApproverChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedApprovers = [...formState.approvers];
+    updatedApprovers[index][name] = value;
+    setFormState({ ...formState, approvers: updatedApprovers });
+  };
+
+  const handleNoOfApproversChange = (e) => {
+    const count = parseInt(e.target.value, 10);
+    const updatedApprovers = Array.from(
+      { length: count },
+      (_, i) =>
+        formState.approvers[i] || {
+          role: "",
+          job_title: "",
+          first_name: "",
+          last_name: "",
+          email: "",
+          contact_number: "",
+          set_as_approver: "Yes",
+        }
+    );
+    setFormState({
+      ...formState,
+      no_of_approvers: count,
+      approvers: updatedApprovers,
+    });
   };
 
   const handleAddNew = () => {
-    setEditMode(false);
-    setFormData({
-      id: null,
-      hiring_plan: "PL0001",
-      role: "",
-      first_name: "",
-      last_name: "",
-      email: "",
-      contact_number: "",
-      job_title: "",
-      set_as_approver: "Yes",
+    setFormState({
+      req_id: "",
+      planning_id: "",
+      client_name: "",
+      client_id: "",
+      no_of_approvers: 1,
+      approvers: [
+        {
+          role: "",
+          job_title: "",
+          first_name: "",
+          last_name: "",
+          email: "",
+          contact_number: "",
+          set_as_approver: "Yes",
+        },
+      ],
     });
+    setStep(1);
     setShowModal(true);
   };
 
-  const handleEdit = (item) => {
-    setEditMode(true);
-    setFormData(item);
-    setShowModal(true);
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setStep(1);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this approver?")) return;
+  const handleFinalSubmit = async () => {
     try {
-      const res = await axiosInstance.delete("/api/set-approver/", { data: { id } });
+      const res = await axiosInstance.post("/api/set-approver/", formState);
       if (res.data.success) {
-        toast.success("Approver deleted successfully!");
+        toast.success("Approvers added successfully!");
+        handleCloseModal();
         fetchApprovers();
       } else {
-        toast.error(res.data.message || "Failed to delete approver.");
+        toast.error(res.data.message || "Failed to submit approvers.");
       }
     } catch (err) {
-      console.error("Delete error:", err);
-      toast.error("Delete failed.");
+      console.error("Final submit error:", err);
+      toast.error("Submission failed.");
     }
   };
-
-  const isValidEmail = (email) => {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-};
-
-const handleSubmit = async () => {
-  if (!isValidEmail(formData.email)) {
-    toast.error("Please enter a valid email address.");
-    return;
-  }
-
-  try {
-    if (editMode) {
-      const res = await axiosInstance.put("/api/set-approver/", formData);
-      if (res.data.success) {
-        toast.success("Approver updated successfully!");
-      } else {
-        toast.error(res.data.message || "Failed to update approver.");
-      }
-    } else {
-      const res = await axiosInstance.post("/api/set-approver/", formData);
-      if (res.data.success) {
-        toast.success("Approver added successfully!");
-      } else {
-        toast.error(res.data.message || "Failed to add approver.");
-      }
-    }
-    setShowModal(false);
-    fetchApprovers();
-  } catch (err) {
-    console.error("Submit error:", err);
-    toast.error(err?.response?.data?.message || "Form submission failed.");
-  }
-};
-
 
   return (
     <Container fluid className="py-4 px-md-5 bg-light min-vh-100">
@@ -137,50 +218,34 @@ const handleSubmit = async () => {
         </div>
 
         <div className="table-responsive">
-          <Table striped bordered hover size="sm" className="text-center align-middle">
+          <Table
+            striped
+            bordered
+            hover
+            size="sm"
+            className="text-center align-middle"
+          >
             <thead className="bg-primary text-white">
               <tr>
-                <th>Approver</th>
-                <th>Role</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Job Title</th>
-                <th>Email</th>
-                <th>Contact</th>
-                <th>Hiring Plan</th>
-                <th>Actions</th>
+                <th>Req ID</th>
+                <th>Planning ID</th>
+                <th>Client Name</th>
+                <th>No. of Approver</th>
+                <th>Action</th>
+                
               </tr>
             </thead>
             <tbody>
-              {approvers.map((a) => (
-                <tr key={a.id}>
-                  <td>{a.set_as_approver}</td>
-                  <td>{a.role}</td>
-                  <td>{a.first_name}</td>
-                  <td>{a.last_name}</td>
-                  <td>{a.job_title}</td>
-                  <td>
-                    <a href={`mailto:${a.email}`}>{a.email}</a>
-                  </td>
-                  <td>{a.contact_number}</td>
+              {approvers.map((a, i) => (
+                <tr key={i}>
+                  <td>{a.req_id}</td>
                   <td>{a.hiring_plan}</td>
                   <td>
-                    <Button
-                      size="sm"
-                      variant="outline-primary"
-                      className="me-1"
-                      onClick={() => handleEdit(a)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline-danger"
-                      onClick={() => handleDelete(a.id)}
-                    >
-                      Delete
-                    </Button>
+                    {a.client_name}
                   </td>
+                  <td>{a.set_as_approver}</td>
+                  <td>View</td>
+                 
                 </tr>
               ))}
             </tbody>
@@ -189,110 +254,213 @@ const handleSubmit = async () => {
       </Card>
 
       {/* Modal */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg">
+      <Modal show={showModal} onHide={handleCloseModal} centered size="xl">
         <Modal.Header closeButton>
-          <Modal.Title>{editMode ? "Edit Approver" : "Add Approver"}</Modal.Title>
+          <Modal.Title>Set Approver</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
-            <Row className="mb-3">
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label>Role</Form.Label>
-                  <Form.Select
-                    name="role"
-                    value={formData.role}
-                    onChange={handleInputChange}
-                  >
-                    <option value="">-- Select Role --</option>
-                    <option value="Manager">Manager</option>
-                    <option value="HR">HR</option>
-                    <option value="Finance">Finance</option>
-                    <option value="Reviewer">Reviewer</option>
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label>Job Title</Form.Label>
-                  <Form.Control
-                    name="job_title"
-                    value={formData.job_title}
-                    onChange={handleInputChange}
-                    placeholder="Enter job title"
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
+          {step === 1 && (
+            <>
+              <Row className="mb-3">
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label>Req ID</Form.Label>
+                    <Form.Select
+                      name="req_id"
+                      value={formState.req_id}
+                      onChange={handleMainChange}
+                    >
+                      <option value="">-- Select Req ID --</option>
+                      {dropdownOptions.requisition_id.map((id, index) => (
+                        <option key={index} value={id}>
+                          {id}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label>Planning ID</Form.Label>
+                    <Form.Select
+                      name="planning_id"
+                      value={formState.planning_id}
+                      onChange={handleMainChange}
+                    >
+                      <option value="">-- Select Planning ID --</option>
+                      {dropdownOptions.plan_id.map((id, index) => (
+                        <option key={index} value={id}>
+                          {id}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </Form.Group>
+                </Col>
+              </Row>
+              <div className="text-end">
+                {loadingClient ? (
+                  <Button variant="primary" disabled>
+                    Loading...
+                  </Button>
+                ) : (
+                  formState.req_id &&
+                  formState.planning_id &&
+                  formState.client_name &&
+                  formState.client_id && (
+                    <Button variant="primary" onClick={() => setStep(2)}>
+                      Next
+                    </Button>
+                  )
+                )}
+              </div>
+            </>
+          )}
 
-            <Row className="mb-3">
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label>First Name</Form.Label>
-                  <Form.Control
-                    name="first_name"
-                    value={formData.first_name}
-                    onChange={handleInputChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label>Last Name</Form.Label>
-                  <Form.Control
-                    name="last_name"
-                    value={formData.last_name}
-                    onChange={handleInputChange}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
+          {step === 2 && (
+            <>
+              <Row className="mb-3">
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label>Client Name</Form.Label>
+                    <Form.Control
+                      name="client_name"
+                      placeholder="Enter client name"
+                      value={formState.client_name}
+                      onChange={handleMainChange}
+                      disabled
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label>Client ID</Form.Label>
+                    <Form.Control
+                      name="client_id"
+                      placeholder="Enter client ID"
+                      value={formState.client_id}
+                      onChange={handleMainChange}
+                      disabled
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
 
-            <Row className="mb-3">
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label>Contact Number</Form.Label>
-                  <Form.Control
-                    name="contact_number"
-                    value={formData.contact_number}
-                    onChange={handleInputChange}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
+              <Form.Group className="mb-3">
+                <Form.Label>Number of Approvers</Form.Label>
+                <Form.Control
+                  type="number"
+                  min="1"
+                  name="no_of_approvers"
+                  value={formState.no_of_approvers}
+                  onChange={handleNoOfApproversChange}
+                />
+              </Form.Group>
 
-            <Form.Group className="mb-3">
-              <Form.Label>Set as Approver</Form.Label>
-              <Form.Select
-                name="set_as_approver"
-                value={formData.set_as_approver}
-                onChange={handleInputChange}
-              >
-                <option value="Yes">Yes</option>
-                <option value="Maybe">Maybe</option>
-                <option value="NA">NA</option>
-              </Form.Select>
-            </Form.Group>
-          </Form>
+              {formState.approvers.map((approver, index) => (
+                <div key={index} className="border rounded p-3 mb-4">
+                  <h6 className="fw-bold">Approver {index + 1}</h6>
+                  <Row className="mb-3">
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label>Role</Form.Label>
+                        <Form.Select
+                          name="role"
+                          value={approver.role}
+                          onChange={(e) => handleApproverChange(index, e)}
+                        >
+                          <option value="">-- Select Role --</option>
+                          <option value="Manager">Manager</option>
+                          <option value="HR">HR</option>
+                          <option value="Finance">Finance</option>
+                          <option value="Reviewer">Reviewer</option>
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label>Job Title</Form.Label>
+                        <Form.Control
+                          name="job_title"
+                          value={approver.job_title}
+                          onChange={(e) => handleApproverChange(index, e)}
+                          placeholder="Enter job title"
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+
+                  <Row className="mb-3">
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label>First Name</Form.Label>
+                        <Form.Control
+                          name="first_name"
+                          value={approver.first_name}
+                          onChange={(e) => handleApproverChange(index, e)}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label>Last Name</Form.Label>
+                        <Form.Control
+                          name="last_name"
+                          value={approver.last_name}
+                          onChange={(e) => handleApproverChange(index, e)}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+
+                  <Row className="mb-3">
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label>Email</Form.Label>
+                        <Form.Control
+                          type="email"
+                          name="email"
+                          value={approver.email}
+                          onChange={(e) => handleApproverChange(index, e)}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label>Contact Number</Form.Label>
+                        <Form.Control
+                          name="contact_number"
+                          value={approver.contact_number}
+                          onChange={(e) => handleApproverChange(index, e)}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+
+                  <Form.Group>
+                    <Form.Label>Set as Approver</Form.Label>
+                    <Form.Select
+                      name="set_as_approver"
+                      value={approver.set_as_approver}
+                      onChange={(e) => handleApproverChange(index, e)}
+                    >
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </Form.Select>
+                  </Form.Group>
+                </div>
+              ))}
+            </>
+          )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+          <Button variant="secondary" onClick={handleCloseModal}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleSubmit}>
-            {editMode ? "Update" : "Create"}
-          </Button>
+          {step === 2 && (
+            <Button variant="success" onClick={handleFinalSubmit}>
+              Submit
+            </Button>
+          )}
         </Modal.Footer>
       </Modal>
 
