@@ -84,6 +84,8 @@ const Creatmodel = () => {
       no_of_openings,
     } = formData;
 
+    localStorage.setItem("clientName", client_name);
+    localStorage.setItem("plan_id", hiring_plan_id);
     if (requisition_template) {
       localStorage.setItem("reqtempid", requisition_template);
     }
@@ -101,8 +103,8 @@ const Creatmodel = () => {
     }
 
     const payload = {
-      hiring_plan_id,
-      HiringManager:user_id,
+      Planning_id: hiring_plan_id,
+      HiringManager: user_id,
       requisition_date,
       due_requisition_date,
       requisition_template,
@@ -135,6 +137,7 @@ const Creatmodel = () => {
             "createrequisitiondata",
             JSON.stringify(res?.data?.data)
           );
+
         navigate("/hiring_manager/job_requisition");
         // You can close modal after success if needed:
         // setTimeout(() => setShow(false), 1000);
@@ -262,9 +265,7 @@ const Creatmodel = () => {
 
             {/* Template Dropdown */}
             <Form.Group className="mb-3">
-              <Form.Label>
-                Job Requisition Template <span className="text-danger">*</span>
-              </Form.Label>
+              <Form.Label>Job Requisition Template</Form.Label>
               <Form.Select
                 name="requisition_template"
                 value={formData.requisition_template}
@@ -282,7 +283,9 @@ const Creatmodel = () => {
 
             {/* No of Openings */}
             <Form.Group className="mb-3">
-              <Form.Label>Number of Openings</Form.Label>
+              <Form.Label>
+                Number of Openings <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="number"
                 name="no_of_openings"

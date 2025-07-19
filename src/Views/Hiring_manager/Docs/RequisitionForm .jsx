@@ -266,7 +266,8 @@ const RequisitionForm = (handleNext) => {
 
   useEffect(() => {
     reset({
-      plan_id: createrequisitiondata?.hiring_plan_id,
+      plan_id: localStorage.getItem("plan_id") || "",
+      company_client_name: localStorage.getItem("clientName") || "",
     });
   }, []);
 
@@ -487,7 +488,7 @@ const RequisitionForm = (handleNext) => {
     reset,
   } = useForm();
 
-  console.log(errors,"zdfds")
+  console.log(errors, "zdfds");
 
   const createrequisitiondata = localStorage.getItem("createrequisitiondata")
     ? JSON.parse(localStorage.getItem("createrequisitiondata"))
@@ -526,10 +527,10 @@ const RequisitionForm = (handleNext) => {
       data?.secondary_skills?.map((item) => item.value) || [];
 
     const billing_type = data?.billing_type || "";
-    const billing_start_date = data?.billing_start_date || "";
-    const billing_end_date = data?.billing_end_date || "";
-    const contract_start_date = data?.contract_start_date || "";
-    const contract_end_date = data?.contract_end_date || "";
+    const billing_start_date = data?.billing_start_date || null;
+    const billing_end_date = data?.billing_end_date || null;
+    const contract_start_date = data?.contract_start_date || null;
+    const contract_end_date = data?.contract_end_date || null;
 
     const experience = data?.experience?.map((item) => item.value) || "";
     const qualification = data?.qualification?.map((item) => item.value) || "";
@@ -609,16 +610,18 @@ const RequisitionForm = (handleNext) => {
         comments,
       },
     };
-      const response = await axiosInstance.put(
-        "/api/jobrequisition/update-requisition/",
-        formdata
-      );
+    const response = await axiosInstance.put(
+      "/api/jobrequisition/update-requisition/",
+      formdata
+    );
 
-      if (response && response.data.success) {
-        localStorage.removeItem("createrequisitiondata");
-        alert(response?.data?.message);
-        navigate("/hiring_manager/home");
-      }
+    if (response && response.data.success) {
+      localStorage.removeItem("createrequisitiondata");
+      localStorage.removeItem("clientName");
+      localStorage.removeItem("plan_id");
+      alert(response?.data?.message);
+      navigate("/hiring_manager/dashboard");
+    }
   };
 
   const handleRequisitionSubmit = () => {
@@ -638,18 +641,14 @@ const RequisitionForm = (handleNext) => {
     );
   };
 
-  const jobPositions = [
-    "Software Engineer",
-    "Frontend Developer",
-    "Backend Developer",
-    "Full Stack Developer",
-    "Data Analyst",
-    "UI/UX Designer",
-    "DevOps Engineer",
-    "Product Manager",
-    "Quality Assurance Tester",
-    "Technical Support Specialist",
-  ];
+  const jobPositions = ["Software Engineer", "Designer", "Product Manager"];
+
+  const BuisnessLine = ["Finance", "SWE", "Products"];
+  const BuisnessUnit = ["Banking", "Insurance", "Healthcare"];
+
+  const Division = ["Banking", "Insurance", "Healthcare"];
+
+  const Department = ["Finance", "SWE", "Products"];
 
   const locations = [
     "New York",
@@ -665,19 +664,30 @@ const RequisitionForm = (handleNext) => {
   ];
 
   const geoZones = [
-    "North America",
-    "South America",
-    "Europe",
-    "Asia",
-    "Africa",
-    "Oceania",
-    "Middle East",
-    "Central America",
-    "Southeast Asia",
-    "Eastern Europe",
+    "NAM",
+    "LATAM",
+    "EMEA",
+    "MENA",
+    "APAC",
+    "ANZ",
+    "EAST",
+    "ASIA",
   ];
 
-  const requisitionTypes = ["Part Time", "Full Time", "Contract", "Internship"];
+  const Band = ["P3", "P4", "P5", "M1", "M2", "M3"];
+
+  const Subband = ["P3.1", "P4.2", "P5.3"];
+
+  const ModeOfWorking = ["Remote", "Onsite", "hybrid", "client site"];
+
+  const requisitionTypes = [
+    "Part Time",
+    "Full Time",
+    "Contractor",
+    "Internship",
+  ];
+
+  const BillingTypes = ["Recrruing", "Onetime", "SOW"];
 
   const experienceOptions = [
     { value: "0-2", label: "0-2" },
@@ -711,11 +721,12 @@ const RequisitionForm = (handleNext) => {
   ];
 
   const primarySkillsOptions = [
-    { value: "react", label: "React.js" },
-    { value: "node", label: "Node.js" },
-    { value: "python", label: "Python" },
+    { value: "Golang", label: "Golang" },
+    { value: "Design", label: "Design" },
+    { value: "UI", label: "UI" },
     { value: "java", label: "Java" },
-    { value: "dotnet", label: ".NET" },
+    { value: "QA", label: "QA" },
+    { value: "Automation", label: "Automation" },
   ];
 
   const secondarySkillsOptions = [
@@ -736,13 +747,13 @@ const RequisitionForm = (handleNext) => {
       >
         <div className="row">
           <div className="mb-3 col-md-3">
-              <p>Requisition Id:{" "}{ reqtempid || createrequisitiondata?.RequisitionID}</p>
+            <p>
+              Requisition Id:{" "}
+              {reqtempid || createrequisitiondata?.RequisitionID}
+            </p>
           </div>
           <div className="mb-3 col-md-3">
-            <label className="form-label">
-              Planning Id
-            </label>
-
+            <p>Planning ID: {localStorage.getItem("plan_id")}</p>
           </div>
         </div>
         <AccordionItem
@@ -767,7 +778,8 @@ const RequisitionForm = (handleNext) => {
                 })}
                 className={`form-control ${
                   errors.internal_title ? "is-invalid" : ""
-                }`}x
+                }`}
+                x
                 placeholder="Software Engineer"
               />
               {errors.internal_title && (
@@ -779,9 +791,7 @@ const RequisitionForm = (handleNext) => {
 
             {/* External Job Title */}
             <div className="col-md-3">
-              <label className="form-label">
-                External Job Title<span className="text-danger">*</span>
-              </label>
+              <label className="form-label">External Job Title</label>
               <input
                 {...register("external_title")}
                 className={`form-control ${
@@ -798,7 +808,9 @@ const RequisitionForm = (handleNext) => {
 
             {/* Position */}
             <div className="col-md-3">
-              <label className="form-label">Position</label>
+              <label className="form-label">
+                Position<span className="text-danger">*</span>
+              </label>
               <select
                 {...register("job_position", {
                   required: "Job position required",
@@ -825,36 +837,97 @@ const RequisitionForm = (handleNext) => {
               <input
                 {...register("company_client_name")}
                 className="form-control"
+                disabled
               />
             </div>
 
             {/* Business Line */}
             <div className="col-md-3">
               <label className="form-label">Business Line</label>
-              <input {...register("business_line")} className="form-control" />
+              <select
+                {...register("business_line")}
+                className={`form-select ${
+                  errors.business_line ? "is-invalid" : ""
+                }`}
+              >
+                <option value="">Select Buisness Line</option>
+                {BuisnessLine.map((pos) => (
+                  <option value={pos}>{pos}</option>
+                ))}
+              </select>
+              {errors.business_line && (
+                <div className="invalid-feedback">
+                  {errors.business_line.message}
+                </div>
+              )}
             </div>
 
             {/* Business Unit */}
             <div className="col-md-3">
               <label className="form-label">Business Unit</label>
-              <input {...register("business_unit")} className="form-control" />
+              <select
+                {...register("business_unit")}
+                className={`form-select ${
+                  errors.business_unit ? "is-invalid" : ""
+                }`}
+              >
+                <option value="">Select Buisness Unit</option>
+                {BuisnessUnit.map((pos) => (
+                  <option value={pos}>{pos}</option>
+                ))}
+              </select>
+              {errors.business_unit && (
+                <div className="invalid-feedback">
+                  {errors.business_unit.message}
+                </div>
+              )}
             </div>
 
             {/* Division */}
             <div className="col-md-3">
               <label className="form-label">Division</label>
-              <input {...register("division")} className="form-control" />
+              <select
+                {...register("division")}
+                className={`form-select ${errors.division ? "is-invalid" : ""}`}
+              >
+                <option value="">Select Division</option>
+                {Division.map((pos) => (
+                  <option value={pos}>{pos}</option>
+                ))}
+              </select>
+              {errors.division && (
+                <div className="invalid-feedback">
+                  {errors.division.message}
+                </div>
+              )}
             </div>
 
             {/* Department */}
             <div className="col-md-3">
               <label className="form-label">Department</label>
-              <input {...register("department")} className="form-control" />
+              <select
+                {...register("department")}
+                className={`form-select ${
+                  errors.department ? "is-invalid" : ""
+                }`}
+              >
+                <option value="">Select Department</option>
+                {Division.map((pos) => (
+                  <option value={pos}>{pos}</option>
+                ))}
+              </select>
+              {errors.department && (
+                <div className="invalid-feedback">
+                  {errors.department.message}
+                </div>
+              )}
             </div>
 
             {/* Location */}
             <div className="col-md-3">
-              <label className="form-label">Location</label>
+              <label className="form-label">
+                Location<span className="text-danger">*</span>
+              </label>
               <select
                 {...register("location", { required: "Location is required" })}
                 className={`form-select ${errors.location ? "is-invalid" : ""}`}
@@ -873,7 +946,9 @@ const RequisitionForm = (handleNext) => {
 
             {/* Geo Zone */}
             <div className="col-md-3">
-              <label className="form-label">Geo Zone</label>
+              <label className="form-label">
+                Geo Zone<span className="text-danger">*</span>
+              </label>
               <select
                 {...register("geo_zone", { required: "Geo zone is required" })}
                 className={`form-select ${errors.geo_zone ? "is-invalid" : ""}`}
@@ -906,8 +981,9 @@ const RequisitionForm = (handleNext) => {
                 className={`form-select ${errors.band ? "is-invalid" : ""}`}
               >
                 <option value="">Select Band</option>
-                <option value="Band 1">Band 1</option>
-                <option value="Band 2">Band 2</option>
+                {Band.map((band) => (
+                  <option value={band}>{band}</option>
+                ))}
               </select>
               {errors.band && (
                 <div className="invalid-feedback">{errors.band.message}</div>
@@ -916,16 +992,15 @@ const RequisitionForm = (handleNext) => {
 
             {/* Sub Band */}
             <div className="col-md-3">
-              <label className="form-label">
-                Sub Band <span className="text-danger">*</span>
-              </label>
+              <label className="form-label">Sub Band</label>
               <select
                 {...register("sub_band")}
                 className={`form-select ${errors.sub_band ? "is-invalid" : ""}`}
               >
                 <option value="">Select Sub Band</option>
-                <option value="Sub Band A">Sub Band A</option>
-                <option value="Sub Band B">Sub Band B</option>
+                {Subband.map((band) => (
+                  <option value={band}>{band}</option>
+                ))}
               </select>
               {errors.sub_band && (
                 <div className="invalid-feedback">
@@ -970,12 +1045,29 @@ const RequisitionForm = (handleNext) => {
             {/* Mode of Working */}
             <div className="col-md-3">
               <label className="form-label">Mode of Working</label>
-              <input {...register("working_model")} className="form-control" />
+              <select
+                {...register("working_model")}
+                className={`form-select ${
+                  errors.working_model ? "is-invalid" : ""
+                }`}
+              >
+                <option value="">Select</option>
+                {ModeOfWorking.map((row) => (
+                  <option value={row}>{row}</option>
+                ))}
+              </select>
+              {errors.working_model && (
+                <div className="invalid-feedback">
+                  {errors.working_model.message}
+                </div>
+              )}
             </div>
 
             {/* Client Interview */}
             <div className="col-md-3">
-              <label className="form-label">Client Interview</label>
+              <label className="form-label">
+                Client Interview<span className="text-danger">*</span>
+              </label>
               <select
                 {...register("client_interview", {
                   required: "Please select a Client interview",
@@ -999,10 +1091,7 @@ const RequisitionForm = (handleNext) => {
             {/* Requisition Type */}
             <div className="col-md-3">
               <label className="form-label">Requisition Type</label>
-              <select
-                {...register("requisition_type")}
-                className="form-select"
-              >
+              <select {...register("requisition_type")} className="form-select">
                 <option value="">Select Requisition Type</option>
                 {requisitionTypes.map((typ) => (
                   <option value={typ}>{typ}</option>
@@ -1018,66 +1107,66 @@ const RequisitionForm = (handleNext) => {
           onClick={() => toggleSection("skillsreq")}
         >
           <div className="row d-flex gap-3">
-              {/* primary skills */}
-              <div className="col-md-3">
-                <label className="form-label">
-                  Primary Skills <span className="text-danger">*</span>
-                </label>
+            {/* primary skills */}
+            <div className="col-md-3">
+              <label className="form-label">
+                Primary Skills <span className="text-danger">*</span>
+              </label>
 
-                <Controller
-                  name="primary_skills"
-                  control={control}
-                  rules={{
-                    validate: (value) =>
-                      value && value.length > 0
-                        ? true
-                        : "Primary skills required",
-                  }}
-                  render={({ field }) => (
-                    <CreatableSelect
-                      {...field}
-                      isMulti
-                      options={primarySkillsOptions}
-                      classNamePrefix="react-select"
-                      placeholder="Select Primary skills"
-                      onChange={(val) => field.onChange(val)}
-                      className={errors.primary_skills ? "is-invalid" : ""}
-                    />
-                  )}
-                />
-
-                {errors.primary_skills && (
-                  <div className="invalid-feedback d-block">
-                    {errors.primary_skills.message}
-                  </div>
+              <Controller
+                name="primary_skills"
+                control={control}
+                rules={{
+                  validate: (value) =>
+                    value && value.length > 0
+                      ? true
+                      : "Primary skills required",
+                }}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    isMulti
+                    options={primarySkillsOptions}
+                    classNamePrefix="react-select"
+                    placeholder="Select Primary skills"
+                    onChange={(val) => field.onChange(val)}
+                    className={errors.primary_skills ? "is-invalid" : ""}
+                  />
                 )}
-              </div>
+              />
 
-              {/* secondary skills */}
-              <div className="col-md-3">
-                <label className="form-label">Secondary Skills</label>
-                <Controller
-                  className={`form-select ${
-                    errors.secondary_skills ? "is-invalid" : ""
-                  }`}
-                  name="secondary_skills"
-                  control={control}
-                  render={({ field }) => (
-                    <CreatableSelect
-                      {...field}
-                      isMulti
-                      options={secondarySkillsOptions}
-                      classNamePrefix="react-select"
-                      placeholder="Select Secondary skills"
-                    />
-                  )}
-                />
-                {errors.secondary_skills && (
-                  <div className="invalid-feedback">
-                    {errors.secondary_skills.message}
-                  </div>
+              {errors.primary_skills && (
+                <div className="invalid-feedback d-block">
+                  {errors.primary_skills.message}
+                </div>
+              )}
+            </div>
+
+            {/* secondary skills */}
+            <div className="col-md-3">
+              <label className="form-label">Secondary Skills</label>
+              <Controller
+                className={`form-select ${
+                  errors.secondary_skills ? "is-invalid" : ""
+                }`}
+                name="secondary_skills"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    isMulti
+                    options={secondarySkillsOptions}
+                    classNamePrefix="react-select"
+                    placeholder="Select Secondary skills"
+                  />
                 )}
-              </div>
+              />
+              {errors.secondary_skills && (
+                <div className="invalid-feedback">
+                  {errors.secondary_skills.message}
+                </div>
+              )}
+            </div>
           </div>
         </AccordionItem>
 
@@ -1087,63 +1176,64 @@ const RequisitionForm = (handleNext) => {
           onClick={() => toggleSection("billing")}
         >
           <div className="row d-flex gap-3">
-              {/* billing type */}
-              <div className="col-md-3">
-                <label className="form-label">
-                  Billing Type<span className="text-danger">*</span>
-                </label>
-                <select
-                  {...register("billing_type", {
-                    required: "billing is required",
-                  })}
-                  className={`form-select ${
-                    errors.billing_type ? "is-invalid" : ""
-                  }`}
-                >
-                  <option value="">Select billing</option>
-                  <option value="billing 1">billing 1</option>
-                  <option value="billing 2">billing 2</option>
-                </select>
-                {errors.billing_type && (
-                  <div className="invalid-feedback">
-                    {errors.billing_type.message}
-                  </div>
-                )}
-              </div>
+            {/* billing type */}
+            <div className="col-md-3">
+              <label className="form-label">
+                Billing Type<span className="text-danger">*</span>
+              </label>
+              <select
+                {...register("billing_type", {
+                  required: "billing is required",
+                })}
+                className={`form-select ${
+                  errors.billing_type ? "is-invalid" : ""
+                }`}
+              >
+                <option value="">Select billing</option>
+                {BillingTypes.map((typ) => (
+                  <option value={typ}>{typ}</option>
+                ))}
+              </select>
+              {errors.billing_type && (
+                <div className="invalid-feedback">
+                  {errors.billing_type.message}
+                </div>
+              )}
+            </div>
 
-              {/* Billing Start Date */}
-              <div className="col-md-3">
-                <label className="form-label">Billing Start Date :</label>
-                <input
-                  type="date"
-                  {...register("billing_start_date")}
-                  className={`form-control ${
-                    errors.billing_start_date ? "is-invalid" : ""
-                  }`}
-                />
-                {errors.billing_start_date && (
-                  <div className="invalid-feedback">
-                    {errors.billing_start_date.message}
-                  </div>
-                )}
-              </div>
+            {/* Billing Start Date */}
+            <div className="col-md-3">
+              <label className="form-label">Billing Start Date :</label>
+              <input
+                type="date"
+                {...register("billing_start_date")}
+                className={`form-control ${
+                  errors.billing_start_date ? "is-invalid" : ""
+                }`}
+              />
+              {errors.billing_start_date && (
+                <div className="invalid-feedback">
+                  {errors.billing_start_date.message}
+                </div>
+              )}
+            </div>
 
-              {/* Billing End Date */}
-              <div className="col-md-3">
-                <label className="form-label">Billing End Date :</label>
-                <input
-                  type="date"
-                  {...register("billing_end_date")}
-                  className={`form-control ${
-                    errors.billing_end_date ? "is-invalid" : ""
-                  }`}
-                />
-                {errors.billing_end_date && (
-                  <div className="invalid-feedback">
-                    {errors.billing_end_date.message}
-                  </div>
-                )}
-              </div>
+            {/* Billing End Date */}
+            <div className="col-md-3">
+              <label className="form-label">Billing End Date :</label>
+              <input
+                type="date"
+                {...register("billing_end_date")}
+                className={`form-control ${
+                  errors.billing_end_date ? "is-invalid" : ""
+                }`}
+              />
+              {errors.billing_end_date && (
+                <div className="invalid-feedback">
+                  {errors.billing_end_date.message}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="row d-flex gap-3">
@@ -1536,7 +1626,7 @@ const RequisitionForm = (handleNext) => {
           isOpen={openSection === "asset"}
           onClick={() => toggleSection("asset")}
         >
-          <div className="row mt-3 d-flex gap-3"  >
+          <div className="row mt-3 d-flex gap-3">
             <div className="col-md-3">
               <label className="form-label">
                 Laptop Needed: <span className="text-danger">*</span>
