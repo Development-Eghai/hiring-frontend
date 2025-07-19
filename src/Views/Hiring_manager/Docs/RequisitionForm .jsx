@@ -650,6 +650,34 @@ const RequisitionForm = (handleNext) => {
 
   const Department = ["Finance", "SWE", "Products"];
 
+const jobTitle = [
+  "Software Engineer I",
+  "Software Engineer II",
+  "Software Engineer III",
+  "Sr Software Engineer",
+  "Staff Software Engineer",
+  "Principal Software Engineer",
+  "Distinguished Engineer",
+  "Fellow Engineer",
+  "Sr Fellow Engineer",
+  "Engineering Manager",
+  "Sr Engineering Manager",
+  "Director, Engineering",
+  "Sr Director, Engineering",
+  "VP, Engineering",
+  "SVP, CTO Engineering",
+  "Product Owner I",
+  "Product Owner II",
+  "Product Owner III",
+  "Product Manager I",
+  "Product Manager II",
+  "Sr Product Manager",
+  "Group Product Manager",
+  "Director, Product Manager",
+  "Sr Director, Product Manager"
+];
+
+
   const locations = [
     "New York",
     "San Francisco",
@@ -772,16 +800,19 @@ const RequisitionForm = (handleNext) => {
               <label className="form-label">
                 Internal Job Title<span className="text-danger">*</span>
               </label>
-              <input
+              <select
                 {...register("internal_title", {
-                  required: "Internal Job Title is required",
+                  required: "Internal Job required",
                 })}
-                className={`form-control ${
+                className={`form-select ${
                   errors.internal_title ? "is-invalid" : ""
                 }`}
-                x
-                placeholder="Software Engineer"
-              />
+              >
+                <option value="">Select Internal title</option>
+                {jobTitle.map((row) => (
+                  <option value={row}>{row}</option>
+                ))}
+              </select>
               {errors.internal_title && (
                 <div className="invalid-feedback">
                   {errors.internal_title.message}
@@ -792,13 +823,18 @@ const RequisitionForm = (handleNext) => {
             {/* External Job Title */}
             <div className="col-md-3">
               <label className="form-label">External Job Title</label>
-              <input
+
+                <select
                 {...register("external_title")}
-                className={`form-control ${
+                className={`form-select ${
                   errors.external_title ? "is-invalid" : ""
                 }`}
-                placeholder="Software Engineer"
-              />
+              >
+                <option value="">Select External title</option>
+                {jobTitle.map((row) => (
+                  <option value={row}>{row}</option>
+                ))}
+              </select>
               {errors.external_title && (
                 <div className="invalid-feedback">
                   {errors.external_title.message}
