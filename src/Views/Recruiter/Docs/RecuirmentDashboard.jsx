@@ -8,6 +8,7 @@ export const RecruiterDashboard = () => {
   const [tableData, setTableData] = useState([]);
   const [candidateData, setCandidateData] = useState([]);
 
+  console.log(candidateData,"hv")
   console.log(tableData, "uyi");
   const RecuiterTableHeadings = [
     "S.no",
@@ -49,12 +50,14 @@ export const RecruiterDashboard = () => {
         "https://api.pixeladvant.com/api/candidates/interview-details/",
         { req_id: reqId }
       );
+      console.log(response,"uygiu")
 
       if (response.data.success && Array.isArray(response.data.data)) {
         const formatted = response.data.data.map((item) => ({
           "Req ID": item.Req_ID,
           "Candidate Id": item.Candidate_Id,
-          "Candidate Name": item.Candidate_Name,
+          "Candidate First Name":item?.Candidate_First_Name,
+          "Candidate Second Name":item?.Candidate_Last_Name,
           "Applied Postion": item.Applied_Position,
           "Time in Stage": item.Time_in_Stage,
           "JD From applied Position": item.JD_From_applied_Position,

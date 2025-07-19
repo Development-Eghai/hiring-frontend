@@ -15,17 +15,18 @@ const CandidateScreen = () => {
   const CandidateTableHeading = [
     "Req ID",
     "Candidate Id",
-    "Candidate Name",
-    "Email",
-    "Phone number",
+    "Candidate First Name",
+    "Candidate Second Name",
     "Applied Postion",
     "Time in Stage",
-    "View Details",
-    "Resume Score",
+    "JD From applied Position",
+    "CV/Resume",
+    "Cover Letter",
     "Candidate current stage",
     "Candidate Next Stage",
+    "Overall Stage",
+    "final stage",
     "Source",
-    "Status",
     "action",
   ];
 
@@ -201,7 +202,9 @@ const CandidateScreen = () => {
                           <tr key={idx}>
                             <th>{data?.Req_ID}</th>
                             <td>{data?.Candidate_Id}</td>
-                            <td>{data?.Candidate_Name}</td>
+                            <td>{data?.Candidate_First_Name}</td>
+                            <td>{data?.Candidate_Last_Name}</td>
+
                             <td>{data?.email || ""}</td>
                             <td>{data?.Phone_no}</td>
                             <td>{data?.Applied_Position}</td>
