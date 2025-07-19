@@ -15,13 +15,13 @@ const InterviewBandwidthDashboard = () => {
   const staticColumns = [
     {
       name: "Planning ID",
-      selector: (row) => row.planning_id,
+      selector: (row) => row.hiring_plan_id,
       sortable: true,
       wrap: true,
     },
     {
       name: "Req ID",
-      selector: (row) => row.req_id,
+      selector: (row) => row.requisition_id,
       sortable: true,
       wrap: true,
     },
@@ -31,42 +31,42 @@ const InterviewBandwidthDashboard = () => {
       sortable: true,
       wrap: true,
     },
-    {
-      name: "Decline Adjust Count",
-      selector: (row) => row.decline_adjust_count,
-      sortable: true,
-      wrap: true,
-    },
-    {
-      name: "Total Candidate Pipeline",
-      selector: (row) => row.total_candidate_pipline,
-      sortable: true,
-      wrap: true,
-    },
-    {
-      name: "Total Interviews Needed",
-      selector: (row) => row.total_interviews_needed,
-      sortable: true,
-      wrap: true,
-    },
-    {
-      name: "Total Interview Hours",
-      selector: (row) => row.total_interview_hrs,
-      sortable: true,
-      wrap: true,
-    },
-    {
-      name: "Working Hrs / Week",
-      selector: (row) => row.working_hrs_per_week,
-      sortable: true,
-      wrap: true,
-    },
-    {
-      name: "Total Interview Weeks",
-      selector: (row) => row.total_interview_weeks,
-      sortable: true,
-      wrap: true,
-    },
+    // {
+    //   name: "Decline Adjust Count",
+    //   selector: (row) => row.decline_adjust_count,
+    //   sortable: true,
+    //   wrap: true,
+    // },
+    // {
+    //   name: "Total Candidate Pipeline",
+    //   selector: (row) => row.total_candidate_pipline,
+    //   sortable: true,
+    //   wrap: true,
+    // },
+    // {
+    //   name: "Total Interviews Needed",
+    //   selector: (row) => row.total_interviews_needed,
+    //   sortable: true,
+    //   wrap: true,
+    // },
+    // {
+    //   name: "Total Interview Hours",
+    //   selector: (row) => row.total_interview_hrs,
+    //   sortable: true,
+    //   wrap: true,
+    // },
+    // {
+    //   name: "Working Hrs / Week",
+    //   selector: (row) => row.working_hrs_per_week,
+    //   sortable: true,
+    //   wrap: true,
+    // },
+    // {
+    //   name: "Total Interview Weeks",
+    //   selector: (row) => row.total_interview_weeks,
+    //   sortable: true,
+    //   wrap: true,
+    // },
     {
       name: "No. of Interviewer Needed",
       selector: (row) => row.no_of_interviewer_need,
@@ -83,7 +83,10 @@ const InterviewBandwidthDashboard = () => {
 
   const fetchInterviewBandwidth = async () => {
     try {
-      const response = await axiosInstance.get("/your_api_endpoint_here"); // Replace with real endpoint
+      const response = await axiosInstance.post(
+        "/interviewer_bandwidth_dashboard/",
+        {}
+      );
       const staticData = response.data?.data || [];
       setBandwidthData(staticData);
       setBandwidthColumns(staticColumns);
@@ -110,7 +113,12 @@ const InterviewBandwidthDashboard = () => {
             <h5 className="fw-bold mb-0">Interview Bandwidth Dashboard</h5>
           </div>
           <div className="col text-end">
-            <Link  className="btn btn-primary" type="button" to="/hiring_manager/planning/interviewer_bandwidth" variant="primary" >
+            <Link
+              className="btn btn-primary"
+              type="button"
+              to="/hiring_manager/planning/interviewer_bandwidth"
+              variant="primary"
+            >
               + Create Interview Bandwidth
             </Link>
           </div>

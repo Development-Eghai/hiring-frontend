@@ -13,7 +13,8 @@ const InterviewForm = () => {
   const [rating, setRating] = useState(0);
   const [showConfirm, setShowConfirm] = useState(false);
 
-  const [reqId, setReqId] = useState("");
+  const [reqIdsList, setReqIdsList] = useState([]);
+  const [reqId, setReqId] = useState();
   const [role, setRole] = useState("");
   const [techStacks, setTechStacks] = useState("");
   const [screeningType, setScreeningType] = useState("");
@@ -21,12 +22,14 @@ const InterviewForm = () => {
   const [feedbackText, setFeedbackText] = useState("");
 
   const [positionRoles, setPositionRoles] = useState([]);
-  const [planIds, setPlanIds] = useState([]);
+  const [planIds, setPlanIds] = useState();
+  const [planIdsList, setPlanIdsList] = useState([]);
   const [screeningTypes, setScreeningTypes] = useState([]);
   const [scoreCards, setScoreCards] = useState([]);
+  const [clientid, setClientId] = useState("");
+  const [clientname, setClientName] = useState("");
 
   const navigate = useNavigate();
-
 
   const defaultParam = {
     score_card_name: "",
@@ -35,9 +38,29 @@ const InterviewForm = () => {
     min_questions: "",
     screen_type: "",
     duration: "",
+    Weightage: "",
     mode: "",
     feedback: "",
   };
+
+  useEffect(() => {
+    if (reqId && planIds) {
+      const getClientdetails = async () => {
+        const getclientdetails = await axios.post(
+          "https://api.pixeladvant.com/api/client-lookup/",
+          {
+            plan_id: planIds,
+            req_id: reqId,
+          }
+        );
+        if (getclientdetails?.data?.success) {
+          setClientId(getclientdetails?.data?.data?.client_id);
+          setClientName(getclientdetails?.data?.data?.client_name);
+        }
+      };
+      getClientdetails();
+    }
+  }, [reqId, planIds]);
 
   useEffect(() => {
     const fetchDropdownData = async () => {
@@ -50,10 +73,11 @@ const InterviewForm = () => {
         );
 
         if (designRes.data?.success) {
-          const { position_role, plan_id, screening_type } =
+          const { position_role, plan_id, screening_type, requisition_id } =
             designRes.data.data;
           setPositionRoles(position_role || []);
-          setPlanIds(plan_id || []);
+          setPlanIdsList(plan_id || []);
+          setReqIdsList(requisition_id || []);
           setScreeningTypes(screening_type || []);
         }
 
@@ -61,7 +85,6 @@ const InterviewForm = () => {
           setScoreCards(scoreCardRes.data.data || []);
         }
       } catch (error) {
-        toast.error("Failed to fetch dropdown data.");
         console.error("Dropdown fetch error:", error);
       }
     };
@@ -73,13 +96,38 @@ const InterviewForm = () => {
     const value = parseInt(e.target.value);
     setNoOfRounds(e.target.value);
     if (!isNaN(value) && value > 0) {
-      const repeatedParams = Array.from({ length: value }, () => ({
+      const equalWeight = Math.floor(100 / value);
+      const remaining = 100 - equalWeight * value;
+
+      const repeatedParams = Array.from({ length: value }, (_, i) => ({
         ...defaultParam,
+        weightage: i === 0 ? equalWeight + remaining : equalWeight,
       }));
       setParameters(repeatedParams);
     } else {
       setParameters([]);
     }
+  };
+
+  const handleWeightChange = (index, value) => {
+    const newWeight = Number(value);
+    const updatedParameters = [...parameters];
+
+    // Calculate total weight excluding current row
+    const otherTotal = updatedParameters.reduce((sum, param, idx) => {
+      return idx !== index ? sum + Number(param.weightage || 0) : sum;
+    }, 0);
+
+    // Calculate the remaining weight available for this row
+    const maxAllowed = 100 - otherTotal;
+
+    if (newWeight > maxAllowed) {
+      toast.error(`Max allowed weight for this round is 100%`);
+      return;
+    }
+
+    updatedParameters[index].weightage = newWeight;
+    setParameters(updatedParameters);
   };
 
   const handleChange = (index, key, value) => {
@@ -98,8 +146,8 @@ const InterviewForm = () => {
     }));
 
     const formData = {
+      plan_id: planIds,
       req_id: reqId,
-      position_role: role,
       tech_stacks: techStacks,
       screening_type: screeningType,
       no_of_interview_round: noOfRounds,
@@ -157,8 +205,8 @@ const InterviewForm = () => {
     e.preventDefault();
 
     if (
+      planIds &&
       reqId &&
-      role &&
       techStacks &&
       screeningType &&
       noOfRounds &&
@@ -167,6 +215,7 @@ const InterviewForm = () => {
         (param) =>
           param.score_card_name &&
           param.options &&
+          param.weightage &&
           param.guideline &&
           param.min_questions &&
           param.screen_type &&
@@ -224,17 +273,22 @@ const InterviewForm = () => {
       </Link> */}
       <div className="interview-container p-3 bg-light rounded">
         <ToastContainer position="top-right" />
-        <Form onSubmit={handleShowConfirmation}>
-          <Row className="mb-4">
-            <Col md={6} className="mb-3">
+        <Form
+          onSubmit={handleShowConfirmation}
+          className="justify-content-center"
+        >
+          <Row className="mb-4 d-flex gap-3">
+            <Col md={3} className="mb-3">
               <Form.Group>
-                <Form.Label>Planning Id</Form.Label>
+                <Form.Label>
+                  Planning Id<span className="text-danger">*</span>
+                </Form.Label>
                 <Form.Select
-                  value={reqId}
-                  onChange={(e) => setReqId(e.target.value)}
+                  value={planIds}
+                  onChange={(e) => setPlanIds(e.target.value)}
                 >
                   <option value="">Select Planning Id</option>
-                  {planIds.map((id, idx) => (
+                  {planIdsList.map((id, idx) => (
                     <option key={idx} value={id}>
                       {id}
                     </option>
@@ -242,15 +296,18 @@ const InterviewForm = () => {
                 </Form.Select>
               </Form.Group>
             </Col>
-            <Col md={6} className="mb-3">
+
+            <Col md={3} className="mb-3">
               <Form.Group>
-                <Form.Label>Position/Role</Form.Label>
+                <Form.Label>
+                  Requisition ID<span className="text-danger">*</span>
+                </Form.Label>
                 <Form.Select
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
+                  value={reqId}
+                  onChange={(e) => setReqId(e.target.value)}
                 >
-                  <option value="">Select Role</option>
-                  {positionRoles.map((r, idx) => (
+                  <option value="">Select Req ID</option>
+                  {reqIdsList.map((r, idx) => (
                     <option key={idx} value={r}>
                       {r}
                     </option>
@@ -260,8 +317,24 @@ const InterviewForm = () => {
             </Col>
           </Row>
 
-          <Row className="mb-4">
-            <Col md={6} className="mb-3">
+          <Row className="mb-4 d-flex gap-3">
+            <Col md={3} className="mb-3">
+              <Form.Group>
+                <Form.Label>Client Id</Form.Label>
+                <Form.Control type="text" value={clientid} disabled />
+              </Form.Group>
+            </Col>
+
+            <Col md={3} className="mb-3">
+              <Form.Group>
+                <Form.Label>Client Name</Form.Label>
+                <Form.Control type="text" value={clientname} disabled />
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Row className="mb-4 d-flex gap-3">
+            <Col md={3} className="mb-3">
               <Form.Group>
                 <Form.Label>Tech Stacks</Form.Label>
                 <Form.Control
@@ -272,7 +345,7 @@ const InterviewForm = () => {
                 />
               </Form.Group>
             </Col>
-            <Col md={6} className="mb-3">
+            <Col md={3} className="mb-3">
               <Form.Group>
                 <Form.Label>Screening Type</Form.Label>
                 <Form.Select
@@ -291,7 +364,7 @@ const InterviewForm = () => {
           </Row>
 
           <Row className="mb-4">
-            <Col md={6} className="mb-3">
+            <Col md={4} className="mb-3 d-flex gap-3">
               <Form.Group>
                 <Form.Label>No of Interview Rounds</Form.Label>
                 <Form.Control
@@ -314,6 +387,7 @@ const InterviewForm = () => {
                 <span>Min Qs</span>
                 <span>Screening Type</span>
                 <span>Duration</span>
+                <span>Weight</span>
                 <span>Mode</span>
                 <span>Feedback</span>
               </div>
@@ -373,6 +447,14 @@ const InterviewForm = () => {
                         handleChange(index, "duration", e.target.value)
                       }
                       placeholder="Duration"
+                    />
+                    <Form.Control
+                      type="text"
+                      value={param.weightage || ""}
+                      onChange={(e) =>
+                        handleWeightChange(index, e.target.value)
+                      }
+                      placeholder="weightage"
                     />
                     <Form.Control
                       type="text"

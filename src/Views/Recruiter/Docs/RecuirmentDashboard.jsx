@@ -8,7 +8,7 @@ export const RecruiterDashboard = () => {
   const [tableData, setTableData] = useState([]);
   const [candidateData, setCandidateData] = useState([]);
 
-  console.log(tableData,"uyi")
+  console.log(tableData, "uyi");
   const RecuiterTableHeadings = [
     "S.no",
     "Planning ID",
@@ -28,7 +28,8 @@ export const RecruiterDashboard = () => {
   const CandidateTableHeading = [
     "Req ID",
     "Candidate Id",
-    "Candidate Name",
+    "Candidate First Name",
+    "Candidate Second Name",
     "Applied Postion",
     "Time in Stage",
     "JD From applied Position",
@@ -84,7 +85,7 @@ export const RecruiterDashboard = () => {
           { user_role: 2 }
         );
 
-        console.log(response?.data?.data,"caa")
+        console.log(response?.data?.data, "caa");
 
         if (response?.data?.success && Array.isArray(response.data.data)) {
           const formatted = response.data.data.map((item, index) => ({
@@ -112,7 +113,7 @@ export const RecruiterDashboard = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [modalSourceinput,setModalSourceinput] = useState("");
+  const [modalSourceinput, setModalSourceinput] = useState("");
   const [cvFiles, setCvFiles] = useState([]);
 
   const handleFileChange = (e) => {
@@ -124,7 +125,7 @@ export const RecruiterDashboard = () => {
     setCvFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleCVSubmit = () => {
+  const handleCVSubmit = async () => {
     if (cvFiles.length === 0) {
       alert("Please select at least one file.");
       return;
@@ -133,13 +134,27 @@ export const RecruiterDashboard = () => {
     // Create FormData
     const formData = new FormData();
     cvFiles.forEach((file, i) => {
-      formData.append("cv_files[]", file);
+      formData.append("files", file);
     });
     formData.append("req_id", selectedRow?.reqId);
-    console.log("Uploading files for:", selectedRow?.reqId);
+    formData.append("Source", modalSourceinput);
+    console.log(formData, "dca");
     cvFiles.forEach((f) => console.log("File:", f.name));
 
-    handleCloseModal();
+    const uploadcvresponse = await axios.post(
+      "https://api.pixeladvant.com/api/upload-resumes/",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    console.log(uploadcvresponse, "ascas");
+
+    if (uploadcvresponse?.data?.success) {
+      handleCloseModal();
+    }
   };
 
   const handleUploadClick = (row) => {
@@ -155,7 +170,7 @@ export const RecruiterDashboard = () => {
 
   return (
     <div className="h-100">
-      <RecruiterHeader/>
+      <RecruiterHeader />
       <div className="row">
         <div className="card rounded-3 border-0 shadow-sm p-2 mt-5">
           <div className="card-body p-0 card overflow-auto">
@@ -262,13 +277,12 @@ export const RecruiterDashboard = () => {
                 </div>
               )}
               <Form.Group className="col-5">
-                <Form.Label>Select Source</Form.Label>
+                <Form.Label> Source</Form.Label>
                 <Form.Control
                   type="text"
-                  onChange={(e)=>setModalSourceinput(e.target.value)}
+                  onChange={(e) => setModalSourceinput(e.target.value)}
                 />
               </Form.Group>
-              
 
               {selectedRow && (
                 <div className="mt-4">
@@ -295,7 +309,7 @@ export const RecruiterDashboard = () => {
 
         <div className="card rounded-3 border-0 shadow-sm p-2 mt-5">
           <div className="card-body p-0 card overflow-auto">
-              <h5 className="p-3">Candidate List</h5>
+            <h5 className="p-3">Candidate List</h5>
 
             <table
               className="table mb-0 table-bordered table-striped"

@@ -71,6 +71,12 @@ const Creatmodel = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === "no_of_openings") {
+      const number = parseInt(value, 10);
+      if (number < 1 || number > 1000) return;
+    }
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -292,6 +298,8 @@ const Creatmodel = () => {
                 value={formData.no_of_openings}
                 onChange={handleChange}
                 placeholder="Enter number"
+                min={1}
+                max={1000}
               />
             </Form.Group>
           </Form>

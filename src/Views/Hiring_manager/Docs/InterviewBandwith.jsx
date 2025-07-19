@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Form, Button, Spinner } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
@@ -22,10 +23,54 @@ const InterviewBandwidth = () => {
   const [resultData, setResultData] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const [planIds, setPlanIds] = useState();
+  const [planIdsList, setPlanIdsList] = useState([]);
+  const [reqIdsList, setReqIdsList] = useState([]);
+  const [reqId, setReqId] = useState();
+  const [clientid, setClientId] = useState("");
+  const [clientname, setClientName] = useState("");
   const columns = [
     { name: "Metrics", selector: (row) => row.metric, grow: 3, wrap: true },
     { name: "Values", selector: (row) => row.value, grow: 1, center: true },
   ];
+  useEffect(() => {
+    if (reqId && planIds) {
+      const getClientdetails = async () => {
+        const getclientdetails = await axios.post(
+          "https://api.pixeladvant.com/api/client-lookup/",
+          {
+            plan_id: planIds,
+            req_id: reqId,
+          }
+        );
+        console.log(getclientdetails, "Zca");
+        if (getclientdetails?.data?.success) {
+          setClientId(getclientdetails?.data?.data?.client_id);
+          setClientName(getclientdetails?.data?.data?.client_name);
+        }
+      };
+      getClientdetails();
+    }
+  }, [reqId, planIds]);
+
+  useEffect(() => {
+    const fetchDropdownData = async () => {
+      try {
+        const designRes = await axios.get(
+          "https://api.pixeladvant.com/design_screen_list_data/"
+        );
+
+        if (designRes.data?.success) {
+          const { plan_id, requisition_id } = designRes.data.data;
+          setPlanIdsList(plan_id || []);
+          setReqIdsList(requisition_id || []);
+        }
+      } catch (error) {
+        console.error("Dropdown fetch error:", error);
+      }
+    };
+    fetchDropdownData();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,6 +79,7 @@ const InterviewBandwidth = () => {
 
   const validateForm = () => {
     const requiredFields = [
+      "planning_id",
       "no_of_roles_to_hire",
       "conversion_ratio",
       "interview_round",
@@ -60,20 +106,21 @@ const InterviewBandwidth = () => {
     try {
       const payload = {
         ...formData,
-        no_of_roles_to_hire: safeNumber(formData.no_of_roles_to_hire),
-        conversion_ratio: safeNumber(formData.conversion_ratio),
-        offer_decline: safeNumber(formData.offer_decline),
-        elimination: safeNumber(formData.elimination),
-        avg_interviewer_time_per_week_hrs: safeNumber(
-          formData.avg_interviewer_time_per_week_hrs
-        ),
-        interview_round: safeNumber(formData.interview_round),
-        interview_time_per_round: safeNumber(formData.interview_time_per_round),
-        interviewer_leave_days: safeNumber(formData.interviewer_leave_days),
-        no_of_month_interview_happens: safeNumber(
-          formData.no_of_month_interview_happens
-        ),
-
+        plan_id: planIds,
+        req_id: reqId,
+        no_of_roles_to_hire: safeNumber(formData.no_of_roles_to_hire) || 0,
+        conversion_ratio: safeNumber(formData.conversion_ratio) || 0,
+        elimination: safeNumber(formData.elimination) || 0,
+        avg_interviewer_time_per_week_hrs:
+          safeNumber(formData.avg_interviewer_time_per_week_hrs) || 0,
+        interview_round: safeNumber(formData.interview_round) || 0,
+        interview_time_per_round:
+          safeNumber(formData.interview_time_per_round) || 0,
+        interviewer_leave_days:
+          safeNumber(formData.interviewer_leave_days) || 0,
+        no_of_month_interview_happens:
+          safeNumber(formData.no_of_month_interview_happens) || 0,
+        offer_decline: safeNumber(formData.offer_decline) || 0,
         // Static values
         dead_line_days: 10,
         working_hours_per_day: 8,
@@ -171,10 +218,69 @@ const InterviewBandwidth = () => {
         <h3 className="mb-4 text-start">Interviewer Bandwidth Calculator</h3>
 
         <Form className="mb-5">
-          <Row className="mb-3 gap-2">
+          <Row className="mb-4 d-flex gap-3">
+            <Col md={3} className="mb-3">
+              <Form.Group>
+                <Form.Label>
+                  Planning Id <span className="text-danger">*</span>
+                </Form.Label>
+                <Form.Select
+                  value={planIds}
+                  onChange={(e) => setPlanIds(e.target.value)}
+                  name="planning_id"
+                >
+                  <option value="">Select Planning Id</option>
+                  {planIdsList.map((id, idx) => (
+                    <option key={idx} value={id}>
+                      {id}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Col>
+
+            <Col md={3} className="mb-3">
+              <Form.Group>
+                <Form.Label>
+                  Requisition ID <span className="text-danger">*</span>
+                </Form.Label>
+                <Form.Select
+                  value={reqId}
+                  onChange={(e) => setReqId(e.target.value)}
+                  name="requisition_id"
+                >
+                  <option value="">Select Req ID</option>
+                  {reqIdsList.map((r, idx) => (
+                    <option key={idx} value={r}>
+                      {r}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Row className="mb-4 d-flex gap-3">
+            <Col md={3} className="mb-3">
+              <Form.Group>
+                <Form.Label>Client Id</Form.Label>
+                <Form.Control type="text" value={clientid} disabled />
+              </Form.Group>
+            </Col>
+
+            <Col md={3} className="mb-3">
+              <Form.Group>
+                <Form.Label>Client Name</Form.Label>
+                <Form.Control type="text" value={clientname} disabled />
+              </Form.Group>
+            </Col>
+          </Row>
+          <Row className="mb-3 d-flex gap-3">
             <Col>
               <Form.Group>
-                <Form.Label>No. of Roles to Hire *</Form.Label>
+                <Form.Label>
+                  No. of Roles to Hire <span className="text-danger">*</span>
+                </Form.Label>
                 <Form.Control
                   type="number"
                   name="no_of_roles_to_hire"
@@ -186,7 +292,9 @@ const InterviewBandwidth = () => {
 
             <Col>
               <Form.Group>
-                <Form.Label>Conversion Ratio *</Form.Label>
+                <Form.Label>
+                  Conversion Ratio <span className="text-danger">*</span>
+                </Form.Label>
                 <Form.Control
                   type="number"
                   name="conversion_ratio"
@@ -195,21 +303,9 @@ const InterviewBandwidth = () => {
                 />
               </Form.Group>
             </Col>
-
-            <Col>
-              <Form.Group>
-                <Form.Label>Offer Decline %</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="offer_decline"
-                  value={formData.offer_decline}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-            </Col>
           </Row>
 
-          <Row className="mb-3 gap-2">
+          <Row className="mb-3 d-flex gap-3">
             {/* <Col>
             <Form.Group>
               <Form.Label>Elimination %</Form.Label>
@@ -236,7 +332,9 @@ const InterviewBandwidth = () => {
 
             <Col>
               <Form.Group>
-                <Form.Label>No. of Interview Rounds *</Form.Label>
+                <Form.Label>
+                  No. of Interview Rounds <span className="text-danger">*</span>
+                </Form.Label>
                 <Form.Control
                   type="number"
                   name="interview_round"
@@ -248,7 +346,9 @@ const InterviewBandwidth = () => {
 
             <Col>
               <Form.Group>
-                <Form.Label>Time per Round (hrs) *</Form.Label>
+                <Form.Label>
+                  Time per Round (hrs) <span className="text-danger">*</span>
+                </Form.Label>
                 <Form.Control
                   type="number"
                   name="interview_time_per_round"
@@ -259,7 +359,7 @@ const InterviewBandwidth = () => {
             </Col>
           </Row>
 
-          <Row className="mb-3 gap-2">
+          <Row className="mb-3 d-flex gap-3">
             <Col>
               <Form.Group>
                 <Form.Label>Unplanned Leave Days</Form.Label>

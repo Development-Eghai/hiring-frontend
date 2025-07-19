@@ -7,6 +7,7 @@ import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
 const InterviewDesignDashboard = () => {
+  const navigate = useNavigate();
   const [columns, setColumns] = useState([]);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,7 +33,7 @@ const InterviewDesignDashboard = () => {
             width: "70px",
             center: true,
           },
-           {
+          {
             name: "Planning ID",
             selector: (row) => row.id,
             wrap: true,
@@ -122,29 +123,29 @@ const InterviewDesignDashboard = () => {
         leave_adjustment: 59,
       },
     ];
-
-    
-
-    
   };
 
   useEffect(() => {
     fetchInterviewDesigns();
   }, []);
 
- 
-
- 
-
- 
   return (
     <div className="interview-table-wrapper">
       <div className="scroll-container bg-white rounded p-2">
         <div className="row col-12 d-flex justify-content-between align-items-center mb-2 px-2 py-3">
-          <div className="col ">
+          <div className="col">
             <h5 className="fw-bold mb-0">Interview Design Dashboard</h5>
           </div>
-          
+          <div className="col-2">
+            <Button
+              variant="primary"
+              onClick={() =>
+                navigate("/hiring_manager/planning/interview_design_screen")
+              }
+            >
+              Create Design
+            </Button>
+          </div>
         </div>
         <DataTable
           columns={columns}
@@ -184,8 +185,6 @@ const InterviewDesignDashboard = () => {
           }}
         />
       </div>
-
-      
     </div>
   );
 };
