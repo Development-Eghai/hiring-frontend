@@ -8,17 +8,18 @@ import {
   Col,
   Container,
   Card,
+  CardBody,
 } from "react-bootstrap";
 import axiosInstance from "Services/axiosInstance";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import CandidateApprovalStatus from "./CandidateApprovalStatus";
 
 const SetApproveScreen = () => {
   const [approvers, setApprovers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [step, setStep] = useState(1);
   const [loadingClient, setLoadingClient] = useState(false);
-  
 
   const [dropdownOptions, setDropdownOptions] = useState({
     requisition_id: [],
@@ -103,7 +104,13 @@ const SetApproveScreen = () => {
     try {
       const res = await axiosInstance.get("/api/set-approver/");
       if (res.data.success) {
-        setApprovers(res.data.data);
+        const data = res.data.data;
+        if (data && typeof data === "object") {
+          setApprovers([data]);
+        } else {
+          setApprovers([]);
+          console.warn("Invalid approver data format:", data);
+        }
       } else {
         toast.error(res.data.message || "Failed to fetch approvers.");
       }
@@ -122,7 +129,6 @@ const SetApproveScreen = () => {
     const updatedState = { ...formState, [name]: value };
     setFormState(updatedState);
 
-    // Check and fetch client info if both req_id and planning_id are set
     if (
       (name === "req_id" && updatedState.planning_id) ||
       (name === "planning_id" && updatedState.req_id)
@@ -208,264 +214,266 @@ const SetApproveScreen = () => {
   };
 
   return (
-    <Container fluid className="py-4 px-md-5 bg-light min-vh-100">
-      <Card className="shadow-sm p-4">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h5 className="fw-bold m-0">Set Approver Screen</h5>
-          <Button variant="success" onClick={handleAddNew}>
-            + Add Approver
-          </Button>
-        </div>
-
-        <div className="table-responsive">
-          <Table
-            striped
-            bordered
-            hover
-            size="sm"
-            className="text-center align-middle"
-          >
-            <thead className="bg-primary text-white">
-              <tr>
-                <th>Req ID</th>
-                <th>Planning ID</th>
-                <th>Client Name</th>
-                <th>No. of Approver</th>
-                <th>Action</th>
-                
-              </tr>
-            </thead>
-            <tbody>
-              {approvers.map((a, i) => (
-                <tr key={i}>
-                  <td>{a.req_id}</td>
-                  <td>{a.hiring_plan}</td>
-                  <td>
-                    {a.client_name}
-                  </td>
-                  <td>{a.set_as_approver}</td>
-                  <td>View</td>
-                 
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </div>
-      </Card>
-
-      {/* Modal */}
-      <Modal show={showModal} onHide={handleCloseModal} centered size="xl">
-        <Modal.Header closeButton>
-          <Modal.Title>Set Approver</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {step === 1 && (
-            <>
-              <Row className="mb-3">
-                <Col md={6}>
-                  <Form.Group>
-                    <Form.Label>Req ID</Form.Label>
-                    <Form.Select
-                      name="req_id"
-                      value={formState.req_id}
-                      onChange={handleMainChange}
-                    >
-                      <option value="">-- Select Req ID --</option>
-                      {dropdownOptions.requisition_id.map((id, index) => (
-                        <option key={index} value={id}>
-                          {id}
-                        </option>
-                      ))}
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group>
-                    <Form.Label>Planning ID</Form.Label>
-                    <Form.Select
-                      name="planning_id"
-                      value={formState.planning_id}
-                      onChange={handleMainChange}
-                    >
-                      <option value="">-- Select Planning ID --</option>
-                      {dropdownOptions.plan_id.map((id, index) => (
-                        <option key={index} value={id}>
-                          {id}
-                        </option>
-                      ))}
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-              </Row>
-              <div className="text-end">
-                {loadingClient ? (
-                  <Button variant="primary" disabled>
-                    Loading...
-                  </Button>
-                ) : (
-                  formState.req_id &&
-                  formState.planning_id &&
-                  formState.client_name &&
-                  formState.client_id && (
-                    <Button variant="primary" onClick={() => setStep(2)}>
-                      Next
-                    </Button>
-                  )
-                )}
-              </div>
-            </>
-          )}
-
-          {step === 2 && (
-            <>
-              <Row className="mb-3">
-                <Col md={6}>
-                  <Form.Group>
-                    <Form.Label>Client Name</Form.Label>
-                    <Form.Control
-                      name="client_name"
-                      placeholder="Enter client name"
-                      value={formState.client_name}
-                      onChange={handleMainChange}
-                      disabled
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group>
-                    <Form.Label>Client ID</Form.Label>
-                    <Form.Control
-                      name="client_id"
-                      placeholder="Enter client ID"
-                      value={formState.client_id}
-                      onChange={handleMainChange}
-                      disabled
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-
-              <Form.Group className="mb-3">
-                <Form.Label>Number of Approvers</Form.Label>
-                <Form.Control
-                  type="number"
-                  min="1"
-                  name="no_of_approvers"
-                  value={formState.no_of_approvers}
-                  onChange={handleNoOfApproversChange}
-                />
-              </Form.Group>
-
-              {formState.approvers.map((approver, index) => (
-                <div key={index} className="border rounded p-3 mb-4">
-                  <h6 className="fw-bold">Approver {index + 1}</h6>
-                  <Row className="mb-3">
-                    <Col md={6}>
-                      <Form.Group>
-                        <Form.Label>Role</Form.Label>
-                        <Form.Select
-                          name="role"
-                          value={approver.role}
-                          onChange={(e) => handleApproverChange(index, e)}
-                        >
-                          <option value="">-- Select Role --</option>
-                          <option value="Manager">Manager</option>
-                          <option value="HR">HR</option>
-                          <option value="Finance">Finance</option>
-                          <option value="Reviewer">Reviewer</option>
-                        </Form.Select>
-                      </Form.Group>
-                    </Col>
-                    <Col md={6}>
-                      <Form.Group>
-                        <Form.Label>Job Title</Form.Label>
-                        <Form.Control
-                          name="job_title"
-                          value={approver.job_title}
-                          onChange={(e) => handleApproverChange(index, e)}
-                          placeholder="Enter job title"
-                        />
-                      </Form.Group>
-                    </Col>
-                  </Row>
-
-                  <Row className="mb-3">
-                    <Col md={6}>
-                      <Form.Group>
-                        <Form.Label>First Name</Form.Label>
-                        <Form.Control
-                          name="first_name"
-                          value={approver.first_name}
-                          onChange={(e) => handleApproverChange(index, e)}
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col md={6}>
-                      <Form.Group>
-                        <Form.Label>Last Name</Form.Label>
-                        <Form.Control
-                          name="last_name"
-                          value={approver.last_name}
-                          onChange={(e) => handleApproverChange(index, e)}
-                        />
-                      </Form.Group>
-                    </Col>
-                  </Row>
-
-                  <Row className="mb-3">
-                    <Col md={6}>
-                      <Form.Group>
-                        <Form.Label>Email</Form.Label>
-                        <Form.Control
-                          type="email"
-                          name="email"
-                          value={approver.email}
-                          onChange={(e) => handleApproverChange(index, e)}
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col md={6}>
-                      <Form.Group>
-                        <Form.Label>Contact Number</Form.Label>
-                        <Form.Control
-                          name="contact_number"
-                          value={approver.contact_number}
-                          onChange={(e) => handleApproverChange(index, e)}
-                        />
-                      </Form.Group>
-                    </Col>
-                  </Row>
-
-                  <Form.Group>
-                    <Form.Label>Set as Approver</Form.Label>
-                    <Form.Select
-                      name="set_as_approver"
-                      value={approver.set_as_approver}
-                      onChange={(e) => handleApproverChange(index, e)}
-                    >
-                      <option value="Yes">Yes</option>
-                      <option value="No">No</option>
-                    </Form.Select>
-                  </Form.Group>
-                </div>
-              ))}
-            </>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Cancel
-          </Button>
-          {step === 2 && (
-            <Button variant="success" onClick={handleFinalSubmit}>
-              Submit
+    <div>
+      <Container fluid className="py-4 px-md-5 bg-light min-vh-100">
+        <Card className="shadow-sm p-4">
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h5 className="fw-bold m-0">Set Approver Screen</h5>
+            <Button variant="success" onClick={handleAddNew}>
+              + Add Approver
             </Button>
-          )}
-        </Modal.Footer>
-      </Modal>
+          </div>
 
-      <ToastContainer position="top-right" autoClose={3000} />
-    </Container>
+          <div className="table-responsive">
+            <Table
+              striped
+              bordered
+              hover
+              size="sm"
+              className="text-center align-middle"
+            >
+              <thead className="bg-primary text-white">
+                <tr>
+                  <th>Req ID</th>
+                  <th>Planning ID</th>
+                  <th>Client Name</th>
+                  <th>No. of Approver</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {approvers.map((a, i) => (
+                  <tr key={i}>
+                    <td>{a.req_id}</td>
+                    <td>{a.planning_id}</td>
+                    <td>{a.client_name}</td>
+                    <td>{a.no_of_approvers}</td>
+                    <td>View</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
+        </Card>
+
+        <div>
+          <CandidateApprovalStatus />
+        </div>
+
+        {/* Modal */}
+        <Modal show={showModal} onHide={handleCloseModal} centered size="xl">
+          <Modal.Header closeButton>
+            <Modal.Title>Set Approver</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {step === 1 && (
+              <>
+                <Row className="mb-3">
+                  <Col md={6}>
+                    <Form.Group>
+                      <Form.Label>Req ID</Form.Label>
+                      <Form.Select
+                        name="req_id"
+                        value={formState.req_id}
+                        onChange={handleMainChange}
+                      >
+                        <option value="">-- Select Req ID --</option>
+                        {dropdownOptions.requisition_id.map((id, index) => (
+                          <option key={index} value={id}>
+                            {id}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group>
+                      <Form.Label>Planning ID</Form.Label>
+                      <Form.Select
+                        name="planning_id"
+                        value={formState.planning_id}
+                        onChange={handleMainChange}
+                      >
+                        <option value="">-- Select Planning ID --</option>
+                        {dropdownOptions.plan_id.map((id, index) => (
+                          <option key={index} value={id}>
+                            {id}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
+                </Row>
+                <div className="text-end">
+                  {loadingClient ? (
+                    <Button variant="primary" disabled>
+                      Loading...
+                    </Button>
+                  ) : (
+                    formState.req_id &&
+                    formState.planning_id &&
+                    formState.client_name &&
+                    formState.client_id && (
+                      <Button variant="primary" onClick={() => setStep(2)}>
+                        Next
+                      </Button>
+                    )
+                  )}
+                </div>
+              </>
+            )}
+
+            {step === 2 && (
+              <>
+                <Row className="mb-3">
+                  <Col md={6}>
+                    <Form.Group>
+                      <Form.Label>Client Name</Form.Label>
+                      <Form.Control
+                        name="client_name"
+                        placeholder="Enter client name"
+                        value={formState.client_name}
+                        onChange={handleMainChange}
+                        disabled
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group>
+                      <Form.Label>Client ID</Form.Label>
+                      <Form.Control
+                        name="client_id"
+                        placeholder="Enter client ID"
+                        value={formState.client_id}
+                        onChange={handleMainChange}
+                        disabled
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Number of Approvers</Form.Label>
+                  <Form.Control
+                    type="number"
+                    min="1"
+                    name="no_of_approvers"
+                    value={formState.no_of_approvers}
+                    onChange={handleNoOfApproversChange}
+                  />
+                </Form.Group>
+
+                {formState.approvers.map((approver, index) => (
+                  <div key={index} className="border rounded p-3 mb-4">
+                    <h6 className="fw-bold">Approver {index + 1}</h6>
+                    <Row className="mb-3">
+                      <Col md={6}>
+                        <Form.Group>
+                          <Form.Label>Role</Form.Label>
+                          <Form.Select
+                            name="role"
+                            value={approver.role}
+                            onChange={(e) => handleApproverChange(index, e)}
+                          >
+                            <option value="">-- Select Role --</option>
+                            <option value="Manager">Manager</option>
+                            <option value="HR">HR</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Reviewer">Reviewer</option>
+                          </Form.Select>
+                        </Form.Group>
+                      </Col>
+                      <Col md={6}>
+                        <Form.Group>
+                          <Form.Label>Job Title</Form.Label>
+                          <Form.Control
+                            name="job_title"
+                            value={approver.job_title}
+                            onChange={(e) => handleApproverChange(index, e)}
+                            placeholder="Enter job title"
+                          />
+                        </Form.Group>
+                      </Col>
+                    </Row>
+
+                    <Row className="mb-3">
+                      <Col md={6}>
+                        <Form.Group>
+                          <Form.Label>First Name</Form.Label>
+                          <Form.Control
+                            name="first_name"
+                            value={approver.first_name}
+                            onChange={(e) => handleApproverChange(index, e)}
+                          />
+                        </Form.Group>
+                      </Col>
+                      <Col md={6}>
+                        <Form.Group>
+                          <Form.Label>Last Name</Form.Label>
+                          <Form.Control
+                            name="last_name"
+                            value={approver.last_name}
+                            onChange={(e) => handleApproverChange(index, e)}
+                          />
+                        </Form.Group>
+                      </Col>
+                    </Row>
+
+                    <Row className="mb-3">
+                      <Col md={6}>
+                        <Form.Group>
+                          <Form.Label>Email</Form.Label>
+                          <Form.Control
+                            type="email"
+                            name="email"
+                            value={approver.email}
+                            onChange={(e) => handleApproverChange(index, e)}
+                          />
+                        </Form.Group>
+                      </Col>
+                      <Col md={6}>
+                        <Form.Group>
+                          <Form.Label>Contact Number</Form.Label>
+                          <Form.Control
+                            name="contact_number"
+                            value={approver.contact_number}
+                            onChange={(e) => handleApproverChange(index, e)}
+                          />
+                        </Form.Group>
+                      </Col>
+                    </Row>
+
+                    <Form.Group>
+                      <Form.Label>Set as Approver</Form.Label>
+                      <Form.Select
+                        name="set_as_approver"
+                        value={approver.set_as_approver}
+                        onChange={(e) => handleApproverChange(index, e)}
+                      >
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                      </Form.Select>
+                    </Form.Group>
+                  </div>
+                ))}
+              </>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseModal}>
+              Cancel
+            </Button>
+            {step === 2 && (
+              <Button variant="success" onClick={handleFinalSubmit}>
+                Submit
+              </Button>
+            )}
+          </Modal.Footer>
+        </Modal>
+
+        <ToastContainer position="top-right" autoClose={3000} />
+      </Container>
+    </div>
   );
 };
 
