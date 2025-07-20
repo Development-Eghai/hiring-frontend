@@ -1,5 +1,5 @@
 import Modal from "react-bootstrap/Modal";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Table, Button, Container, Row, Col, Form } from "react-bootstrap";
 import axiosInstance from "Services/axiosInstance";
 import { FaEdit, FaTrash } from "react-icons/fa";
