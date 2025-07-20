@@ -29,11 +29,11 @@ const JsonData = () => {
             route: "planning/interview_design_dashboard",
             icon: Icons.Planning,
           },
-          {
-            name: "Interview Design Screen",
-            route: "planning/interview_design_screen",
-            icon: Icons.Planning,
-          },
+          // {
+          //   name: "Interview Design Screen",
+          //   route: "planning/interview_design_screen",
+          //   icon: Icons.Planning,
+          // },
           
           {
             name: "Interviewer Bandwidth",

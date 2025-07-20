@@ -110,7 +110,7 @@ const InterviewBandwidthDashboard = () => {
       <div className="scroll-container bg-white rounded p-2 mt-3">
         <div className="row col-12 d-flex justify-content-between align-items-center mb-2 px-2 py-3">
           <div className="col">
-            <h5 className="fw-bold mb-0">Interview Bandwidth Dashboard</h5>
+            <h5 className="fw-bold mb-0">Interviewer Bandwidth Dashboard</h5>
           </div>
           <div className="col text-end">
             <Link

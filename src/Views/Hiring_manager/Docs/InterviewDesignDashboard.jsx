@@ -143,7 +143,7 @@ const InterviewDesignDashboard = () => {
                 navigate("/hiring_manager/planning/interview_design_screen")
               }
             >
-              Create Design
+              Create Interview Design
             </Button>
           </div>
         </div>

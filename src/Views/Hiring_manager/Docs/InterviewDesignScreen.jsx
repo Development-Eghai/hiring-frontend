@@ -231,7 +231,7 @@ const InterviewForm = () => {
 
   return (
     <div>
-      {/* <div className=" mb-2">
+      <div className=" mb-2">
         <Link
           to="/hiring_manager/planning/interview_design_dashboard"
           className="text-decoration-none btn p-2 btn-light"
@@ -265,12 +265,10 @@ const InterviewForm = () => {
               />
             </g>
           </svg>
-          Back to Design dashboard
+          Back to Interview Design dashboard
         </Link>
-      </div> */}
-      {/* <Link to={"/planning/interview_design_dashboard"}>
-        Back to Design dashboard
-      </Link> */}
+      </div> 
+    
       <div className="interview-container p-3 bg-light rounded">
         <ToastContainer position="top-right" />
         <Form

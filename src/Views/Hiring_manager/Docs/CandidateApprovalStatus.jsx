@@ -4,7 +4,7 @@ import DataTable from "react-data-table-component";
 import { Modal, Button, Table, Spinner } from "react-bootstrap";
 
 const ApproversModal = ({ show, onHide, approvers }) => (
-  <Modal show={show} onHide={onHide} size="lg" centered>
+  <Modal show={show} onHide={onHide} size="xl" centered>
     <Modal.Header closeButton>
       <Modal.Title>Approvers</Modal.Title>
     </Modal.Header>
@@ -125,7 +125,7 @@ const CandidateApproverStatus = () => {
   ];
 
   return (
-    <div className="container mt-4">
+    <div className=" mt-4">
       <h4 className="mb-3">Candidate Approver Status</h4>
       {loading ? (
         <div className="text-center py-5">
@@ -134,9 +134,10 @@ const CandidateApproverStatus = () => {
       ) : (
         <DataTable
           columns={columns}
+          className="rounded border"
           data={candidates}
         //   pagination
-          highlightOnHover
+          // highlightOnHover
           striped
           responsive
           noHeader

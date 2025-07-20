@@ -14,12 +14,15 @@ import axiosInstance from "Services/axiosInstance";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CandidateApprovalStatus from "./CandidateApprovalStatus";
+import DataTable from "react-data-table-component";
 
 const SetApproveScreen = () => {
   const [approvers, setApprovers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [step, setStep] = useState(1);
   const [loadingClient, setLoadingClient] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [viewApproversData, setViewApproversData] = useState([]);
 
   const [dropdownOptions, setDropdownOptions] = useState({
     requisition_id: [],
@@ -248,13 +251,23 @@ const SetApproveScreen = () => {
                     <td>{a.planning_id}</td>
                     <td>{a.client_name}</td>
                     <td>{a.no_of_approvers}</td>
-                    <td>View</td>
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      onClick={() => {
+                        setViewApproversData(a.approvers || []);
+                        setShowViewModal(true);
+                      }}
+                    >
+                      View
+                    </Button>
                   </tr>
                 ))}
               </tbody>
             </Table>
           </div>
         </Card>
+        <hr />
 
         <div>
           <CandidateApprovalStatus />
@@ -468,6 +481,40 @@ const SetApproveScreen = () => {
                 Submit
               </Button>
             )}
+          </Modal.Footer>
+        </Modal>
+
+        <Modal
+          show={showViewModal}
+          onHide={() => setShowViewModal(false)}
+          size="xl"
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Approver Details</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <DataTable
+              columns={[
+                { name: "Role", selector: (row) => row.role, sortable: true },
+                { name: "Job Title", selector: (row) => row.job_title },
+                { name: "First Name", selector: (row) => row.first_name },
+                { name: "Last Name", selector: (row) => row.last_name },
+                { name: "Email", selector: (row) => row.email },
+                { name: "Contact", selector: (row) => row.contact_number },
+                { name: "Approver", selector: (row) => row.set_as_approver },
+              ]}
+              data={viewApproversData}
+              // pagination
+              // highlightOnHover
+              // striped
+              responsive
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowViewModal(false)}>
+              Close
+            </Button>
           </Modal.Footer>
         </Modal>
 
