@@ -21,12 +21,12 @@ const CandidateScreen = () => {
     "Time in Stage",
     "JD From applied Position",
     "CV/Resume",
-    "Cover Letter",
     "Candidate current stage",
     "Candidate Next Stage",
     "Overall Stage",
     "final stage",
     "Source",
+    "Score",
     "action",
   ];
 
@@ -36,6 +36,7 @@ const CandidateScreen = () => {
   const [showModal, setShowModal] = useState(false);
 
   const [selectedCandidate, setSelectedCandidate] = useState({});
+  const [candidateDeleted,setCandidateDeleted] = useState(false);
 
   // effects
 
@@ -55,7 +56,7 @@ const CandidateScreen = () => {
     };
 
     fetchData();
-  }, []);
+  }, [candidateDeleted]);
 
   //functions
 
@@ -64,7 +65,24 @@ const CandidateScreen = () => {
     setShowModal(true);
   };
 
-  const handleDelete = () => {};
+  const handleDelete = async(candidate_id) => {
+
+    try {
+      const response = await axios.delete(
+        "https://api.pixeladvant.com/candidates/delete/", {
+        data: {
+          candidate_id: candidate_id,
+        },
+      }
+      );
+      if (response?.data?.success) {
+        setCandidateDeleted(!candidateDeleted)
+        setShowModal(false);
+      }
+    } catch (err) {
+      console.error("Error fetching recruiter table data", err);
+    }
+  };
 
   const handleSubmitModal = async (formData) => {
     try {
@@ -204,14 +222,11 @@ const CandidateScreen = () => {
                             <td>{data?.Candidate_Id}</td>
                             <td>{data?.Candidate_First_Name}</td>
                             <td>{data?.Candidate_Last_Name}</td>
-
-                            <td>{data?.email || ""}</td>
-                            <td>{data?.Phone_no}</td>
                             <td>{data?.Applied_Position}</td>
                             <td>{data?.Time_in_Stage}</td>
-
+                            <td>{data?.JD_From_applied_Position}</td>
                             <td>
-                              {data?.JD_From_applied_Position && (
+                              {data?.CV_Resume && (
                                 <>
                                   <a
                                     href="#"
@@ -219,9 +234,8 @@ const CandidateScreen = () => {
                                       handleShow(e, data?.Candidate_Id, "jd")
                                     }
                                   >
-                                    view JD,
-                                  </a>{" "}
-                                  <br />
+                                   JD,
+                                  </a>
                                 </>
                               )}
                               {data?.CV_Resume && (
@@ -232,21 +246,19 @@ const CandidateScreen = () => {
                                       handleShow(e, data?.Candidate_Id, "cv")
                                     }
                                   >
-                                    View CV,
+                                    CV,
                                   </a>
-                                  <br />
                                 </>
                               )}
                               {data?.Cover_Letter && (
                                 <>
-                                  {" "}
                                   <a
                                     href="#!"
                                     onClick={(e) =>
                                       handleShow(e, data?.Candidate_Id, "cl")
                                     }
                                   >
-                                    View CL
+                                   CL
                                   </a>
                                 </>
                               )}
@@ -270,7 +282,7 @@ const CandidateScreen = () => {
                                 <Button
                                   size="sm"
                                   variant="danger"
-                                  onClick={() => handleDelete()}
+                                  onClick={() => handleDelete(data?.Candidate_Id)}
                                 >
                                   <FaTrash />
                                 </Button>
@@ -280,7 +292,7 @@ const CandidateScreen = () => {
                         ))
                       ) : (
                         <tr>
-                          <td className="text-center">No data found</td>
+                          <td colSpan={15} className="text-center text-muted py-3">No data found</td>
                         </tr>
                       )}
                     </tbody>
@@ -305,7 +317,7 @@ const CandidateScreen = () => {
         </Modal.Header>
         <Modal.Body>
           <form id="candidateForm">
-            <div className="row mb-2">
+            <div className="row mb-2 d-flex gap-3">
               <div className="col">
                 <label>Req ID</label>
                 <select
@@ -344,13 +356,21 @@ const CandidateScreen = () => {
               </div>
             </div>
 
-            <div className="row mb-2">
+            <div className="row mb-2 d-flex gap-3">
               <div className="col">
-                <label>Candidate Name</label>
+                <label>Candidate First Name</label>
                 <input
                   className="form-control"
-                  name="Name"
-                  defaultValue={selectedCandidate?.Candidate_Name || ""}
+                  name="Candidate_First_Name"
+                  defaultValue={selectedCandidate?.Candidate_First_Name || ""}
+                />
+              </div>
+              <div className="col">
+                <label>Candidate Second Name</label>
+                <input
+                  className="form-control"
+                  name="Candidate_Last_Name"
+                  defaultValue={selectedCandidate?.Candidate_Last_Name || ""}
                 />
               </div>
               <div className="col">
@@ -363,7 +383,7 @@ const CandidateScreen = () => {
               </div>
             </div>
 
-            <div className="row mb-2">
+            <div className="row mb-2 d-flex gap-3">
               <div className="col">
                 <label>Time in Stage</label>
                 <input
@@ -377,12 +397,12 @@ const CandidateScreen = () => {
                 <input
                   className="form-control"
                   name="resumeScore"
-                  defaultValue={selectedCandidate?.Resume_Score || ""}
+                  defaultValue={selectedCandidate?.Score || ""}
                 />
               </div>
             </div>
 
-            <div className="row mb-2">
+            <div className="row mb-2 d-flex gap-3">
               <div className="col">
                 <label>Current Stage</label>
                 <input
@@ -412,7 +432,7 @@ const CandidateScreen = () => {
               />
             </div>
 
-            <div className="row">
+            <div className="row mb-2 d-flex gap-3">
               <div className="col">
                 <label>Upload Resume</label>
                 <input type="file" name="resume" className="form-control" />
