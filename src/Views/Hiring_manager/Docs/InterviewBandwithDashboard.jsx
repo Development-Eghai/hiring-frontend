@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { Button } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axiosInstance from "Services/axiosInstance";
-import Creatmodel from "./Creatmodel";
 
 const InterviewBandwidthDashboard = () => {
-  const navigate = useNavigate();
   const [bandwidthColumns, setBandwidthColumns] = useState([]);
   const [bandwidthData, setBandwidthData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
 
   const staticColumns = [
     {
@@ -31,44 +28,32 @@ const InterviewBandwidthDashboard = () => {
       sortable: true,
       wrap: true,
     },
-    // {
-    //   name: "Decline Adjust Count",
-    //   selector: (row) => row.decline_adjust_count,
-    //   sortable: true,
-    //   wrap: true,
-    // },
-    // {
-    //   name: "Total Candidate Pipeline",
-    //   selector: (row) => row.total_candidate_pipline,
-    //   sortable: true,
-    //   wrap: true,
-    // },
-    // {
-    //   name: "Total Interviews Needed",
-    //   selector: (row) => row.total_interviews_needed,
-    //   sortable: true,
-    //   wrap: true,
-    // },
-    // {
-    //   name: "Total Interview Hours",
-    //   selector: (row) => row.total_interview_hrs,
-    //   sortable: true,
-    //   wrap: true,
-    // },
-    // {
-    //   name: "Working Hrs / Week",
-    //   selector: (row) => row.working_hrs_per_week,
-    //   sortable: true,
-    //   wrap: true,
-    // },
-    // {
-    //   name: "Total Interview Weeks",
-    //   selector: (row) => row.total_interview_weeks,
-    //   sortable: true,
-    //   wrap: true,
-    // },
     {
-      name: "No. of Interviewer Needed",
+      name: "Interview Round",
+      selector: (row) => row.interview_round,
+      sortable: true,
+      wrap: true,
+    },
+    {
+      name: "Deadline Days",
+      selector: (row) => row.dead_line_days,
+      sortable: true,
+      wrap: true,
+    },
+    {
+      name: "Roles to Hire",
+      selector: (row) => row.no_of_roles_to_hire,
+      sortable: true,
+      wrap: true,
+    },
+    {
+      name: "Offer Decline %",
+      selector: (row) => row.offer_decline,
+      sortable: true,
+      wrap: true,
+    },
+    {
+      name: "No. of Interviewers",
       selector: (row) => row.no_of_interviewer_need,
       sortable: true,
       wrap: true,
@@ -82,13 +67,29 @@ const InterviewBandwidthDashboard = () => {
   ];
 
   const fetchInterviewBandwidth = async () => {
+    setLoading(true);
     try {
+      const payload = {
+        field_names: [
+          "hiring_plan_id",
+          "requisition_id",
+          "leave_adjustment",
+          "dead_line_days",
+          "offer_decline",
+          "no_of_roles_to_hire",
+          "interview_round",
+          "no_of_interviewer_need",
+          "required_candidate",
+        ],
+      };
+
       const response = await axiosInstance.post(
         "/interviewer_bandwidth_dashboard/",
-        {}
+        payload
       );
-      const staticData = response.data?.data || [];
-      setBandwidthData(staticData);
+
+      const responseData = response?.data?.data || [];
+      setBandwidthData(responseData);
       setBandwidthColumns(staticColumns);
     } catch (error) {
       console.error("Error fetching interview bandwidth:", error);
@@ -101,10 +102,6 @@ const InterviewBandwidthDashboard = () => {
     fetchInterviewBandwidth();
   }, []);
 
-  const handleBandwidthNavigate = () => {
-    navigate("interviewer_bandwidth");
-  };
-
   return (
     <div>
       <div className="scroll-container bg-white rounded p-2 mt-3">
@@ -115,9 +112,7 @@ const InterviewBandwidthDashboard = () => {
           <div className="col text-end">
             <Link
               className="btn btn-primary"
-              type="button"
               to="/hiring_manager/planning/interviewer_bandwidth"
-              variant="primary"
             >
               + Create Interview Bandwidth
             </Link>
