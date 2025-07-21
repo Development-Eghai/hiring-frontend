@@ -3,6 +3,8 @@ import DataTable from "react-data-table-component";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import axiosInstance from "Services/axiosInstance";
+import { BsPencilSquare, BsTrash } from "react-icons/bs";
+import { toast } from "react-toastify";
 
 const InterviewBandwidthDashboard = () => {
   const [bandwidthColumns, setBandwidthColumns] = useState([]);
@@ -64,7 +66,53 @@ const InterviewBandwidthDashboard = () => {
       sortable: true,
       wrap: true,
     },
+    {
+      name: "Action",
+      selector: (row) => row.interview_plan_id, // helps for sorting/fallback
+      cell: (row) => (
+        <div className="d-flex gap-2">
+          <Link
+            to={{
+              pathname: "/hiring_manager/planning/interviewer_bandwidth",
+              search: `?edit_id=${row.interview_plan_id}`,
+              state: row,
+            }}
+            className="btn btn-sm btn-outline-primary"
+          >
+            <BsPencilSquare className="me-1" />
+          </Link>
+          <Button
+            variant="outline-danger"
+            size="sm"
+            onClick={() => handleDelete(row.interview_plan_id)}
+          >
+            <BsTrash className="me-1" />
+          </Button>
+        </div>
+      ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+      width: "180px",
+    },
   ];
+
+  const handleDelete = async (interview_plan_id) => {
+  if (!window.confirm("Are you sure you want to delete this entry?")) return;
+  try {
+    await axiosInstance.delete("/interview_planner_calc/", {
+      data: { interview_plan_id },
+    });
+    setBandwidthData((data) =>
+      data.filter((row) => row.interview_plan_id !== interview_plan_id)
+    );
+    toast.success("Deleted successfully!");
+  } catch (error) {
+    toast.error("Delete failed. Please try again.");
+    console.error(error);
+  }
+};
+
 
   const fetchInterviewBandwidth = async () => {
     setLoading(true);
@@ -80,6 +128,7 @@ const InterviewBandwidthDashboard = () => {
           "interview_round",
           "no_of_interviewer_need",
           "required_candidate",
+          "interview_plan_id",
         ],
       };
 

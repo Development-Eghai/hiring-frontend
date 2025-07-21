@@ -3,6 +3,8 @@ import { Card, Form, InputGroup, Button } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import Icons from "Utils/Icons";
 import FilterComponentPlanning from "./FilterComponentplanning";
+import { BsPencilSquare, BsTrash } from "react-icons/bs";
+
 import {
   useCommonState,
   useCustomNavigate,
@@ -33,48 +35,80 @@ const defaultFields = [
 ];
 
 const allFields = [
-  "Background",
-  "Career Gap",
-  "Candidate Fit",
-  "CIBIL",
-  "Communication",
-  "Compensation/Benefits",
-  "Department",
-  "Designation",
-  "Differently abled",
-  "Domain",
-  "Duration/Timeline",
-  "Educational",
-  "Experience",
-  "Feedback",
-  "Govt",
-  "Interview",
-  "Interview Format",
-  "Interviewer",
-  "JD",
-  "Job Health Requirements",
-  "Job Type",
-  "Joining Readiness",
-  "Language Proficiency",
-  "Location",
-  "Notice Period",
-  "Place",
-  "Recruiter",
-  "Reference",
-  "Relocation",
-  "Role Type",
-  "Sabbatical",
-  "Screening Questions",
-  "Shift",
-  "Social Media",
-  "Solicitation",
-  "Status",
-  "Target",
-  "Tech",
-  "Travel",
-  "Valid",
-  "Visa",
-  "Working",
+  "background_verification",
+  "career_gap",
+  "citizen_requirement",
+  "communication_language",
+  "compensation",
+  "designation",
+  "domain",
+  "domain_name",
+  "education_qualification",
+  "experience_range",
+  "github_link",
+  "jd_details",
+  "job_health_requirements",
+  "job_position",
+  "job_type",
+  "language_proficiency",
+  "location",
+  "mode_of_working",
+  "no_of_openings",
+  "relocation",
+  "relocation_amount",
+  "role_type",
+  "shift_timings",
+  "social_media_links",
+  "target_companies",
+  "tech_stacks",
+  "travel_opportunities",
+  "visa_country",
+  "visa_requirements",
+  "visa_type",
+  "working_model",
+
+  // "Background",
+  // "Career Gap",
+  // "Candidate Fit",
+  // "CIBIL",
+  // "Communication",
+  // "Compensation/Benefits",
+  // "Department",
+  // "Designation",
+  // "Differently abled",
+  // "Domain",
+  // "Duration/Timeline",
+  // "Educational",
+  // "Experience",
+  // "Feedback",
+  // "Govt",
+  // "Interview",
+  // "Interview Format",
+  // "Interviewer",
+  // "JD",
+  // "Job Health Requirements",
+  // "Job Type",
+  // "Joining Readiness",
+  // "Language Proficiency",
+  // "Location",
+  // "Notice Period",
+  // "Place",
+  // "Recruiter",
+  // "Reference",
+  // "Relocation",
+  // "Role Type",
+  // "Sabbatical",
+  // "Screening Questions",
+  // "Shift",
+  // "Social Media",
+  // "Solicitation",
+  // "Status",
+  // "Target",
+  // "Tech",
+  // "Travel",
+  // "Valid",
+  // "Visa",
+  // "Working",
 ];
 
 export const PlanningScreen = () => {
@@ -127,16 +161,17 @@ export const PlanningScreen = () => {
               )
             }
           >
-            {Icons.Edit}
-            Edit
+            <BsPencilSquare className="me-1" />
+            
           </Button>
+
           <Button
             variant="outline-danger"
             size="sm"
             onClick={() => handleDelete(row.id)}
           >
-            {Icons.Delete}
-            Delete
+            <BsTrash className="me-1" />
+            
           </Button>
         </div>
       ),
