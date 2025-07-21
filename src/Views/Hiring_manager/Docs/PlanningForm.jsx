@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -8,7 +8,6 @@ import SpinnerComponent from "Components/Spinner/Spinner";
 import axiosInstance from "Services/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
-
 import * as pdfjsLib from "pdfjs-dist";
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
@@ -80,54 +79,138 @@ const fieldRequirements = {
   github_link: "not_mandatory",
 };
 
-const getLabelWithAsterisk = (name, label) => {
-  const requirement = fieldRequirements[name];
-  if (requirement === "mandatory") {
-    return (
-      <span>
-        {label} <span style={{ color: "red" }}>*</span>
-      </span>
-    );
-  }
-  return label;
+const selectOptions = {
+  job_position: ["Java Dev", "Python Dev", "UI/UX Designer"],
+  experience_range: ["0-5", "5-10", "10-15", "15-20", "20+"],
+  working_model: ["Part", "Full", "Internship", "Contractor"],
+  relocation: ["Yes", "No", "Decide Later"],
+  domain: ["Yes", "No", "Decide Later"],
+  visa_requirements: ["Yes", "No", "Decide Later"],
+  background_verification: ["Yes", "No", "TBD"],
+  shift_timings: ["General", "Day", "Night", "Rotational"],
+  role_type: [
+    "Individual Contributor",
+    "Team Handling",
+    "Management",
+    "Leadership",
+  ],
+  job_type: ["Full time", "Part time", "Contractor"],
+  citizen_requirement: ["Yes", "No", "Decide Later"],
+  career_gap: ["Yes", "No", "Decide Later"],
+  job_health_requirements: ["Yes", "No", "Decide Later"],
+  language_proficiency: ["Beginner", "Intermediate", "Proficient"],
+  social_media_links: ["Yes", "No"],
 };
 
+const getLabelWithAsterisk = (name, label) =>
+  fieldRequirements[name] === "mandatory" ? (
+    <span>
+      {label} <span style={{ color: "red" }}>*</span>
+    </span>
+  ) : (
+    label
+  );
+
+const validateForm = (formData) => {
+  for (const key in fieldRequirements) {
+    if (fieldRequirements[key] === "mandatory" && !formData[key]) {
+      toast.error("Please fill all mandatory fields.");
+      return false;
+    }
+  }
+  return true;
+};
+
+const useJDParser = (setFormData) => {
+  return useCallback(
+    async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const fileType = file.name.split(".").pop().toLowerCase();
+      if (!["doc", "docx", "pdf", "txt"].includes(fileType)) {
+        toast.error(
+          "Unsupported file type. Please upload .docx, .pdf, or .txt"
+        );
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = async (event) => {
+        const content = event.target.result;
+        try {
+          if (fileType === "txt") {
+            setFormData((prev) => ({ ...prev, jd_details: content }));
+          } else if (fileType === "pdf") {
+            const pdf = await pdfjsLib.getDocument({ data: content }).promise;
+            let jdText = "";
+            for (let i = 1; i <= pdf.numPages; i++) {
+              const page = await pdf.getPage(i);
+              const txt = await page.getTextContent();
+              jdText += txt.items.map((s) => s.str).join(" ") + "\n";
+            }
+            setFormData((prev) => ({ ...prev, jd_details: jdText }));
+          } else if (fileType === "doc" || fileType === "docx") {
+            const mammoth = await import("mammoth");
+            const result = await mammoth.extractRawText({
+              arrayBuffer: content,
+            });
+            setFormData((prev) => ({ ...prev, jd_details: result.value }));
+          }
+        } catch (err) {
+          console.error(err);
+          toast.error("Failed to parse the uploaded file");
+        }
+      };
+
+      if (["pdf", "doc", "docx"].includes(fileType)) {
+        reader.readAsArrayBuffer(file);
+      } else {
+        reader.readAsText(file);
+      }
+    },
+    [setFormData]
+  );
+};
+
+const useEditDetails = (edit_id, setFormData, setLoading, set_is_edit) =>
+  useEffect(() => {
+    const fetchEditDetails = async () => {
+      setLoading(true);
+      try {
+        const { data } = await axiosInstance.post(
+          "/api/hiring-plan/details/",
+          { hiring_plan_id: edit_id },
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+        if (data?.error_code === 200) setFormData(data.data);
+      } catch (err) {
+        console.log(err?.message || "Something went wrong");
+      }
+      setLoading(false);
+    };
+    if (edit_id) {
+      fetchEditDetails();
+      set_is_edit(edit_id);
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, [edit_id, setFormData, setLoading, set_is_edit]);
+
 const PlanningForm = () => {
-  const queryParams = new URLSearchParams(window.location.search);
-  const edit_id = queryParams.get("edit_id");
+  const edit_id = new URLSearchParams(window.location.search).get("edit_id");
   const [formData, setFormData] = useState(initialState);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [sections, setSections] = useState([]);
   const [is_edit, set_is_edit] = useState(null);
-  const navigate = useNavigate();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const navigate = useNavigate();
 
-  const selectOptions = {
-    job_position: ["Java Dev", "Python Dev", "UI/UX Designer"],
-    experience_range: ["0-5", "5-10", "10-15", "15-20", "20+"],
-    working_model: ["Part", "Full", "Internship", "Contractor"],
-    relocation: ["Yes", "No", "Decide Later"],
-    domain: ["Yes", "No", "Decide Later"],
-    visa_requirements: ["Yes", "No", "Decide Later"],
-    background_verification: ["Yes", "No", "TBD"],
-    shift_timings: ["General", "Day", "Night", "Rotational"],
-    role_type: [
-      "Individual Contributor",
-      "Team Handling",
-      "Management",
-      "Leadership",
-    ],
-    job_type: ["Full time", "Part time", "Contractor"],
-    citizen_requirement: ["Yes", "No", "Decide Later"],
-    career_gap: ["Yes", "No", "Decide Later"],
-    job_health_requirements: ["Yes", "No", "Decide Later"],
-    language_proficiency: ["Beginner", "Intermediate", "Proficient"],
-    social_media_links: ["Yes", "No"],
-  };
+  useEditDetails(edit_id, setFormData, setLoading, set_is_edit);
+  const handleJDFileUpload = useJDParser(setFormData);
 
   useEffect(() => {
-    const updatedSections = [
+    setSections([
       {
         title: "1. Job Overview",
         fields: [
@@ -178,82 +261,48 @@ const PlanningForm = () => {
           { name: "job_health_requirements", label: "Job Health Requirement" },
           { name: "career_gap", label: "Career Gap" },
           { name: "language_proficiency", label: "Language Proficiency" },
-          //   { name: "social_media_links", label: "Social Media Links" },
           { name: "social_media_links", label: "Social Media Link" },
           ...(formData.social_media_links === "Yes"
             ? [{ name: "github_link", label: "Protfolio Link" }]
             : []),
         ],
       },
-    ];
-    setSections(updatedSections);
+    ]);
   }, [formData]);
 
-  useEffect(() => {
-    if (edit_id) {
-      getEditDetails(edit_id);
-      set_is_edit(edit_id);
-      window.history.replaceState(null, "", window.location.pathname);
-    }
-  }, [edit_id]);
+  const handleChange = useCallback(
+    (e) => {
+      const { name, value, files } = e.target;
 
-  async function getEditDetails(id) {
-    setLoading(true);
-    try {
-      const { data } = await axiosInstance.post(
-        "/api/hiring-plan/details/",
-        { hiring_plan_id: id },
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-      if (data?.error_code === 200) {
-        setFormData(data?.data);
+      if (name === "no_of_openings") {
+        const digitsOnly = value.replace(/\D/g, "");
+        const limitedDigits = digitsOnly.slice(0, 4);
+
+        setFormData((prev) => ({ ...prev, [name]: limitedDigits }));
+        return;
       }
-    } catch (err) {
-      console.log(err?.message || "Something went wrong");
-    }
-    setLoading(false);
-  }
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setFormData({ ...formData, [name]: files ? files[0] : value });
-  };
+      setFormData((prev) => ({ ...prev, [name]: files ? files[0] : value }));
+    },
+    [setFormData]
+  );
 
-  const validateForm = () => {
-    for (const key of Object.keys(fieldRequirements)) {
-      if (fieldRequirements[key] === "mandatory" && !formData[key]) {
-        toast.error("Please fill all mandatory fields.");
-        return false;
-      }
-    }
-    return true;
-  };
-
-  const handleSubmit = async () => {
-    const isValid = validateForm();
-    if (!isValid) return;
-
+  const handleSubmit = useCallback(async () => {
+    if (!validateForm(formData)) return;
     const payload = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      payload.append(key, value);
-    });
+    Object.entries(formData).forEach(([key, value]) =>
+      payload.append(key, value)
+    );
     if (is_edit) payload.append("hiring_plan_id", is_edit);
-
     try {
-      const response = await axiosInstance[is_edit ? "put" : "post"](
-        "/hiring_plan/",
-        payload,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
-
+      const request = is_edit ? "put" : "post";
+      const response = await axiosInstance[request]("/hiring_plan/", payload, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       if (response.data?.error_code === 200) {
         toast.success("Form submitted successfully!");
         setFormData(initialState);
-        setTimeout(() => {
-          navigate("/hiring_manager/planning");
-        }, 1500);
+        setTimeout(() => navigate("/hiring_manager/planning"), 1500);
       } else {
         toast.error(response.data?.message || "Something went wrong");
       }
@@ -263,19 +312,20 @@ const PlanningForm = () => {
           "Failed to submit form. Please try again."
       );
     }
-  };
+  }, [formData, is_edit, navigate]);
 
   const renderInput = (label, name, type = "text") => (
     <div className="mb-3 col-md-5 mx-5" key={name}>
       <label className="form-label">{getLabelWithAsterisk(name, label)}</label>
       {type === "textarea" ? (
-        <textarea
+        <input
+          type={type}
           name={name}
           value={formData[name] || ""}
           onChange={handleChange}
           className={`form-control ${errors[name] ? "is-invalid" : ""}`}
-          rows={4}
           placeholder={`Enter ${label}`}
+          min={name === "no_of_openings" ? 0 : undefined}
         />
       ) : (
         <input
@@ -317,7 +367,10 @@ const PlanningForm = () => {
       <CreatableSelect
         isClearable
         onChange={(newValue) =>
-          setFormData({ ...formData, [name]: newValue ? newValue.value : "" })
+          setFormData((prev) => ({
+            ...prev,
+            [name]: newValue ? newValue.value : "",
+          }))
         }
         value={
           formData[name]
@@ -354,52 +407,6 @@ const PlanningForm = () => {
     </div>
   );
 
-  const handleJDFileUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const fileType = file.name.split(".").pop().toLowerCase();
-    if (!["doc", "docx", "pdf", "txt"].includes(fileType)) {
-      toast.error("Unsupported file type. Please upload .docx, .pdf, or .txt");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const content = event.target.result;
-
-      try {
-        if (fileType === "txt") {
-          setFormData((prev) => ({ ...prev, jd_details: content }));
-        } else if (fileType === "pdf") {
-          const pdf = await pdfjsLib.getDocument({ data: content }).promise;
-          let text = "";
-          for (let i = 1; i <= pdf.numPages; i++) {
-            const page = await pdf.getPage(i);
-            const txt = await page.getTextContent();
-            text += txt.items.map((s) => s.str).join(" ") + "\n";
-          }
-          setFormData((prev) => ({ ...prev, jd_details: text }));
-        } else if (fileType === "docx" || fileType === "doc") {
-          const mammoth = await import("mammoth");
-          const result = await mammoth.extractRawText({
-            arrayBuffer: content,
-          });
-          setFormData((prev) => ({ ...prev, jd_details: result.value }));
-        }
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to parse the uploaded file");
-      }
-    };
-
-    if (["pdf", "docx", "doc"].includes(fileType)) {
-      reader.readAsArrayBuffer(file);
-    } else {
-      reader.readAsText(file);
-    }
-  };
-
   return (
     <div className="h-100" style={{ overflow: "auto" }}>
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
@@ -416,12 +423,8 @@ const PlanningForm = () => {
           </div>
         ) : (
           <form
-            onSubmit={handleSubmit}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-              }
-            }}
+            onSubmit={(e) => e.preventDefault()}
+            onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
             className="bg-light border rounded-4 shadow-sm p-4"
           >
             <CardHeader className="mb-4 text-primary fw-bold sticky-top bg-light border-bottom py-3">
@@ -487,6 +490,7 @@ const PlanningForm = () => {
               </div>
             ))}
 
+            {/* Submit Button */}
             <div className="text-end mt-4 mb-2">
               <button
                 type="button"
@@ -501,6 +505,7 @@ const PlanningForm = () => {
         )}
       </Card>
 
+      {/* Confirmation Modal */}
       <Modal
         show={showConfirmModal}
         onHide={() => setShowConfirmModal(false)}
