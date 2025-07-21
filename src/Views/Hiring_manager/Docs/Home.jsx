@@ -101,9 +101,12 @@ export const Home = () => {
   const [showModal, setShowModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [rowToDelete, setRowToDelete] = useState(null);
-
   const fetchData = (fields) => {
-    dispatch(HandleGetReportingData({ fields }));
+    const params = {
+      user_role:commonState?.app_data?.user_id,
+      fields
+    }
+    dispatch(HandleGetReportingData(params));
   };
 
   useEffect(() => {
