@@ -3,7 +3,7 @@ import { Modal, Button, Form, Spinner } from "react-bootstrap";
 import { FaCalendarAlt } from "react-icons/fa";
 import axios from "axios";
 import Icons from "Utils/Icons"; // Adjust path as needed
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useCommonState } from "Components/CustomHooks";
 
 const Creatmodel = () => {
@@ -13,7 +13,7 @@ const Creatmodel = () => {
   const [templateOptions, setTemplateOptions] = useState([]);
   const [statusMessage, setStatusMessage] = useState(null); // ✅ For inline message
   const navigate = useNavigate();
-
+  const location = useLocation();
   const { commonState } = useCommonState();
   const { user_role, user_id } = commonState?.app_data;
   const [formData, setFormData] = useState({
@@ -89,8 +89,10 @@ const Creatmodel = () => {
       requisition_template,
       no_of_openings,
     } = formData;
-
+    localStorage.setItem("createreqformData", JSON.stringify(formData));
     localStorage.setItem("clientName", client_name);
+    localStorage.setItem("reqDate",requisition_date)
+    localStorage.setItem("reqDueDate",due_requisition_date)
     localStorage.setItem("plan_id", hiring_plan_id);
     if (requisition_template) {
       localStorage.setItem("reqtempid", requisition_template);
@@ -163,6 +165,25 @@ const Creatmodel = () => {
       setLoading(false);
     }
   };
+
+const getMaxDueDate = (requisitionDateStr) => {
+  if (!requisitionDateStr) return "";
+  const date = new Date(requisitionDateStr);
+  date.setFullYear(date.getFullYear() + 1);
+  return date.toISOString().split("T")[0]; 
+};
+
+  useEffect(() => {
+    if (location.state?.setShow) {
+      setShow(true);
+
+    const stored = localStorage.getItem("createreqformData");
+    if (stored) {
+      setFormData(JSON.parse(stored));
+    }
+    }
+  }, [location.state]);
+
 
   return (
     <>
@@ -255,17 +276,19 @@ const Creatmodel = () => {
                 }
                 style={{ cursor: "pointer" }}
               >
-                <Form.Control
-                  type="date"
-                  name="due_requisition_date"
-                  id="requisitionDueDateInput"
-                  value={formData.due_requisition_date}
-                  min={
-                    formData.requisition_date ||
-                    new Date().toISOString().split("T")[0]
-                  }
-                  onChange={handleChange}
-                />
+<Form.Control
+  type="date"
+  name="due_requisition_date"
+  id="requisitionDueDateInput"
+  value={formData.due_requisition_date}
+  min={
+    formData.requisition_date || new Date().toISOString().split("T")[0]
+  }
+  max={
+    formData.requisition_date ? getMaxDueDate(formData.requisition_date) : ""
+  }
+  onChange={handleChange}
+/>
               </div>
             </Form.Group>
 

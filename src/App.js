@@ -4,7 +4,7 @@ import { ToastContainer } from "react-toastify";
 import { BuisnessLayout } from "Views/Business_ops/Business_ops_utils/BuisnessLayout";
 import BuisnessOpsDashboard from "Views/Business_ops/Docs/BuisnessOpsDashboard";
 import BuisnessOpsReview from "Views/Business_ops/Docs/BuisnessOpsReview";
-import JobBuisnessReview from "Views/Business_ops/Docs/JobRequisition";
+import JobBuisnessReview from "Views/Business_ops/Docs/JobBuisnessReview";
 import Error from "Views/Common/Docs/error";
 import { InitializeProjectSetup } from "Views/Common/Docs/InitializeProjectSetup";
 import Login from "Views/Common/Docs/Login";
@@ -76,7 +76,7 @@ function App() {
             <Route element={<BuisnessLayout />}>
               <Route path="dashboard" element={<BuisnessOpsDashboard/>}/>
               <Route path="buisness_review" element={<JobBuisnessReview/>}/>
-
+              
           </Route>
           </Route>
 

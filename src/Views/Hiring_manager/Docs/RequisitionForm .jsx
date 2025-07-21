@@ -13,7 +13,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import { ToastContainer, toast } from "react-toastify";
-
+import { BsArrowLeft } from "react-icons/bs";
 const AccordionItem = ({ title, children, isOpen, onClick }) => (
   <div className="mb-2">
     <div
@@ -268,6 +268,8 @@ const RequisitionForm = (handleNext) => {
     reset({
       plan_id: localStorage.getItem("plan_id") || "",
       company_client_name: localStorage.getItem("clientName") || "",
+      date_of_requisition:localStorage.getItem("reqDate") || "",
+      due_date_of_requisition:localStorage.getItem("reqDueDate") || "",
     });
   }, []);
 
@@ -549,6 +551,9 @@ const RequisitionForm = (handleNext) => {
     const newQuestions = questions.map(({ id, isNew, ...rest }) => rest);
     const newCompentencies = Competencies.map(({ id, isNew, ...rest }) => rest);
 
+    const date_of_requisition = data?.date_of_requisition;
+    const due_date_of_requisition = data?.due_date_of_requisition;
+
     const formdata = {
       user_role: user_id,
       requisition_id: reqtempid || createrequisitiondata?.RequisitionID,
@@ -572,6 +577,8 @@ const RequisitionForm = (handleNext) => {
         working_model,
         client_interview,
         requisition_type,
+        date_of_requisition,
+        due_date_of_requisition,
       },
       skills_required: {
         primary_skills,
@@ -592,8 +599,8 @@ const RequisitionForm = (handleNext) => {
         required_score,
         internalDesc,
         externalDesc,
-        questions: newQuestions,
-        Competencies: newCompentencies,
+        // questions: newQuestions,
+        // Competencies: newCompentencies,
         // teams: [
         //   { team_name: team_name },
         //   { team_type: team_type_2 },
@@ -619,6 +626,8 @@ const RequisitionForm = (handleNext) => {
       localStorage.removeItem("createrequisitiondata");
       localStorage.removeItem("clientName");
       localStorage.removeItem("plan_id");
+      localStorage.removeItem("reqDate")
+      localStorage.removeItem("reqDueDate")
       alert(response?.data?.message);
       navigate("/hiring_manager/dashboard");
     }
@@ -640,6 +649,11 @@ const RequisitionForm = (handleNext) => {
       }
     );
   };
+
+  const goToDashboard = () => {
+    navigate("/hiring_manager/dashboard", { state: { setShow: true } });
+  };
+
 
   const jobPositions = ["Software Engineer", "Designer", "Product Manager"];
 
@@ -873,7 +887,27 @@ const jobTitle = [
               <input
                 {...register("company_client_name")}
                 className="form-control"
-                disabled
+              />
+            </div>
+
+                        <div className="col-md-3">
+              <label className="form-label">Date of Requisition</label>
+              <input
+              type="date"
+                {...register("date_of_requisition")}
+                className="form-control"
+                               min={new Date().toISOString().split("T")[0]}
+              />
+            </div>
+
+                        <div className="col-md-3">
+              <label className="form-label">Due Date of Requisition </label>
+              <input
+                {...register("due_date_of_requisition")}
+                type="date"
+                className="form-control"
+               min={new Date().toISOString().split("T")[0]}
+
               />
             </div>
 
@@ -1215,12 +1249,10 @@ const jobTitle = [
             {/* billing type */}
             <div className="col-md-3">
               <label className="form-label">
-                Billing Type<span className="text-danger">*</span>
+                Billing Type
               </label>
               <select
-                {...register("billing_type", {
-                  required: "billing is required",
-                })}
+                {...register("billing_type")}
                 className={`form-select ${
                   errors.billing_type ? "is-invalid" : ""
                 }`}
@@ -1665,12 +1697,10 @@ const jobTitle = [
           <div className="row mt-3 d-flex gap-3">
             <div className="col-md-3">
               <label className="form-label">
-                Laptop Needed: <span className="text-danger">*</span>
+                Laptop Needed: 
               </label>
               <select
-                {...register("laptop_needed", {
-                  required: "Please specify if a laptop is needed",
-                })}
+                {...register("laptop_needed",)}
                 className={`form-select ${
                   errors.laptop_needed ? "is-invalid" : ""
                 }`}
@@ -1688,12 +1718,10 @@ const jobTitle = [
 
             <div className="col-md-3">
               <label className="form-label">
-                Laptop Type: <span className="text-danger">*</span>
+                Laptop Type:
               </label>
               <select
-                {...register("laptop_type", {
-                  required: "Please select a laptop type",
-                })}
+                {...register("laptop_type")}
                 className={`form-select ${
                   errors.laptop_type ? "is-invalid" : ""
                 }`}
@@ -1712,13 +1740,11 @@ const jobTitle = [
 
             <div className="col-md-3">
               <label className="form-label">
-                Comments: <span className="text-danger">*</span>
+                Comments:
               </label>
               <input
                 type="text"
-                {...register("comments", {
-                  required: "Please provide comments",
-                })}
+                {...register("comments")}
                 className={`form-control ${
                   errors.comments ? "is-invalid" : ""
                 }`}
@@ -1733,12 +1759,24 @@ const jobTitle = [
           </div>
         </AccordionItem>
 
+
+<div className="row">
+  {/* back button */}
+          <div className="col text-start">
+          <button className="btn btn-secondary mt-3" type="submit" onClick={goToDashboard}>
+                  <BsArrowLeft style={{ marginRight: "8px" }} />
+
+ Back to create Requisition
+          </button>
+        </div>
         {/* Submit Button */}
-        <div className="col-12 text-end">
+        <div className="col text-end">
           <button className="btn btn-primary mt-3" type="submit">
             {reqtempid ? "update" : "Submit"}
           </button>
         </div>
+</div>
+
       </form>
     </div>
   );
