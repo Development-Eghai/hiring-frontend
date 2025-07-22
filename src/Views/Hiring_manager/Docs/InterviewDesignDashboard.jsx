@@ -1,20 +1,16 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
-import { FaInfoCircle } from "react-icons/fa";
 import axiosInstance from "Services/axiosInstance";
-import Creatmodel from "./Creatmodel";
 import { Button } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { BsPencilSquare, BsTrash } from "react-icons/bs";
+import { toast } from "react-toastify";
 
 const InterviewDesignDashboard = () => {
   const navigate = useNavigate();
   const [columns, setColumns] = useState([]);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-
-  const [bandwidthColumns, setBandwidthColumns] = useState([]);
-  const [bandwidthData, setBandwidthData] = useState([]);
 
   const fetchInterviewDesigns = async () => {
     try {
@@ -57,6 +53,38 @@ const InterviewDesignDashboard = () => {
             wrap: true,
             grow: 2,
           },
+
+          // {
+          //   name: "Action",
+          //   selector: (row) => row.interview_design_id,
+          //   cell: (row) => (
+          //     <div className="d-flex gap-2">
+          //       <Link
+          //         to={{
+          //           pathname:
+          //             "/hiring_manager/planning/interview_design_screen",
+          //           search: `?edit_id=${row.interview_design_id}`,
+          //           state: row,
+          //         }}
+          //         className="btn btn-sm btn-outline-primary"
+          //       >
+          //         <BsPencilSquare className="me-1" />
+          //       </Link>
+
+          //       <Button
+          //         variant="outline-danger"
+          //         size="sm"
+          //         onClick={() => handleDelete(row.interview_design_id)}
+          //       >
+          //         <BsTrash className="me-1" />
+          //       </Button>
+          //     </div>
+          //   ),
+          //   ignoreRowClick: true,
+          //   allowOverflow: true,
+          //   button: true,
+          //   width: "180px",
+          // },
         ];
 
         for (let i = 0; i < maxRounds; i++) {
@@ -75,8 +103,40 @@ const InterviewDesignDashboard = () => {
           grow: 1,
         });
 
+        dynamicColumns.push({
+          name: "Action",
+          selector: (row) => row.interview_design_id,
+          cell: (row) => (
+            <div className="d-flex gap-2">
+              <Link
+                to={{
+                  pathname: "/hiring_manager/planning/interview_design_screen",
+                  search: `?edit_id=${row.interview_design_id}`,
+                  state: row,
+                }}
+                className="btn btn-sm btn-outline-primary"
+              >
+                <BsPencilSquare className="me-1" />
+              </Link>
+
+              <Button
+                variant="outline-danger"
+                size="sm"
+                onClick={() => handleDelete(row.interview_design_id)}
+              >
+                <BsTrash className="me-1" />
+              </Button>
+            </div>
+          ),
+          ignoreRowClick: true,
+          allowOverflow: true,
+          button: true,
+          width: "180px",
+        });
+
         const formattedData = rawData.map((item) => ({
           id: item.plan_id,
+          interview_design_id: item.interview_design_id,
           label: item.position_role,
           techStack: item.tech_stacks,
           screeningtype: item.screening_type,
@@ -94,35 +154,23 @@ const InterviewDesignDashboard = () => {
     }
   };
 
-  const fetchInterviewBandwidth = () => {
-    const staticData = [
-      {
-        planning_id: "PLN001",
-        req_id: "REQ123",
-        required_candidate: 7,
-        decline_adjust_count: 0.49,
-        total_candidate_pipline: 7.49,
-        total_interviews_needed: 52.43,
-        total_interview_hrs: 367.01,
-        working_hrs_per_week: 40,
-        total_interview_weeks: 9.17525,
-        no_of_interviewer_need: 36.701,
-        leave_adjustment: 59,
-      },
-      {
-        planning_id: "PLN001",
-        req_id: "REQ123",
-        required_candidate: 7,
-        decline_adjust_count: 0.49,
-        total_candidate_pipline: 7.49,
-        total_interviews_needed: 52.43,
-        total_interview_hrs: 367.01,
-        working_hrs_per_week: 40,
-        total_interview_weeks: 9.17525,
-        no_of_interviewer_need: 36.701,
-        leave_adjustment: 59,
-      },
-    ];
+  const handleDelete = async (interview_design_id) => {
+    if (!window.confirm("Are you sure you want to delete this entry?")) return;
+
+    try {
+      await axiosInstance.delete("/interview_design_screen/", {
+        data: { interview_design_id },
+      });
+
+      setData((prev) =>
+        prev.filter((row) => row.interview_design_id !== interview_design_id)
+      );
+
+      toast.success("Deleted successfully!");
+    } catch (error) {
+      toast.error("Delete failed. Please try again.");
+      console.error(error);
+    }
   };
 
   useEffect(() => {

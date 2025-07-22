@@ -12,6 +12,9 @@ const InterviewForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [rating, setRating] = useState(0);
   const [showConfirm, setShowConfirm] = useState(false);
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const interview_design_id = searchParams.get("edit_id");
 
   const [reqIdsList, setReqIdsList] = useState([]);
   const [reqId, setReqId] = useState();
@@ -44,6 +47,39 @@ const InterviewForm = () => {
   };
 
   useEffect(() => {
+    const fetchDesignById = async () => {
+      if (!interview_design_id) return;
+
+      try {
+        const res = await axiosInstance.post(
+          "https://api.pixeladvant.com/api/design/by-id/",
+          {
+            interview_design_id,
+          }
+        );
+
+        if (res.data?.success && res.data?.data) {
+          const data = res.data.data;
+          setPlanIds(data.hiring_plan_id);
+          setReqId(data.req_id);
+          setRole(data.position_role);
+          setTechStacks(data.tech_stacks);
+          setScreeningType(data.screening_type);
+          setNoOfRounds(data.no_of_interview_round);
+          setRating(data.final_rating || 0);
+          setStatus(data.status || "");
+          setFeedbackText(data.feedback || "");
+        }
+      } catch (error) {
+        console.error("Failed to fetch interview design by ID", error);
+        toast.error("Failed to fetch design details.");
+      }
+    };
+
+    fetchDesignById();
+  }, [interview_design_id]);
+
+  useEffect(() => {
     if (reqId && planIds) {
       const getClientdetails = async () => {
         const getclientdetails = await axios.post(
@@ -69,7 +105,10 @@ const InterviewForm = () => {
           "https://api.pixeladvant.com/design_screen_list_data/"
         );
         const scoreCardRes = await axios.get(
-          "https://api.pixeladvant.com/config_score_card/"
+          "https://api.pixeladvant.com/admin_configuration/"
+          // {
+          //   score_card: true,
+          // }
         );
 
         if (designRes.data?.success) {
@@ -82,7 +121,12 @@ const InterviewForm = () => {
         }
 
         if (scoreCardRes.data?.success) {
-          setScoreCards(scoreCardRes.data.data || []);
+          const rawCards = scoreCardRes.data.data?.["Score Card"] || [];
+          const formattedScoreCards = rawCards.map((name, idx) => ({
+            id: idx,
+            score_card_name: name,
+          }));
+          setScoreCards(formattedScoreCards);
         }
       } catch (error) {
         console.error("Dropdown fetch error:", error);
@@ -110,23 +154,28 @@ const InterviewForm = () => {
   };
 
   const handleWeightChange = (index, value) => {
-    const newWeight = Number(value);
-    const updatedParameters = [...parameters];
+    const newWeight = value === "" ? "" : Number(value);
 
-    // Calculate total weight excluding current row
-    const otherTotal = updatedParameters.reduce((sum, param, idx) => {
-      return idx !== index ? sum + Number(param.weightage || 0) : sum;
-    }, 0);
+    // Calculate sum of other values (skip empty or current)
+    const otherTotal = parameters.reduce(
+      (sum, param, i) =>
+        i !== index ? sum + (Number(param.weightage) || 0) : sum,
+      0
+    );
 
-    // Calculate the remaining weight available for this row
     const maxAllowed = 100 - otherTotal;
 
-    if (newWeight > maxAllowed) {
-      toast.error(`Max allowed weight for this round is 100%`);
+    if (newWeight !== "" && newWeight > maxAllowed) {
+      toast.error(`Max allowed here is ${maxAllowed}%`);
       return;
     }
 
-    updatedParameters[index].weightage = newWeight;
+    const updatedParameters = [
+      ...parameters.slice(0, index),
+      { ...parameters[index], weightage: newWeight },
+      ...parameters.slice(index + 1),
+    ];
+
     setParameters(updatedParameters);
   };
 
@@ -158,44 +207,57 @@ const InterviewForm = () => {
     };
 
     try {
-      const res = await axiosInstance.post(
-        "interview_design_screen/",
-        formData,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      let res;
+      if (interview_design_id) {
+        res = await axiosInstance.put(
+          "https://api.pixeladvant.com/interview_design_screen/",
+          { ...formData, interview_design_id },
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      } else {
+        res = await axiosInstance.post(
+          "https://api.pixeladvant.com/interview_design_screen/",
+          formData,
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      }
 
       if (res.status >= 200 && res.status < 300) {
-        toast.success("Form submitted successfully!");
+        toast.success(
+          interview_design_id
+            ? "Interview Design updated successfully!"
+            : "Form submitted successfully!"
+        );
         setShowConfirm(false);
 
         setTimeout(() => {
           navigate("/hiring_manager/planning/interview_design_dashboard");
         }, 1500);
 
-        // Reset form
-        setReqId("");
-        setRole("");
-        setTechStacks("");
-        setScreeningType("");
-        setNoOfRounds("");
-        setFeedbackText("");
-        setParameters([]);
-        setRating(0);
-        setStatus("rejected");
+        if (!interview_design_id) {
+          setReqId("");
+          setRole("");
+          setTechStacks("");
+          setScreeningType("");
+          setNoOfRounds("");
+          setFeedbackText("");
+          setParameters([]);
+          setRating(0);
+          setStatus("rejected");
+        }
       } else {
         toast.error("Server responded with an error.");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      if (error.response?.data) {
-        toast.error(
-          error.response.data.detail || "Submission failed. Please try again."
-        );
-      } else {
-        toast.error("Something went wrong while submitting the form.");
-      }
+      toast.error(
+        error?.response?.data?.detail ||
+          "Something went wrong while submitting the form."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -267,8 +329,8 @@ const InterviewForm = () => {
           </svg>
           Back to Interview Design dashboard
         </Link>
-      </div> 
-    
+      </div>
+
       <div className="interview-container p-3 bg-light rounded">
         <ToastContainer position="top-right" />
         <Form
@@ -439,7 +501,7 @@ const InterviewForm = () => {
                       placeholder="Screen Type"
                     />
                     <Form.Control
-                      type="text"
+                      type="number"
                       value={param.duration || ""}
                       onChange={(e) =>
                         handleChange(index, "duration", e.target.value)
@@ -447,7 +509,7 @@ const InterviewForm = () => {
                       placeholder="Duration"
                     />
                     <Form.Control
-                      type="text"
+                      type="number"
                       value={param.weightage || ""}
                       onChange={(e) =>
                         handleWeightChange(index, e.target.value)
@@ -481,9 +543,17 @@ const InterviewForm = () => {
           </div>
 
           <div className="text-end mt-4">
-            <Button variant="primary" type="submit" disabled={isSubmitting}>
+            <Button
+              variant="primary"
+              onClick={
+                interview_design_id ? handleSubmit : handleShowConfirmation
+              }
+              disabled={isSubmitting}
+            >
               {isSubmitting ? (
                 <Spinner animation="border" size="sm" />
+              ) : interview_design_id ? (
+                "Update"
               ) : (
                 "Submit"
               )}

@@ -68,7 +68,7 @@ const InterviewBandwidthDashboard = () => {
     },
     {
       name: "Action",
-      selector: (row) => row.interview_plan_id, // helps for sorting/fallback
+      selector: (row) => row.interview_plan_id,
       cell: (row) => (
         <div className="d-flex gap-2">
           <Link
