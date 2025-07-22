@@ -24,7 +24,6 @@ const initialState = {
   working_model: "",
   job_type: "",
   role_type: "",
-  mode_of_working: "",
   relocation: "",
   relocation_amount: "",
   domain: "",
@@ -58,7 +57,6 @@ const fieldRequirements = {
   working_model: "mandatory",
   job_type: "mandatory",
   role_type: "mandatory",
-  mode_of_working: "mandatory",
   relocation: "not_mandatory",
   relocation_amount: "not_mandatory",
   domain: "not_mandatory",
@@ -82,24 +80,24 @@ const fieldRequirements = {
 const selectOptions = {
   job_position: ["Java Dev", "Python Dev", "UI/UX Designer"],
   experience_range: ["0-5", "5-10", "10-15", "15-20", "20+"],
-  working_model: ["Part", "Full", "Internship", "Contractor"],
+  working_model: ["WFH", "On site", "HYBRID"],
   relocation: ["Yes", "No", "Decide Later"],
   domain: ["Yes", "No", "Decide Later"],
   visa_requirements: ["Yes", "No", "Decide Later"],
   background_verification: ["Yes", "No", "TBD"],
   shift_timings: ["General", "Day", "Night", "Rotational"],
-  role_type: [
-    "Individual Contributor",
-    "Team Handling",
-    "Management",
-    "Leadership",
-  ],
+  role_type: ["Full time", "Part time", "Contractor", "Internship"],
   job_type: ["Full time", "Part time", "Contractor"],
   citizen_requirement: ["Yes", "No", "Decide Later"],
   career_gap: ["Yes", "No", "Decide Later"],
   job_health_requirements: ["Yes", "No", "Decide Later"],
   language_proficiency: ["Beginner", "Intermediate", "Proficient"],
   social_media_links: ["Yes", "No"],
+  education_qualification: ["B.Tech", "M.Tech", "B.Sc", "MBA", "Other"],
+  bg_verification_type: ["Education", "Aadhar", "Credit", "Work History"],
+  tech_stacks: ["python", "react"],
+  designation: ["react developer", "python developer"],
+  target_companies: ["HCL", "CTS"],
 };
 
 const getLabelWithAsterisk = (name, label) =>
@@ -226,7 +224,6 @@ const PlanningForm = () => {
           { name: "working_model", label: "Working Model" },
           { name: "job_type", label: "Job Type" },
           { name: "role_type", label: "Role Type" },
-          { name: "mode_of_working", label: "Mode of Working" },
           { name: "relocation", label: "Relocation" },
           ...(formData.relocation === "Yes"
             ? [{ name: "relocation_amount", label: "Relocation Amount" }]
@@ -256,6 +253,10 @@ const PlanningForm = () => {
         title: "3. Compliance & Type",
         fields: [
           { name: "background_verification", label: "Background Verification" },
+          ...(formData.background_verification === "Yes"
+            ? [{ name: "bg_verification_type", label: "BG Verification Type" }]
+            : []),
+
           { name: "communication_language", label: "Communication Language" },
           { name: "citizen_requirement", label: "Citizen Requirement" },
           { name: "job_health_requirements", label: "Job Health Requirement" },
@@ -276,9 +277,30 @@ const PlanningForm = () => {
 
       if (name === "no_of_openings") {
         const digitsOnly = value.replace(/\D/g, "");
-        const limitedDigits = digitsOnly.slice(0, 4);
-
-        setFormData((prev) => ({ ...prev, [name]: limitedDigits }));
+        const limited = Math.min(Number(digitsOnly), 1000);
+        setFormData((prev) => ({ ...prev, [name]: limited || "" }));
+        return;
+      }
+      
+      if (name === "relocation_amount") {
+        const digitsOnly = value.replace(/\D/g, "");
+        setFormData((prev) => ({ ...prev, [name]: digitsOnly }));
+        return;
+      }
+      if (name === "domain_name") {
+        const charsOnly = value.replace(/[^a-zA-Z\s]/g, "");
+        setFormData((prev) => ({ ...prev, [name]: charsOnly }));
+        return;
+      }
+      if (name === "visa_country") {
+        const charsOnly = value.replace(/[^a-zA-Z\s]/g, "");
+        setFormData((prev) => ({ ...prev, [name]: charsOnly }));
+        return;
+      }
+      if (name === "travel_opportunities") {
+        const digits = value.replace(/\D/g, "");
+        const capped = Math.min(Number(digits), 100);
+        setFormData((prev) => ({ ...prev, [name]: capped || "" }));
         return;
       }
 
@@ -324,7 +346,9 @@ const PlanningForm = () => {
           value={formData[name] || ""}
           onChange={handleChange}
           className={`form-control ${errors[name] ? "is-invalid" : ""}`}
-          placeholder={`Enter ${label}`}
+          placeholder={
+            name === "compensation" ? "Enter range e.g. 5-10" : `Enter ${label}`
+          }
           min={name === "no_of_openings" ? 0 : undefined}
         />
       ) : (
@@ -361,19 +385,32 @@ const PlanningForm = () => {
     </div>
   );
 
-  const renderCreatableSelect = (label, name, optionsList = []) => (
+  const renderCreatableSelect = (
+    label,
+    name,
+    optionsList = [],
+    isMulti = false
+  ) => (
     <div className="mb-3 col-md-5 mx-5" key={name}>
       <label className="form-label">{getLabelWithAsterisk(name, label)}</label>
       <CreatableSelect
         isClearable
-        onChange={(newValue) =>
+        isMulti={isMulti}
+        onChange={(selectedOptions) =>
           setFormData((prev) => ({
             ...prev,
-            [name]: newValue ? newValue.value : "",
+            [name]: isMulti
+              ? selectedOptions?.map((opt) => opt.value).join(", ")
+              : selectedOptions?.value || "",
           }))
         }
         value={
-          formData[name]
+          isMulti
+            ? (formData[name]?.split(", ") || []).map((v) => ({
+                label: v,
+                value: v,
+              }))
+            : formData[name]
             ? { label: formData[name], value: formData[name] }
             : null
         }
