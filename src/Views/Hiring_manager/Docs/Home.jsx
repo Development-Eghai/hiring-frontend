@@ -155,9 +155,8 @@ export const Home = () => {
   }, [selectedFields]);
 
   const handleEdit = (row) => {
-    console.log("Edit clicked:", row);
     // open edit modal or navigate to edit page
-    navigate("/hiring_manager/job_requisition", { state: row });
+    navigate("/hiring_manager/job_requisition", { state:{ reqid:row?.id}});
   };
 
   const confirmDelete = (row) => {
@@ -214,7 +213,6 @@ export const Home = () => {
       Requisition_id: row.id,
     }));
 
-  console.log(filteredData, "aas");
 
   return (
     <div className="h-100">

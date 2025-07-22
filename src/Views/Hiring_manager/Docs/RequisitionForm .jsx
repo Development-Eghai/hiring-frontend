@@ -40,9 +40,18 @@ const RequisitionForm = (handleNext) => {
   const [Reqid, setReqid] = useState([]);
   const [planid, setPlanId] = useState([]);
   const [tempDetails, setTempDetails] = useState();
-  const [reqtempid, setreqtempid] = useState(localStorage.getItem("reqtempid"));
+  const [reqtempid, setreqtempid] = useState("");
 
   const routelocation = useLocation();
+  console.log(routelocation,"zdasdasd")
+
+  const createreqformData = routelocation?.state
+
+  useEffect(()=>{
+    if(createreqformData?.reqid){
+      setreqtempid(createreqformData?.reqid)
+    }
+  },[createreqformData])
 
   const { user_role, user_id } = commonState?.app_data;
 
@@ -266,10 +275,10 @@ const RequisitionForm = (handleNext) => {
 
   useEffect(() => {
     reset({
-      plan_id: localStorage.getItem("plan_id") || "",
-      company_client_name: localStorage.getItem("clientName") || "",
-      date_of_requisition:localStorage.getItem("reqDate") || "",
-      due_date_of_requisition:localStorage.getItem("reqDueDate") || "",
+      plan_id: createreqformData?.hiring_plan_id || "",
+      company_client_name: createreqformData?.client_name || "",
+      date_of_requisition:createreqformData?.requisition_date || "",
+      due_date_of_requisition:createreqformData?.due_requisition_date|| "",
     });
   }, []);
 
@@ -309,7 +318,6 @@ const RequisitionForm = (handleNext) => {
       }
 
       if (gettempleteDetail?.data?.error_code == 200) {
-        localStorage.removeItem("reqtempid");
         const templeteDetails = gettempleteDetail?.data?.data;
         const {
           Planning_id,
@@ -425,15 +433,6 @@ const RequisitionForm = (handleNext) => {
     fetch_reqs();
   }, [reqtempid]);
 
-  useEffect(() => {
-    let edit_req_id;
-    if (routelocation.state) {
-      edit_req_id = routelocation?.state?.id;
-    }
-    setreqtempid(edit_req_id);
-    console.log(reqtempid, "zsdsasds");
-  }, [reqtempid]);
-
   const handleQuestionInputChange = (id, field, value) => {
     setQuestions((prev) =>
       prev.map((row) => (row.id === id ? { ...row, [field]: value } : row))
@@ -490,11 +489,7 @@ const RequisitionForm = (handleNext) => {
     reset,
   } = useForm();
 
-  console.log(errors, "zdfds");
 
-  const createrequisitiondata = localStorage.getItem("createrequisitiondata")
-    ? JSON.parse(localStorage.getItem("createrequisitiondata"))
-    : null;
 
   const onError = (errors) => {
     if (Object.keys(errors).length > 0) {
@@ -506,7 +501,7 @@ const RequisitionForm = (handleNext) => {
     const Planning_id = data?.plan_id || "";
     const internal_title = data?.internal_title || "";
     const external_title = data?.external_title || "";
-    const job_position = data?.external_title || "";
+    const job_position = data?.job_position || "";
     const company_client_name = data?.company_client_name || "";
     const business_line = data?.business_line || "";
     const business_unit = data?.business_unit || "";
@@ -556,7 +551,7 @@ const RequisitionForm = (handleNext) => {
 
     const formdata = {
       user_role: user_id,
-      requisition_id: reqtempid || createrequisitiondata?.RequisitionID,
+      requisition_id: reqtempid || createreqformData?.reqid,
       Planning_id,
       HiringManager: user_id,
       PositionTitle: job_position,
@@ -623,11 +618,6 @@ const RequisitionForm = (handleNext) => {
     );
 
     if (response && response.data.success) {
-      localStorage.removeItem("createrequisitiondata");
-      localStorage.removeItem("clientName");
-      localStorage.removeItem("plan_id");
-      localStorage.removeItem("reqDate")
-      localStorage.removeItem("reqDueDate")
       alert(response?.data?.message);
       navigate("/hiring_manager/dashboard");
     }
@@ -648,10 +638,6 @@ const RequisitionForm = (handleNext) => {
         req_id: reqtempid,
       }
     );
-  };
-
-  const goToDashboard = () => {
-    navigate("/hiring_manager/dashboard", { state: { setShow: true } });
   };
 
 
@@ -791,11 +777,11 @@ const jobTitle = [
           <div className="mb-3 col-md-3">
             <p>
               Requisition Id:{" "}
-              {reqtempid || createrequisitiondata?.RequisitionID}
+              {reqtempid || createreqformData?.reqid}
             </p>
           </div>
           <div className="mb-3 col-md-3">
-            <p>Planning ID: {localStorage.getItem("plan_id")}</p>
+            <p>Planning ID: {createreqformData?.hiring_plan_id}</p>
           </div>
         </div>
         <AccordionItem
@@ -1762,13 +1748,6 @@ const jobTitle = [
 
 <div className="row">
   {/* back button */}
-          <div className="col text-start">
-          <button className="btn btn-secondary mt-3" type="submit" onClick={goToDashboard}>
-                  <BsArrowLeft style={{ marginRight: "8px" }} />
-
- Back to create Requisition
-          </button>
-        </div>
         {/* Submit Button */}
         <div className="col text-end">
           <button className="btn btn-primary mt-3" type="submit">

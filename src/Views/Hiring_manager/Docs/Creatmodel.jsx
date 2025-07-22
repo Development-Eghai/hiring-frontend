@@ -16,6 +16,7 @@ const Creatmodel = () => {
   const location = useLocation();
   const { commonState } = useCommonState();
   const { user_role, user_id } = commonState?.app_data;
+
   const [formData, setFormData] = useState({
     hiring_plan_id: "",
     client_name: "",
@@ -25,9 +26,10 @@ const Creatmodel = () => {
     no_of_openings: "",
   });
 
+
   useEffect(() => {
     if (show) {
-      setStatusMessage(null); // Clear message
+      setStatusMessage(null);
       fetchPlanIds();
       fetchJobTemplates();
     }
@@ -69,8 +71,27 @@ const Creatmodel = () => {
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = async(e) => {
     const { name, value } = e.target;
+
+    if(name === "hiring_plan_id"){
+          try {
+      const res = await axios.post("https://api.pixeladvant.com/api/hiringplan/detail/",{
+        Planning_id:value
+      });
+
+      if (res?.data?.success) {
+          if (res?.data?.data?.no_of_openings !== undefined) {
+    setFormData(prev => ({
+      ...prev,
+      no_of_openings: res?.data?.data?.no_of_openings,
+    }));
+  }
+      } 
+    } catch (err) {
+      console.error("No of Role fetch error:", err);
+    }
+    }
 
     if (name === "no_of_openings") {
       const number = parseInt(value, 10);
@@ -86,7 +107,7 @@ const Creatmodel = () => {
       client_name,
       requisition_date,
       due_requisition_date,
-      requisition_template,
+      requisition_template ="",
       no_of_openings,
     } = formData;
     localStorage.setItem("createreqformData", JSON.stringify(formData));
@@ -94,9 +115,6 @@ const Creatmodel = () => {
     localStorage.setItem("reqDate",requisition_date)
     localStorage.setItem("reqDueDate",due_requisition_date)
     localStorage.setItem("plan_id", hiring_plan_id);
-    if (requisition_template) {
-      localStorage.setItem("reqtempid", requisition_template);
-    }
     if (
       !requisition_date ||
       !due_requisition_date ||
@@ -137,16 +155,22 @@ const Creatmodel = () => {
           requisition_date: "",
           due_requisition_date: "",
           requisition_template: "",
+          client_name,
           no_of_openings: "",
         });
 
-        res?.data?.data &&
-          localStorage.setItem(
-            "createrequisitiondata",
-            JSON.stringify(res?.data?.data)
-          );
-
-        navigate("/hiring_manager/job_requisition");
+        navigate("/hiring_manager/job_requisition", {
+          state: {
+            hiring_plan_id,
+            requisition_date,
+            due_requisition_date,
+            requisition_date,
+            no_of_openings,
+            client_name,
+            requisition_template,
+            reqid: requisition_template,
+          },
+        });
         // You can close modal after success if needed:
         // setTimeout(() => setShow(false), 1000);
       } else {
@@ -173,16 +197,16 @@ const getMaxDueDate = (requisitionDateStr) => {
   return date.toISOString().split("T")[0]; 
 };
 
-  useEffect(() => {
-    if (location.state?.setShow) {
-      setShow(true);
-
-    const stored = localStorage.getItem("createreqformData");
-    if (stored) {
-      setFormData(JSON.parse(stored));
-    }
-    }
-  }, [location.state]);
+useEffect(()=>{
+  setFormData({
+    hiring_plan_id: "",
+    client_name: "",
+    requisition_date: "",
+    due_requisition_date: "",
+    requisition_template: "",
+    no_of_openings: "",
+  })
+},[show])
 
 
   return (

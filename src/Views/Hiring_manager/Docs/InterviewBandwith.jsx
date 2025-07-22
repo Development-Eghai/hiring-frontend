@@ -34,7 +34,7 @@ const InterviewBandwidth = () => {
     { name: "Values", selector: (row) => row.value, grow: 1, center: true },
   ];
   useEffect(() => {
-    if (reqId && planIds) {
+    if (reqId) {
       const getClientdetails = async () => {
         const getclientdetails = await axios.post(
           "https://api.pixeladvant.com/api/client-lookup/",
@@ -79,7 +79,7 @@ const InterviewBandwidth = () => {
 
   const validateForm = () => {
     const requiredFields = [
-      "planning_id",
+      "requisition_id",
       "no_of_roles_to_hire",
       "conversion_ratio",
       "interview_round",
@@ -222,7 +222,7 @@ const InterviewBandwidth = () => {
             <Col md={3} className="mb-3">
               <Form.Group>
                 <Form.Label>
-                  Planning Id <span className="text-danger">*</span>
+                  Planning Id 
                 </Form.Label>
                 <Form.Select
                   value={planIds}
