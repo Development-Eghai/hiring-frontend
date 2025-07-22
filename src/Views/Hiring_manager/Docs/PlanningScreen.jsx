@@ -52,7 +52,6 @@ const allFields = [
   "job_type",
   "language_proficiency",
   "location",
-  "mode_of_working",
   "no_of_openings",
   "relocation",
   "relocation_amount",

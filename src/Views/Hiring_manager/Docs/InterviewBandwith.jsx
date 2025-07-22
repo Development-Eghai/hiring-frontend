@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axiosInstance from "Services/axiosInstance";
+import { useLocation } from "react-router-dom";
 
 const InterviewBandwidth = () => {
   const [formData, setFormData] = useState({
@@ -19,6 +20,10 @@ const InterviewBandwidth = () => {
     interviewer_leave_days: "",
     no_of_month_interview_happens: "",
   });
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const editId = queryParams.get("edit_id");
 
   const [resultData, setResultData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -71,6 +76,48 @@ const InterviewBandwidth = () => {
     };
     fetchDropdownData();
   }, []);
+
+  useEffect(() => {
+    if (editId) {
+      const fetchEditData = async () => {
+        try {
+          const res = await axios.post(
+            "https://api.pixeladvant.com/api/planner/by-id/",
+            {
+              interview_plan_id: Number(editId),
+            }
+          );
+
+          if (res.data.success) {
+            const data = res.data.data;
+            setFormData({
+              no_of_roles_to_hire: data.no_of_roles_to_hire || "",
+              conversion_ratio: data.conversion_ratio || "",
+              offer_decline: data.offer_decline || "",
+              elimination: data.elimination || "",
+              avg_interviewer_time_per_week_hrs:
+                data.avg_interviewer_time_per_week_hrs || "",
+              interview_round: data.interview_round || "",
+              interview_time_per_round: data.interview_time_per_round || "",
+              interviewer_leave_days: data.interviewer_leave_days || "",
+              no_of_month_interview_happens:
+                data.no_of_month_interview_happens || "",
+            });
+
+            setPlanIds(data.hiring_plan_id || "");
+            setReqId(data.requisition_id || "");
+          } else {
+            toast.error("Failed to fetch interview planner data.");
+          }
+        } catch (error) {
+          console.error("Error fetching planner data:", error);
+          toast.error("Error fetching planner data.");
+        }
+      };
+
+      fetchEditData();
+    }
+  }, [editId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -172,6 +219,47 @@ const InterviewBandwidth = () => {
       setLoading(false);
     }
   };
+
+  const handleUpdate = async () => {
+  if (!validateForm()) return;
+
+  setLoading(true);
+
+  try {
+    const payload = {
+      interview_plan_id: Number(editId),
+      plan_id: planIds,
+      req_id: reqId,
+      ...formData,
+      no_of_roles_to_hire: safeNumber(formData.no_of_roles_to_hire) || 0,
+      conversion_ratio: safeNumber(formData.conversion_ratio) || 0,
+      elimination: safeNumber(formData.elimination) || 0,
+      avg_interviewer_time_per_week_hrs: safeNumber(formData.avg_interviewer_time_per_week_hrs) || 0,
+      interview_round: safeNumber(formData.interview_round) || 0,
+      interview_time_per_round: safeNumber(formData.interview_time_per_round) || 0,
+      interviewer_leave_days: safeNumber(formData.interviewer_leave_days) || 0,
+      no_of_month_interview_happens: safeNumber(formData.no_of_month_interview_happens) || 0,
+      offer_decline: safeNumber(formData.offer_decline) || 0,
+      dead_line_days: 10,
+      working_hours_per_day: 8,
+      working_hrs_per_week: 40,
+    };
+
+    const res = await axiosInstance.put("/interview_planner_calc/", payload);
+
+    if (res.data.success) {
+      toast.success("Updated successfully!");
+    } else {
+      toast.error("Update failed.");
+    }
+  } catch (error) {
+    console.error("Error during update:", error);
+    toast.error("Error during update.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div>
@@ -388,10 +476,16 @@ const InterviewBandwidth = () => {
           <div className="text-end">
             <Button
               variant="primary"
-              onClick={handleCalculate}
+              onClick={editId ? handleUpdate : handleCalculate}
               disabled={loading}
             >
-              {loading ? <Spinner animation="border" size="sm" /> : "Calculate"}
+              {loading ? (
+                <Spinner animation="border" size="sm" />
+              ) : editId ? (
+                "Update"
+              ) : (
+                "Calculate"
+              )}
             </Button>
           </div>
         </Form>

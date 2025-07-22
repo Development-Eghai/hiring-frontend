@@ -84,7 +84,9 @@ const InterviewBandwidthDashboard = () => {
           <Button
             variant="outline-danger"
             size="sm"
-            onClick={() => handleDelete(row.interview_plan_id)}
+            onClick={() =>
+              handleDelete(row.requisition_id, row.hiring_plan_id)
+            }
           >
             <BsTrash className="me-1" />
           </Button>
@@ -97,22 +99,26 @@ const InterviewBandwidthDashboard = () => {
     },
   ];
 
-  const handleDelete = async (interview_plan_id) => {
-  if (!window.confirm("Are you sure you want to delete this entry?")) return;
-  try {
-    await axiosInstance.delete("/interview_planner_calc/", {
-      data: { interview_plan_id },
-    });
-    setBandwidthData((data) =>
-      data.filter((row) => row.interview_plan_id !== interview_plan_id)
-    );
-    toast.success("Deleted successfully!");
-  } catch (error) {
-    toast.error("Delete failed. Please try again.");
-    console.error(error);
-  }
-};
+  const handleDelete = async (requisition_id, hiring_plan_id) => {
+    if (!window.confirm("Are you sure you want to delete this entry?")) return;
 
+    try {
+      await axiosInstance.delete("/interview_planner_calc/", {
+        data: {
+          req_id:requisition_id,
+          plan_id: hiring_plan_id,
+        },
+      });
+
+      setBandwidthData((data) =>
+        data.filter((row) => row.requisition_id !== requisition_id)
+      );
+      toast.success("Deleted successfully!");
+    } catch (error) {
+      toast.error("Delete failed. Please try again.");
+      console.error(error);
+    }
+  };
 
   const fetchInterviewBandwidth = async () => {
     setLoading(true);
