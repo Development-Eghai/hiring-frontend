@@ -233,7 +233,7 @@ export const BuisnessOpsDashboard = () => {
   const handleSubmitBulkAction = async () => {
     setIsSubmitting(true);
     const payload = {
-      user_role: commonState?.app_data?.user_id || 3,
+      user_role: commonState?.app_data?.user_id,
       req_data: selectedRows.map((row) => ({
         req_id: row.id,
         status: actionType,

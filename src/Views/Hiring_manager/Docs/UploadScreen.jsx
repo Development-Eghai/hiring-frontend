@@ -131,7 +131,7 @@ const UploadScreen = () => {
     };
 
     fetchData();
-  }, [showDeleteModal, deletee, showAddModal]);
+  }, [showDeleteModal, deletee, showAddModal,showuploadmodal]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -219,6 +219,31 @@ const UploadScreen = () => {
     setSelectedEditData(item);
     setEditSlots(item?.slots);
   };
+
+
+  const handleupload = async (e)=>{
+    e.preventDefault();
+
+    if (!file) return alert('Please select a file first.');
+
+    const formData = new FormData();
+    formData.append('file', file); 
+
+    try {
+      const response = await axios.post('https://api.pixeladvant.com/api/interviewers/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      if(response?.data?.success){
+        setShowUploadModal(false)
+      }
+    } catch (error) {
+      console.error('Upload failed:', error);
+      alert('Failed to upload file.');
+    }
+  }
 
   const handleDelete = async (interviewer_id) => {
     try {
@@ -780,12 +805,12 @@ const UploadScreen = () => {
       </Modal>
 
       {/* upload modal */}
-      <Modal show={showuploadmodal} onHide={() => setShowUploadModal}>
+      <Modal show={showuploadmodal} onHide={() => setShowUploadModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Upload Excel File</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form onSubmit={""}>
+          <Form onSubmit={handleupload}>
             <Form.Group controlId="formFile">
               <Form.Label>Select Excel File (.xlsx or .xls)</Form.Label>
               <Form.Control
@@ -797,7 +822,7 @@ const UploadScreen = () => {
             <div className="mt-3 d-flex justify-content-end">
               <Button
                 variant="secondary"
-                onClick={() => setShowUploadModal}
+                onClick={() => setShowUploadModal(false)}
                 className="me-2"
               >
                 Cancel
