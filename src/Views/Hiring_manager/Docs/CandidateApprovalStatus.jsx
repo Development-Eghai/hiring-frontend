@@ -67,7 +67,7 @@ const CandidateApproverStatus = () => {
       );
       if (response.data.success) {
         setCandidates(response.data.data);
-        console.log("response",response)
+        console.log("response", response);
       }
     } catch (error) {
       console.error("Error fetching candidate approver status:", error);
@@ -86,47 +86,66 @@ const CandidateApproverStatus = () => {
   };
 
   const columns = [
+    // {
+    //   name: "Req ID",
+    //   selector: (row) => row.req_id || "-",
+    //   sortable: true,
+    // },
+    // {
+    //   name: "Client Name",
+    //   selector: (row) => row.client_name || "-",
+    //   sortable: true,
+    // },
+    // {
+    //   name: "Client ID",
+    //   selector: (row) => row.client_id || "-",
+    //   sortable: true,
+    // },
     {
-      name: "Req ID",
-      selector: (row) => row.req_id,
+      name: "Role",
+      selector: (row) => row.role || "-",
+    },
+    {
+      name: "Name",
+      selector: (row) => row.name || "-",
       sortable: true,
     },
     {
-      name: "Client Name",
-      selector: (row) => row.client_name || "-",
+      name: "Email ",
+      selector: (row) => row.email || "-",
+      sortable: true,
+    },
+    
+    {
+      name: "Contact Number ",
+      selector: (row) => row.contact_number || "-",
       sortable: true,
     },
     {
-      name: "Candidate ID",
-      selector: (row) => row.candidate_id,
-    },
-    {
-      name: "Candidate Name",
-      selector: (row) =>
-        `${row.candidate_first_name} ${row.candidate_last_name}`,
+      name: "Job Title",
+      selector: (row) => row.job_title || "-",
+      sortable: true,
     },
     {
       name: "Status",
-      selector: (row) => row.overall_status,
+      selector: (row) => row.overall_status || "-",
       sortable: true,
     },
     {
-      name: "No. of Approvers",
-      cell: (row) => (
-        <Button
-          variant="link"
-          className="p-0"
-          onClick={() => handleApproverClick(row.approvers)}
-        >
-          {row.no_of_approvers}
-        </Button>
-      ),
+      name: "Decision",
+      selector: (row) => row.decision || "N/A",
+      sortable: true,
+    },
+    {
+      name: "Commend",
+      selector: (row) => row.comment || "-",
+      sortable: true,
     },
   ];
 
   return (
     <div className=" mt-4">
-      <h4 className="mb-3">Candidate Approver Status</h4>
+      <h4 className="mb-3">Approver Details</h4>
       {loading ? (
         <div className="text-center py-5">
           <Spinner animation="border" variant="primary" />
@@ -136,7 +155,7 @@ const CandidateApproverStatus = () => {
           columns={columns}
           className="rounded border"
           data={candidates}
-        //   pagination
+          //   pagination
           // highlightOnHover
           striped
           responsive

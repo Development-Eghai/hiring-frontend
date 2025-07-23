@@ -55,7 +55,7 @@ const SetApproveScreen = () => {
 
   const fetchClientDetails = async (req_id, plan_id) => {
     if (!req_id || !plan_id) return;
-    setLoadingClient(true); // start loading
+    setLoadingClient(true); 
 
     try {
       const res = await axiosInstance.post(
@@ -80,7 +80,7 @@ const SetApproveScreen = () => {
       console.error("Error fetching client data:", err);
       toast.error("Error fetching client information.");
     } finally {
-      setLoadingClient(false); // stop loading
+      setLoadingClient(false); 
     }
   };
 

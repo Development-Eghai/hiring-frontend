@@ -390,3 +390,13 @@
   max-width: 80% !important;
   width: 80% !important;
 }
+.parameter-scroll-wrapper {
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 1rem;
+}
+
+.parameter-header,
+.parameter-body {
+  min-width: 1200px; 
+}

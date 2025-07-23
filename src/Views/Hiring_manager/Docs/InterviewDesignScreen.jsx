@@ -60,7 +60,7 @@ const InterviewForm = () => {
 
         if (res.data?.success && res.data?.data) {
           const data = res.data.data;
-          setPlanIds(data.hiring_plan_id);
+          setPlanIds(data.plan_id);
           setReqId(data.req_id);
           setRole(data.position_role);
           setTechStacks(data.tech_stacks);
@@ -69,6 +69,13 @@ const InterviewForm = () => {
           setRating(data.final_rating || 0);
           setStatus(data.status || "");
           setFeedbackText(data.feedback || "");
+          setParameters(
+            (data.params || []).map((param) => ({
+              ...param,
+              weightage: param.Weightage || param.weightage || 0,
+              Weightage: param.Weightage || param.weightage || 0,
+            }))
+          );
         }
       } catch (error) {
         console.error("Failed to fetch interview design by ID", error);
@@ -136,16 +143,38 @@ const InterviewForm = () => {
     fetchDropdownData();
   }, []);
 
+  const handlePlanIdChange = async (selectedId) => {
+    setPlanIds(selectedId);
+
+    setTechStacks("");
+
+    if (!selectedId) return;
+
+    try {
+      const res = await axiosInstance.post(
+        "https://api.pixeladvant.com/api/hiringplan/detail/",
+        { Planning_id: selectedId }
+      );
+
+      if (res.data?.success) {
+        const tech = res.data?.data?.tech_stacks || "";
+        setTechStacks(tech);
+      } else {
+        toast.error("Tech stack fetch failed");
+      }
+    } catch (error) {
+      console.error("Error fetching tech stacks:", error);
+      toast.error("Error fetching tech stacks");
+    }
+  };
+
   const handleChangeNoOfRounds = (e) => {
     const value = parseInt(e.target.value);
     setNoOfRounds(e.target.value);
     if (!isNaN(value) && value > 0) {
-      const equalWeight = Math.floor(100 / value);
-      const remaining = 100 - equalWeight * value;
-
-      const repeatedParams = Array.from({ length: value }, (_, i) => ({
+      const repeatedParams = Array.from({ length: value }, () => ({
         ...defaultParam,
-        weightage: i === 0 ? equalWeight + remaining : equalWeight,
+        weightage: "", 
       }));
       setParameters(repeatedParams);
     } else {
@@ -236,7 +265,7 @@ const InterviewForm = () => {
 
         setTimeout(() => {
           navigate("/hiring_manager/planning/interview_design_dashboard");
-        }, 1500);
+        }, 560);
 
         if (!interview_design_id) {
           setReqId("");
@@ -345,7 +374,8 @@ const InterviewForm = () => {
                 </Form.Label>
                 <Form.Select
                   value={planIds}
-                  onChange={(e) => setPlanIds(e.target.value)}
+                  onChange={(e) => handlePlanIdChange(e.target.value)}
+                  disabled={!!interview_design_id} // disable if editing
                 >
                   <option value="">Select Planning Id</option>
                   {planIdsList.map((id, idx) => (
@@ -365,6 +395,7 @@ const InterviewForm = () => {
                 <Form.Select
                   value={reqId}
                   onChange={(e) => setReqId(e.target.value)}
+                  disabled={!!interview_design_id} // disable if editing
                 >
                   <option value="">Select Req ID</option>
                   {reqIdsList.map((r, idx) => (
@@ -511,9 +542,13 @@ const InterviewForm = () => {
                     <Form.Control
                       type="number"
                       value={param.weightage || ""}
-                      onChange={(e) =>
-                        handleWeightChange(index, e.target.value)
-                      }
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+                        const updatedParameters = [...parameters];
+                        updatedParameters[index].weightage = value;
+                        updatedParameters[index].Weightage = value;
+                        setParameters(updatedParameters);
+                      }}
                       placeholder="weightage"
                     />
                     <Form.Control

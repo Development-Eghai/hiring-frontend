@@ -7,6 +7,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axiosInstance from "Services/axiosInstance";
 import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 
 const InterviewBandwidth = () => {
   const [formData, setFormData] = useState({
@@ -20,6 +22,9 @@ const InterviewBandwidth = () => {
     interviewer_leave_days: "",
     no_of_month_interview_happens: "",
   });
+
+  const navigate = useNavigate();
+
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -221,45 +226,52 @@ const InterviewBandwidth = () => {
   };
 
   const handleUpdate = async () => {
-  if (!validateForm()) return;
+    if (!validateForm()) return;
 
-  setLoading(true);
+    setLoading(true);
 
-  try {
-    const payload = {
-      interview_plan_id: Number(editId),
-      plan_id: planIds,
-      req_id: reqId,
-      ...formData,
-      no_of_roles_to_hire: safeNumber(formData.no_of_roles_to_hire) || 0,
-      conversion_ratio: safeNumber(formData.conversion_ratio) || 0,
-      elimination: safeNumber(formData.elimination) || 0,
-      avg_interviewer_time_per_week_hrs: safeNumber(formData.avg_interviewer_time_per_week_hrs) || 0,
-      interview_round: safeNumber(formData.interview_round) || 0,
-      interview_time_per_round: safeNumber(formData.interview_time_per_round) || 0,
-      interviewer_leave_days: safeNumber(formData.interviewer_leave_days) || 0,
-      no_of_month_interview_happens: safeNumber(formData.no_of_month_interview_happens) || 0,
-      offer_decline: safeNumber(formData.offer_decline) || 0,
-      dead_line_days: 10,
-      working_hours_per_day: 8,
-      working_hrs_per_week: 40,
-    };
+    try {
+      const payload = {
+        interview_plan_id: Number(editId),
+        plan_id: planIds,
+        req_id: reqId,
+        ...formData,
+        no_of_roles_to_hire: safeNumber(formData.no_of_roles_to_hire) || 0,
+        conversion_ratio: safeNumber(formData.conversion_ratio) || 0,
+        elimination: safeNumber(formData.elimination) || 0,
+        avg_interviewer_time_per_week_hrs:
+          safeNumber(formData.avg_interviewer_time_per_week_hrs) || 0,
+        interview_round: safeNumber(formData.interview_round) || 0,
+        interview_time_per_round:
+          safeNumber(formData.interview_time_per_round) || 0,
+        interviewer_leave_days:
+          safeNumber(formData.interviewer_leave_days) || 0,
+        no_of_month_interview_happens:
+          safeNumber(formData.no_of_month_interview_happens) || 0,
+        offer_decline: safeNumber(formData.offer_decline) || 0,
+        dead_line_days: 10,
+        working_hours_per_day: 8,
+        working_hrs_per_week: 40,
+      };
 
-    const res = await axiosInstance.put("/interview_planner_calc/", payload);
+      const res = await axiosInstance.put("/interview_planner_calc/", payload);
 
-    if (res.data.success) {
-      toast.success("Updated successfully!");
-    } else {
-      toast.error("Update failed.");
+      if (res.data.success) {
+        toast.success("Updated successfully!");
+        setTimeout(() => {
+      navigate("/hiring_manager/planning/interviewer_bandwidth_dashboard");
+    }, 560);
+
+      } else {
+        toast.error("Update failed.");
+      }
+    } catch (error) {
+      console.error("Error during update:", error);
+      toast.error("Error during update.");
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Error during update:", error);
-    toast.error("Error during update.");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   return (
     <div>
@@ -309,13 +321,12 @@ const InterviewBandwidth = () => {
           <Row className="mb-4 d-flex gap-3">
             <Col md={3} className="mb-3">
               <Form.Group>
-                <Form.Label>
-                  Planning Id 
-                </Form.Label>
+                <Form.Label>Planning Id</Form.Label>
                 <Form.Select
                   value={planIds}
                   onChange={(e) => setPlanIds(e.target.value)}
                   name="planning_id"
+                  disabled={!!editId}
                 >
                   <option value="">Select Planning Id</option>
                   {planIdsList.map((id, idx) => (
@@ -336,6 +347,7 @@ const InterviewBandwidth = () => {
                   value={reqId}
                   onChange={(e) => setReqId(e.target.value)}
                   name="requisition_id"
+                  disabled={!!editId}
                 >
                   <option value="">Select Req ID</option>
                   {reqIdsList.map((r, idx) => (

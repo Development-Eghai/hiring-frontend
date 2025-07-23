@@ -281,7 +281,7 @@ const PlanningForm = () => {
         setFormData((prev) => ({ ...prev, [name]: limited || "" }));
         return;
       }
-      
+
       if (name === "relocation_amount") {
         const digitsOnly = value.replace(/\D/g, "");
         setFormData((prev) => ({ ...prev, [name]: digitsOnly }));
@@ -444,6 +444,38 @@ const PlanningForm = () => {
     </div>
   );
 
+  const [dropdownOptions, setDropdownOptions] = useState(selectOptions);
+
+  useEffect(() => {
+    const fetchConfigOptions = async () => {
+      try {
+        const response = await axiosInstance.get("/admin_configuration/");
+        const configData = response.data?.data || {};
+
+        const mappedOptions = {
+          job_position: configData["Position Role"] || [],
+          designation: configData["Designation"] || [],
+          tech_stacks: configData["Tech Stack"] || [],
+          target_companies: configData["Target Companies"] || [],
+          working_model: configData["Working Model"] || [],
+          role_type: configData["Role Type"] || [],
+          job_type: configData["Job Type"] || [],
+          shift_timings: configData["Shift Timings"] || [],
+          education_qualification: configData["Education Qualification"] || [],
+          communication_language: configData["Communication Language"] || [],
+          location: configData["Location"] || [],
+        };
+
+        setDropdownOptions((prev) => ({ ...prev, ...mappedOptions }));
+      } catch (error) {
+        console.error("Failed to fetch config data", error);
+        toast.error("Failed to load dropdown options.");
+      }
+    };
+
+    fetchConfigOptions();
+  }, []);
+
   return (
     <div className="h-100" style={{ overflow: "auto" }}>
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
@@ -505,15 +537,15 @@ const PlanningForm = () => {
                             ? renderCreatableSelect(
                                 label,
                                 name,
-                                selectOptions[name] || []
+                                dropdownOptions[name] || []
                               )
                             : name === "jd_details"
                             ? renderJobDescriptionField()
                             : name === "social_media_links" &&
                               formData.social_media_links === "Github"
                             ? renderInput("Enter Profile Link", "github_link")
-                            : selectOptions[name]
-                            ? renderSelect(label, name, selectOptions[name])
+                            : dropdownOptions[name]
+                            ? renderSelect(label, name, dropdownOptions[name])
                             : renderInput(
                                 label,
                                 name,

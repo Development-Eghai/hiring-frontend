@@ -31,25 +31,25 @@ const InterviewDesignDashboard = () => {
           },
           {
             name: "Planning ID",
-            selector: (row) => row.id,
+            selector: (row) => row.id || "-" ,
             wrap: true,
             grow: 2,
           },
           {
             name: "Position / Role",
-            selector: (row) => row.label,
+            selector: (row) => row.label || "-",
             wrap: true,
             grow: 2,
           },
           {
             name: "Tech Stack",
-            selector: (row) => row.techStack,
+            selector: (row) => row.techStack || "-",
             wrap: true,
             grow: 2,
           },
           {
             name: "Screening Type",
-            selector: (row) => row.screeningtype,
+            selector: (row) => row.screeningtype || "-",
             wrap: true,
             grow: 2,
           },
@@ -98,7 +98,7 @@ const InterviewDesignDashboard = () => {
 
         dynamicColumns.push({
           name: "Status",
-          selector: (row) => row.status,
+          selector: (row) => row.status  || "-",
           wrap: true,
           grow: 1,
         });
