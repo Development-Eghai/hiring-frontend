@@ -144,8 +144,8 @@ const CandidateApproverStatus = () => {
   ];
 
   return (
-    <div className=" mt-4">
-      <h4 className="mb-3">Approver Details</h4>
+    <div className="">
+      {/* <h4 className="mb-3">Approver Details</h4> */}
       {loading ? (
         <div className="text-center py-5">
           <Spinner animation="border" variant="primary" />
