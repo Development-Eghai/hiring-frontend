@@ -34,7 +34,7 @@ const JsonData = () => {
           //   route: "planning/interview_design_screen",
           //   icon: Icons.Planning,
           // },
-          
+
           {
             name: "Interviewer Bandwidth",
             route: "planning/interviewer_bandwidth_dashboard",
@@ -64,7 +64,12 @@ const JsonData = () => {
           },
         ],
       },
-      
+      {
+        name: "Configuration Screen",
+        route: "https://api.pixeladvant.com/configuration/",
+        external: false,
+        icon: Icons.Reporting,
+      },
     ],
     home_cards: [
       {
