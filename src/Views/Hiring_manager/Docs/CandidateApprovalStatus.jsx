@@ -122,17 +122,17 @@ const CandidateApproverStatus = () => {
       sortable: true,
     },
     {
-      name: "Job Title",
+      name: "Designation",
       selector: (row) => row.job_title || "-",
       sortable: true,
     },
+    // {
+    //   name: "Status",
+    //   selector: (row) => row.overall_status || "-",
+    //   sortable: true,
+    // },
     {
       name: "Status",
-      selector: (row) => row.overall_status || "-",
-      sortable: true,
-    },
-    {
-      name: "Decision",
       selector: (row) => row.decision || "N/A",
       sortable: true,
     },
