@@ -168,7 +168,7 @@ const Creatmodel = () => {
             no_of_openings,
             client_name,
             requisition_template,
-            reqid: requisition_template,
+            reqid: requisition_template || res?.data?.data?.RequisitionID,
           },
         });
         // You can close modal after success if needed:
