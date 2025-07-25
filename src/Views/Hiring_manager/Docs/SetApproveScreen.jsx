@@ -230,7 +230,7 @@ const SetApproveScreen = () => {
           
             <CandidateApprovalStatus />
           </div>
-          {/* <div className="table-responsive">
+          <div className="table-responsive">
             <Table
               striped
               bordered
@@ -274,7 +274,7 @@ const SetApproveScreen = () => {
 
         {/* <div>
           <CandidateApprovalStatus />
-        </div> */}
+        </div>
 
         {/* Modal */}
         <Modal show={showModal} onHide={handleCloseModal} centered size="xl">
