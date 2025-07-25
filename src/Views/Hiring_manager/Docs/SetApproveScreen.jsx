@@ -220,7 +220,6 @@ const SetApproveScreen = () => {
     <div>
       <Container fluid className="py-4 px-md-5 bg-light min-vh-100">
         <Card className="shadow-sm p-4">
-          <div>
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h5 className="fw-bold m-0">Approver Details</h5>
             <Button variant="success" onClick={handleAddNew}>
@@ -268,7 +267,7 @@ const SetApproveScreen = () => {
                 ))}
               </tbody>
             </Table>
-          </div> */} */}
+          </div> */} 
         </Card>
         {/* <hr /> */}
 
