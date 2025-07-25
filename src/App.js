@@ -26,6 +26,7 @@ import { Layout } from "Views/Hiring_manager/Hiring_manager_utils/Layout";
 import InterviewerDashboard from "Views/Interviewer/Docs/InterviewerDashboard";
 import { InterviwerLayout } from "Views/Interviewer/Interviewer_utils/InterviwerLayout";
 import CandidateScreen from "Views/Recruiter/Docs/CandidateScreen";
+import RecruiterScreening from "Views/Recruiter/Docs/RecruiterScreening";
 import { RecruiterDashboard } from "Views/Recruiter/Docs/RecuirmentDashboard";
 import ScheduleInteview from "Views/Recruiter/Docs/ScheduleInteview";
 import { RecruiterLayout } from "Views/Recruiter/Recruiter_utils/layout";
@@ -87,6 +88,7 @@ function App() {
               <Route path="dashboard" element={<RecruiterDashboard />} />
               <Route path="schedule_interview" element={<ScheduleInteview />} />
               <Route path="candidate" element={<CandidateScreen />} />
+              <Route path="screening" element={<RecruiterScreening/>}/>
             </Route>
           </Route>
 
