@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
-import { Button, Form, Modal, Row, Col } from "react-bootstrap";
-import { FaEye, FaTrash, FaEdit } from "react-icons/fa";
+import { Button, Form, Modal, Row, Col, Table, Spinner } from "react-bootstrap";
+import { FaEye, FaTrash, FaEdit, FaExternalLinkAlt } from "react-icons/fa";
 import RecruiterHeader from "../Recruiter_utils/Navbar";
+import axiosInstance from "Services/axiosInstance";
+import { toast } from "react-toastify";
 
 const ScheduleInterview = () => {
   const [selectedRows, setSelectedRows] = useState([]);
@@ -15,43 +17,136 @@ const ScheduleInterview = () => {
   const [editData, setEditData] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [data, setData] = useState([
-    {
-      id: 1,
-      reqId: "B0001",
-      planningId: "P0001",
-      candidateId: "C1234",
-      candidateName: "Ankit",
-      position: "Product Manager",
-      timeInStage: "2 Days",
-      resumeScore: "85%",
-      scheduleDate: "06-06-2025 | 11:00 PM",
-    },
-    {
-      id: 2,
-      reqId: "B0001",
-      planningId: "P0001",
 
-      candidateId: "C1234",
-      candidateName: "Ankit",
-      position: "Product Manager",
-      timeInStage: "2 Days",
-      resumeScore: "85%",
-      scheduleDate: "06-06-2025 | 11:00 PM",
-    },
-    {
-      id: 3,
-      reqId: "B0001",
-      planningId: "P0001",
+  const [deleteScheduleId, setDeleteScheduleId] = useState(null);
 
-      candidateId: "C1234",
-      candidateName: "Ankit",
-      position: "Product Manager",
-      timeInStage: "2 Days",
-      resumeScore: "85%",
-      scheduleDate: "06-06-2025 | 11:00 PM",
-    },
-  ]);
+  const [showFormModal, setShowFormModal] = useState(false);
+
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  //Get api calll
+  useEffect(() => {
+    fetchScheduleData();
+  }, []);
+
+  const [data, setData] = useState([]);
+
+  const fetchScheduleData = async () => {
+    try {
+      const res = await axiosInstance.get("/candidates/schedule-meet/");
+      if (res.data.success) {
+        const transformed = res.data.data.map((item, index) => ({
+          id: index + 1,
+          schedule_id: item.schedule_id,
+          reqId: item.req_id,
+          planningId: item.planning_id,
+          candidateName: item.candidate_name,
+          DurationID: item.durations,
+          position: item.job_position,
+          MeetLink: item.meet_link,
+          scheduleDate:
+            item.schedule_slots?.[0]?.date +
+            " | " +
+            item.schedule_slots?.[0]?.time,
+          fullData: item,
+        }));
+        setData(transformed);
+      }
+    } catch (err) {
+      console.error("Error fetching schedule data", err);
+    }
+  };
+
+  const handleViewDetails = (fullData) => {
+    setEditData(fullData);
+    setSelectedReqId(fullData.req_id);
+    setSelectedCandidate(fullData.candidate_name);
+    setGuests(fullData.guests || []);
+    setInterviewRounds(fullData.no_of_rounds || 1);
+    setScheduleSlots(fullData.schedule_slots || []);
+    setShowDetailsModal(true);
+  };
+
+  // modal fields
+  const [reqOptions, setReqOptions] = useState([]);
+  useEffect(() => {
+    fetchReqIds();
+  }, []);
+
+  const fetchReqIds = async () => {
+    try {
+      const response = await axiosInstance.get("/reqs/ids/");
+      if (response.data.success) {
+        setReqOptions(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching req IDs", error);
+    }
+  };
+
+  const [selectedReqId, setSelectedReqId] = useState("");
+
+  //for candidate name
+  const [reqCandidateOptions, setCandidateOptions] = useState([]);
+
+  const fetchCandidateName = async (reqId) => {
+    if (!reqId) return;
+    try {
+      const response = await axiosInstance.post("/candidates/by-requisition/", {
+        requisition_id: reqId,
+      });
+      console.log(response.data);
+      if (response.data.success) {
+        setCandidateOptions(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching candidates", error);
+    }
+  };
+
+  const [selectedCandidate, setSelectedCandidate] = useState("");
+
+  const handleCandidateChange = (value) => {
+    setSelectedCandidate(value);
+  };
+
+  const handleReqChange = async (reqId) => {
+    setSelectedReqId(reqId);
+    setSelectedCandidate("");
+    await fetchCandidateName(reqId);
+
+    try {
+      const response = await axiosInstance.post("/api/schedule/context/", {
+        req_id: reqId,
+      });
+      if (response.data.success) {
+        const ctx = response.data.data.data;
+        setEditData({
+          candidateName: ctx.candidate_name,
+          position: ctx.job_postion,
+          planningId: ctx.planning_id,
+          interviewer: ctx.interviewer_name,
+          location: ctx.location,
+          timeZone: ctx.time_zone,
+          durations: ctx.durations,
+          purpose: ctx.purpose,
+          mode: ctx.mode,
+          interviewRounds: ctx.no_of_rounds,
+        });
+        setScheduleSlots(
+          ctx.schedule_slots.map((slot) => ({
+            date: slot.date,
+            time: slot.time,
+            guests: [],
+          }))
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching context", error);
+    }
+  };
 
   const toggleRow = (id) => {
     setSelectedRows((prev) =>
@@ -59,14 +154,43 @@ const ScheduleInterview = () => {
     );
   };
 
-  const handleEdit = (row) => {
-    setEditData(row);
-    setGuests([{ name: "John", email: "john@example.com" }]);
-    setInterviewRounds(1);
-    setScheduleSlots([
-      { date: "2025-06-06", time: "11:00 AM", guests: ["john@example.com"] },
-    ]);
-    setShowModal(true);
+  const handleEdit = async (row) => {
+    try {
+      const res = await axiosInstance.post("/api/schedule/get/", {
+        schedule_id: row.schedule_id,
+      });
+
+      if (res.data.success) {
+        const data = res.data.data;
+
+        setSelectedReqId(data.req_id);
+        setSelectedCandidate(data.candidate_name);
+        setGuests(data.guests || []);
+        setInterviewRounds(data.no_of_rounds || 1);
+        setScheduleSlots(data.schedule_slots || []);
+
+        setEditData({
+          planningId: data.planning_id,
+          interviewer: data.interviewer_name,
+          position: data.job_position,
+          location: data.location,
+          timeZone: data.time_zone,
+          durations: data.durations,
+          purpose: data.purpose,
+          mode: data.mode,
+          interviewRounds: data.no_of_rounds,
+          schedule_id: data.schedule_id,
+        });
+
+        await fetchCandidateName(data.req_id); // load candidates for dropdown
+        setShowFormModal(true);
+      } else {
+        toast.error("Failed to fetch schedule details");
+      }
+    } catch (error) {
+      console.error("Error fetching schedule by ID:", error);
+      toast.error("Something went wrong while fetching schedule details.");
+    }
   };
 
   const handleDelete = (row) => {
@@ -74,14 +198,33 @@ const ScheduleInterview = () => {
     setShowConfirm(true);
   };
 
-  const confirmDelete = () => {
-    setData(data.filter((item) => item.id !== deleteTarget.id));
-    setShowConfirm(false);
-    setDeleteTarget(null);
+  const confirmDelete = async () => {
+    if (!deleteScheduleId) return;
+
+    try {
+      const res = await axiosInstance.delete("/api/schedule/delete/", {
+        data: { schedule_id: deleteScheduleId },
+      });
+      console.log("Delete response:", res);
+
+      if (res.status === 200 || res.status === 204) {
+        toast.success("Deleted successfully");
+        setDeleteScheduleId(null);
+        setShowConfirm(false);
+        fetchScheduleData();
+      } else {
+        toast.warning("Delete failed: unexpected status");
+      }
+    } catch (error) {
+      console.error("Delete error:", error.response || error);
+      toast.error("Delete failed. Check console for details.");
+    }
   };
 
   const handleModalClose = () => {
     setShowModal(false);
+    setShowFormModal(false);
+    setShowDetailsModal(false);
     setEditData(null);
     setGuests([]);
     setInterviewRounds(1);
@@ -103,68 +246,102 @@ const ScheduleInterview = () => {
       allowOverflow: true,
       button: true,
     },
-    { name: "Req ID", selector: (row) => row.reqId, sortable: true },
-    { name: "Planning ID", selector: (row) => row.planningId, sortable: true },
-
     {
-      name: "Candidate ID",
-      selector: (row) => row.candidateId,
+      name: "Req ID",
+      selector: (row) => row.reqId,
       sortable: true,
+      width: "120px",
+    },
+    {
+      name: "Planning ID",
+      selector: (row) => row.planningId,
+      sortable: true,
+      width: "130px",
     },
     {
       name: "Candidate Name",
       selector: (row) => row.candidateName,
       sortable: true,
+      width: "180px",
     },
     {
       name: "Applied Position",
       selector: (row) => row.position,
       sortable: true,
+      width: "180px",
     },
     {
-      name: "Time in Stage",
-      selector: (row) => row.timeInStage,
+      name: "Duration",
+      selector: (row) => row.DurationID,
       sortable: true,
-    },
-    {
-      name: "View Details",
-      cell: (row) => <FaEye style={{ cursor: "pointer" }} />,
       width: "120px",
     },
     {
-      name: "Resume Score",
-      selector: (row) => row.resumeScore,
-      sortable: true,
-    },
-    {
-      name: "Interview Schedule Date",
+      name: "Interview Schedule",
       selector: (row) => row.scheduleDate,
       sortable: true,
+      width: "200px",
     },
     {
-      name: "Status",
-      cell: () => (
-        <Form.Select size="sm">
-          <option>Select</option>
-          <option>Scheduled</option>
-          <option>Rejected</option>
-        </Form.Select>
-      ),
+      name: "Meet Link",
+      cell: (row) =>
+        row.MeetLink ? (
+          <a
+            href={row.MeetLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-decoration-none text-primary"
+          >
+            <FaExternalLinkAlt className="me-2" />
+            Open Link
+          </a>
+        ) : (
+          "-"
+        ),
+      sortable: false,
       width: "160px",
+    },
+    {
+      name: "View Details",
+      cell: (row) => (
+        <span
+          style={{ cursor: "pointer", color: "#0d6efd" }}
+          onClick={() => handleViewDetails(row.fullData)}
+        >
+          <FaEye className="me-2" />
+          View More
+        </span>
+      ),
+      width: "150px",
     },
     {
       name: "Action",
       cell: (row) => (
         <div className="d-flex gap-2">
-          <Button size="sm" variant="success" onClick={() => handleEdit(row)}>
+          <Button
+            size="sm"
+            variant="success"
+            onClick={() => handleEdit(row)}
+            title="Edit"
+          >
             <FaEdit />
           </Button>
-          <Button size="sm" variant="danger" onClick={() => handleDelete(row)}>
-            <FaTrash />
+          <Button
+            size="sm"
+            variant="danger"
+            onClick={() => handleDelete(row)}
+            title="Delete"
+          >
+            <FaTrash
+              onClick={() => {
+                setDeleteScheduleId(row.schedule_id);
+                setShowConfirm(true);
+              }}
+            />
           </Button>
         </div>
       ),
-      width: "140px",
+      width: "120px",
     },
   ];
 
@@ -216,6 +393,211 @@ const ScheduleInterview = () => {
     setScheduleSlots(newSlots);
   };
 
+  //form submit
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmitSchedule = async () => {
+    if (loading) return;
+    if (!selectedReqId || !selectedCandidate) {
+      toast.error("Please select Req ID and Candidate Name");
+      return;
+    }
+
+    for (let slot of scheduleSlots) {
+      for (let guestEmail of slot.guests) {
+        if (!validateEmail(guestEmail)) {
+          toast.error(`Invalid guest email: ${guestEmail}`);
+          return;
+        }
+      }
+    }
+
+    const payload = {
+      schedule_id: editData?.schedule_id,
+      req_id: selectedReqId,
+      candidate_name: selectedCandidate,
+      planning_id: editData?.planningId,
+      interviewer_name: editData?.interviewer,
+      job_position: editData?.position,
+      location: editData?.location,
+      time_zone: editData?.timeZone,
+      durations: editData?.durations,
+      purpose: editData?.purpose,
+      mode: editData?.mode,
+      no_of_rounds: editData?.interviewRounds,
+      guests,
+      schedule_slots: scheduleSlots.map((slot) => ({
+        date: slot.date,
+        time: slot.time,
+        guests: slot.guests,
+      })),
+    };
+
+    setLoading(true);
+    try {
+      const isUpdate = !!editData?.schedule_id;
+      const res = isUpdate
+        ? await axiosInstance.put(
+            "https://api.pixeladvant.com/api/schedule/update/",
+            payload
+          )
+        : await axiosInstance.post(
+            "https://api.pixeladvant.com/candidates/schedule-meet/",
+            payload
+          );
+
+      if (res.data.success) {
+        toast.success(
+          isUpdate
+            ? "Interview updated successfully!"
+            : "Interview scheduled successfully!"
+        );
+        handleModalClose();
+        fetchScheduleData(); 
+      } else {
+        toast.warning("Operation failed. Please check inputs.");
+      }
+    } catch (error) {
+      console.error("Schedule Error:", error);
+      toast.error("Error occurred during scheduling.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderDetailsTable = () => {
+    if (!editData) return null;
+
+    const {
+      req_id,
+      planning_id,
+      candidate_name,
+      job_position,
+      durations,
+      interviewer_name,
+      location,
+      time_zone,
+      purpose,
+      mode,
+      no_of_rounds,
+      meet_link,
+      guests = [],
+      schedule_slots = [],
+    } = editData;
+
+    return (
+      <Table bordered responsive>
+        <tbody>
+          <tr>
+            <th>Req ID</th>
+            <td>{req_id}</td>
+          </tr>
+          <tr>
+            <th>Planning ID</th>
+            <td>{planning_id}</td>
+          </tr>
+          <tr>
+            <th>Candidate Name</th>
+            <td>{candidate_name}</td>
+          </tr>
+          <tr>
+            <th>Job Position</th>
+            <td>{job_position}</td>
+          </tr>
+          <tr>
+            <th>Duration</th>
+            <td>{durations}</td>
+          </tr>
+          <tr>
+            <th>Interviewer</th>
+            <td>{interviewer_name}</td>
+          </tr>
+          <tr>
+            <th>Location</th>
+            <td>{location}</td>
+          </tr>
+          <tr>
+            <th>Time Zone</th>
+            <td>{time_zone}</td>
+          </tr>
+          <tr>
+            <th>Purpose</th>
+            <td>{purpose}</td>
+          </tr>
+          <tr>
+            <th>Mode</th>
+            <td>{mode}</td>
+          </tr>
+          <tr>
+            <th>No. of Rounds</th>
+            <td>{no_of_rounds}</td>
+          </tr>
+          <tr>
+            <th>Meet Link</th>
+            <td>
+              {meet_link ? (
+                <a href={meet_link} target="_blank" rel="noopener noreferrer">
+                  {meet_link}
+                </a>
+              ) : (
+                "-"
+              )}
+            </td>
+          </tr>
+          <tr>
+            <th>Guests</th>
+            <td>
+              {guests.length > 0 ? (
+                <ul>
+                  {guests.map((g, i) => (
+                    <div key={i}>
+                      <li>Name : {g.name} </li>
+                      <li>Email ID : {g.email} </li>
+                    </div>
+                  ))}
+                </ul>
+              ) : (
+                "-"
+              )}
+            </td>
+          </tr>
+          <tr>
+            <th>Schedule Slots</th>
+            <td>
+              {schedule_slots.length > 0 ? (
+                <ul>
+                  {schedule_slots.map((s, i) => (
+                    <div key={i}>
+                      <li>Date : {s.date} </li>
+                      <li>
+                        Time : {s.time}
+                        <br />
+                        Guests:{" "}
+                        {s.guests && s.guests.length > 0
+                          ? s.guests.join(", ")
+                          : "None"}
+                      </li>
+                    </div>
+                    // <li key={i}>
+                    //    at
+                    //   <br />
+                    //   Guests:{" "}
+                    //   {s.guests && s.guests.length > 0
+                    //     ? s.guests.join(", ")
+                    //     : "None"}
+                    // </li>
+                  ))}
+                </ul>
+              ) : (
+                "-"
+              )}
+            </td>
+          </tr>
+        </tbody>
+      </Table>
+    );
+  };
+
   return (
     <>
       <RecruiterHeader />
@@ -223,7 +605,7 @@ const ScheduleInterview = () => {
       <div className="mt-5">
         <div className="mb-3 gap-2 d-flex justify-content-between">
           <h4>Schedule Interview</h4>
-          <Button onClick={() => setShowModal(true)}>
+          <Button onClick={() => setShowFormModal(true)}>
             Add Schedule Interview
           </Button>
         </div>
@@ -231,57 +613,81 @@ const ScheduleInterview = () => {
         <DataTable
           columns={columns}
           data={data}
-          pagination
           highlightOnHover
           persistTableHead
           responsive
         />
 
-        <Modal show={showModal} onHide={handleModalClose} size="xl">
+        {/* modal for form */}
+        <Modal show={showFormModal} onHide={handleModalClose} size="xl">
           <Modal.Header closeButton>
-            <Modal.Title>
-              {editData ? "Edit Schedule" : "Add Schedule Interview"}
-            </Modal.Title>
+            <Modal.Title>{" Schedule Interview"}</Modal.Title>
           </Modal.Header>
           <Modal.Body style={{ maxHeight: "70vh", overflowY: "auto" }}>
             <Form>
               <Row className="mb-3 gap-2">
                 <Col>
                   <Form.Label>Req Id</Form.Label>
-                  <Form.Select>
+                  <Form.Select
+                    value={selectedReqId}
+                    onChange={(e) => handleReqChange(e.target.value)}
+                  >
                     <option>Select</option>
+                    {reqOptions.map((item, index) => (
+                      <option key={index} value={item.req_ids}>
+                        {item.req_ids}
+                      </option>
+                    ))}
                   </Form.Select>
                 </Col>
                 <Col>
                   <Form.Label>Planning Id</Form.Label>
-                  <Form.Select>
-                    <option>Select</option>
-                  </Form.Select>
-                </Col>
-                <Col>
-                  <Form.Label>Position Name</Form.Label>
-                  <Form.Control placeholder="Select" />
+                  <Form.Control
+                    placeholder="Planning ID here"
+                    value={editData?.planningId || ""}
+                  />
                 </Col>
               </Row>
 
               <Row className="mb-3 gap-2">
                 <Col>
                   <Form.Label>Candidate Name</Form.Label>
-                  <Form.Select>
-                    <option>Select</option>
+                  <Form.Select
+                    value={selectedCandidate}
+                    onChange={(e) => handleCandidateChange(e.target.value)}
+                  >
+                    <option value="">Select</option>
+                    {reqCandidateOptions.map((item, index) => (
+                      <option key={index} value={item.name}>
+                        {item.name}
+                      </option>
+                    ))}
                   </Form.Select>
                 </Col>
+
+                <Col>
+                  <Form.Label>Position Name</Form.Label>
+                  <Form.Control
+                    placeholder="Position Name here"
+                    value={editData?.position || ""}
+                  />{" "}
+                </Col>
+              </Row>
+              <Row>
                 <Col>
                   <Form.Label>Interviewer Name</Form.Label>
-                  <Form.Select>
-                    <option>Select</option>
-                  </Form.Select>
+                  <Form.Control
+                    placeholder="Interviewer Name here"
+                    value={editData?.interviewer || ""}
+                  />
                 </Col>
               </Row>
 
-              <div className="mb-3 gap-2">
-                <div className="d-flex justify-content-between align-items-center bg-light py-2 rounded px-2">
-                  <Form.Label className="mb-0 text-primary">Guests</Form.Label>
+              <div className="mb-3 gap-2 p-2 rounded  bg-light my-3">
+                <div className="d-flex p-3 rounded justify-content-between align-items-center bg-light py-2  px-2">
+                  <Form.Label className="mb-0 text-primary">
+                    Guests invite
+                  </Form.Label>
                   <Button
                     variant="link"
                     className="p-0"
@@ -326,39 +732,52 @@ const ScheduleInterview = () => {
               <Row className="mb-3 gap-2">
                 <Col>
                   <Form.Label>Location</Form.Label>
-                  <Form.Control placeholder="Enter" />
+                  <Form.Control
+                    placeholder="Location here"
+                    value={editData?.location || ""}
+                  />
                 </Col>
                 <Col>
                   <Form.Label>Time Zone</Form.Label>
-                  <Form.Control placeholder="Enter" />
+                  <Form.Control
+                    placeholder="Time Zone here"
+                    value={editData?.timeZone || ""}
+                  />
                 </Col>
               </Row>
 
               <Row className="mb-3 gap-2">
                 <Col>
                   <Form.Label>Durations</Form.Label>
-                  <Form.Control placeholder="Enter" />
+                  <Form.Control
+                    placeholder="Enter"
+                    value={editData?.durations || ""}
+                  />
                 </Col>
                 <Col>
                   <Form.Label>Purpose</Form.Label>
-                  <Form.Control placeholder="Enter" />
+                  <Form.Control
+                    placeholder="Enter"
+                    value={editData?.purpose || ""}
+                  />
                 </Col>
               </Row>
 
               <Row className="mb-3 gap-2">
                 <Col>
                   <Form.Label>Mode</Form.Label>
-                  <Form.Select>
-                    <option>Face to face</option>
-                  </Form.Select>
+                  <Form.Control
+                    placeholder="enter"
+                    value={editData?.mode || ""}
+                  />
                 </Col>
                 <Col>
                   <Form.Label>Rounds</Form.Label>
                   <Form.Control
                     type="number"
                     min="1"
-                    value={interviewRounds}
-                    onChange={(e) => updateRounds(Number(e.target.value))}
+                    value={editData?.interviewRounds || ""}
+                    // onChange={(e) => updateRounds(Number(e.target.value))}
                   />
                 </Col>
               </Row>
@@ -375,14 +794,14 @@ const ScheduleInterview = () => {
                       <Col>
                         <Form.Control
                           type="date"
-                          value={slot.date}
-                          onChange={(e) =>
-                            handleScheduleChange(
-                              slotIndex,
-                              "date",
-                              e.target.value
-                            )
-                          }
+                          value={slot.date || ""}
+                          // // onChange={(e) =>
+                          // //   handleScheduleChange(
+                          // //     slotIndex,
+                          // //     "date",
+                          // //     e.target.value
+                          // //   )
+                          // }
                         />
                       </Col>
                       <Col>
@@ -444,14 +863,31 @@ const ScheduleInterview = () => {
           </Modal.Body>
           <Modal.Footer>
             <Button variant="outline-secondary" onClick={handleModalClose}>
-              Draft
+              Close
             </Button>
-            <Button variant="primary" onClick={handleModalClose}>
-              {editData ? "Update" : "Schedule"}
+            <Button
+              variant="primary"
+              onClick={handleSubmitSchedule}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Spinner
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    className="me-2"
+                  />
+                  Scheduling...
+                </>
+              ) : (
+                "Schedule Interview"
+              )}
             </Button>
           </Modal.Footer>
         </Modal>
 
+        {/* Delete */}
         <Modal show={showConfirm} onHide={() => setShowConfirm(false)} centered>
           <Modal.Header closeButton>
             <Modal.Title>Confirm Delete</Modal.Title>
@@ -465,6 +901,21 @@ const ScheduleInterview = () => {
             </Button>
             <Button variant="danger" onClick={confirmDelete}>
               Delete
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* Show details */}
+        <Modal show={showDetailsModal} onHide={handleModalClose} size="xl">
+          <Modal.Header closeButton>
+            <Modal.Title>Schedule Interview Details</Modal.Title>
+          </Modal.Header>
+          <Modal.Body style={{ maxHeight: "70vh", overflowY: "auto" }}>
+            {renderDetailsTable()}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleModalClose}>
+              Close
             </Button>
           </Modal.Footer>
         </Modal>

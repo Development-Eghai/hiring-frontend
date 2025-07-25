@@ -31,7 +31,6 @@ import { RecruiterDashboard } from "Views/Recruiter/Docs/RecuirmentDashboard";
 import ScheduleInteview from "Views/Recruiter/Docs/ScheduleInteview";
 import { RecruiterLayout } from "Views/Recruiter/Recruiter_utils/layout";
 
-
 function App() {
   return (
     <React.Fragment>
@@ -84,26 +83,21 @@ function App() {
           </Route>
 
           <Route path="/recruiter">
-            <Route element={<RecruiterLayout />}>
-              <Route path="dashboard" element={<RecruiterDashboard />} />
-              <Route path="schedule_interview" element={<ScheduleInteview />} />
-              <Route path="candidate" element={<CandidateScreen />} />
-              <Route path="screening" element={<RecruiterScreening/>}/>
-            </Route>
+          <Route element={<RecruiterLayout />}>
+          <Route path="dashboard" element={<RecruiterDashboard/>}/>
+          <Route path="schedule_interview" element={<ScheduleInteview/>}/>
+          <Route path="candidate" element={<CandidateScreen/>}/>
+          <Route path="recruiter_screening" element={<RecruiterScreening/>}/>
+
+          </Route>
           </Route>
 
           <Route path="/business_ops">
             <Route element={<BuisnessLayout />}>
-              <Route path="dashboard" element={<BuisnessOpsDashboard />} />
-              <Route path="buisness_review" element={<JobBuisnessReview />} />
-            </Route>
+              <Route path="dashboard" element={<BuisnessOpsDashboard/>}/>
+              <Route path="buisness_review" element={<JobBuisnessReview/>}/>
+              
           </Route>
-
-          <Route path="/interviwer">
-            <Route element={<InterviwerLayout />}>
-              <Route path="dashboard" element={<InterviewerDashboard />} />
-              <Route path="buisness_review" element={<JobBuisnessReview />} />
-            </Route>
           </Route>
 
           <Route path="*" element={<Error />} />
