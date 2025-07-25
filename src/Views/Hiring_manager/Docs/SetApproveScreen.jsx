@@ -104,24 +104,24 @@ const SetApproveScreen = () => {
   });
 
   const fetchApprovers = async () => {
-    try {
-      const res = await axiosInstance.get("/api/set-approver/");
-      if (res.data.success) {
-        const data = res.data.data;
-        if (data && typeof data === "object") {
-          setApprovers([data]);
-        } else {
-          setApprovers([]);
-          console.warn("Invalid approver data format:", data);
-        }
+  try {
+    const res = await axiosInstance.get("/api/set-approver/");
+    if (res.data.success) {
+      const approversList = res.data.data?.approvers;
+      if (Array.isArray(approversList)) {
+        setViewApproversData(approversList);
       } else {
-        toast.error(res.data.message || "Failed to fetch approvers.");
+        setViewApproversData([]);
+        console.warn("Approvers list is invalid:", approversList);
       }
-    } catch (error) {
-      console.error("Error fetching approvers:", error);
-      toast.error("Error fetching approvers.");
+    } else {
+      toast.error(res.data.message || "Failed to fetch approvers.");
     }
-  };
+  } catch (error) {
+    console.error("Error fetching approvers:", error);
+    toast.error("Error fetching approvers.");
+  }
+};
 
   useEffect(() => {
     fetchApprovers();
