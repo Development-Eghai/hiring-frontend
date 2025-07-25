@@ -104,24 +104,24 @@ const SetApproveScreen = () => {
   });
 
   const fetchApprovers = async () => {
-  try {
-    const res = await axiosInstance.get("/api/set-approver/");
-    if (res.data.success) {
-      const approversList = res.data.data?.approvers;
-      if (Array.isArray(approversList)) {
-        setViewApproversData(approversList);
+    try {
+      const res = await axiosInstance.get("/api/set-approver/");
+      if (res.data.success) {
+        const data = res.data.data;
+        if (data && typeof data === "object") {
+          setApprovers([data]);
+        } else {
+          setApprovers([]);
+          console.warn("Invalid approver data format:", data);
+        }
       } else {
-        setViewApproversData([]);
-        console.warn("Approvers list is invalid:", approversList);
+        toast.error(res.data.message || "Failed to fetch approvers.");
       }
-    } else {
-      toast.error(res.data.message || "Failed to fetch approvers.");
+    } catch (error) {
+      console.error("Error fetching approvers:", error);
+      toast.error("Error fetching approvers.");
     }
-  } catch (error) {
-    console.error("Error fetching approvers:", error);
-    toast.error("Error fetching approvers.");
-  }
-};
+  };
 
   useEffect(() => {
     fetchApprovers();
@@ -220,6 +220,7 @@ const SetApproveScreen = () => {
     <div>
       <Container fluid className="py-4 px-md-5 bg-light min-vh-100">
         <Card className="shadow-sm p-4">
+          <div>
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h5 className="fw-bold m-0">Approver Details</h5>
             <Button variant="success" onClick={handleAddNew}>
@@ -227,11 +228,7 @@ const SetApproveScreen = () => {
             </Button>
           </div>
           
-<<<<<<< HEAD
             {/* <CandidateApprovalStatus /> */}
-=======
-{/*             <CandidateApprovalStatus />
->>>>>>> 8443de75683ab74115806d763ec392bfcc3ae9e4
           </div>
           <div className="table-responsive">
             <Table
@@ -271,17 +268,13 @@ const SetApproveScreen = () => {
                 ))}
               </tbody>
             </Table>
-<<<<<<< HEAD
           </div>
-=======
-          </div> */} 
->>>>>>> 8443de75683ab74115806d763ec392bfcc3ae9e4
         </Card>
         {/* <hr /> */}
 
         {/* <div>
           <CandidateApprovalStatus />
-        </div>
+        </div> */}
 
         {/* Modal */}
         <Modal show={showModal} onHide={handleCloseModal} centered size="xl">
