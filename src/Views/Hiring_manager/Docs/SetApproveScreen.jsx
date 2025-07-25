@@ -228,9 +228,9 @@ const SetApproveScreen = () => {
             </Button>
           </div>
           
-            <CandidateApprovalStatus />
+            {/* <CandidateApprovalStatus /> */}
           </div>
-          {/* <div className="table-responsive">
+          <div className="table-responsive">
             <Table
               striped
               bordered
@@ -268,7 +268,7 @@ const SetApproveScreen = () => {
                 ))}
               </tbody>
             </Table>
-          </div> */}
+          </div>
         </Card>
         {/* <hr /> */}
 

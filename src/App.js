@@ -24,10 +24,10 @@ import SetApproveScreen from "Views/Hiring_manager/Docs/SetApproveScreen";
 import UploadScreen from "Views/Hiring_manager/Docs/UploadScreen";
 import { Layout } from "Views/Hiring_manager/Hiring_manager_utils/Layout";
 import CandidateScreen from "Views/Recruiter/Docs/CandidateScreen";
+import RecruiterScreening from "Views/Recruiter/Docs/RecruiterScreening";
 import { RecruiterDashboard } from "Views/Recruiter/Docs/RecuirmentDashboard";
 import ScheduleInteview from "Views/Recruiter/Docs/ScheduleInteview";
 import { RecruiterLayout } from "Views/Recruiter/Recruiter_utils/layout";
-
 
 function App() {
   return (
@@ -42,48 +42,64 @@ function App() {
             <Route element={<Layout />}>
               <Route path="dashboard" element={<Home />} />
               {/* <Route path="hiring_manager_dashboard" element={<Home />} /> */}
-              <Route path="planning" >
+              <Route path="planning">
                 <Route index element={<PlanningScreen />} />
                 <Route path="hiring_planning_form" element={<PlanningForm />} />
-                <Route path="interview_design_screen" element={<InterviewDesignScreen />} />
-                <Route path="interview_design_dashboard" element={<InterviewDesignDashboard />} />
-                <Route path="interviewer_bandwidth" element={<InterviewBandwidth />} />
-                <Route path="interviewer_bandwidth_dashboard" element={<InterviewBandwidthDashboard />} />
-                <Route path="stage_alert_and_responsibility_settings" element={<ResponsibilitySetting />} />
-                <Route path="customised_column_and_settings" element={<CustomizeFieldLabels />} />
-                <Route path="set_approve_screen" element={<SetApproveScreen/>}/>
-              <Route path="upload_screen" element={<UploadScreen/>}/>
+                <Route
+                  path="interview_design_screen"
+                  element={<InterviewDesignScreen />}
+                />
+                <Route
+                  path="interview_design_dashboard"
+                  element={<InterviewDesignDashboard />}
+                />
+                <Route
+                  path="interviewer_bandwidth"
+                  element={<InterviewBandwidth />}
+                />
+                <Route
+                  path="interviewer_bandwidth_dashboard"
+                  element={<InterviewBandwidthDashboard />}
+                />
+                <Route
+                  path="stage_alert_and_responsibility_settings"
+                  element={<ResponsibilitySetting />}
+                />
+                <Route
+                  path="customised_column_and_settings"
+                  element={<CustomizeFieldLabels />}
+                />
+                <Route
+                  path="set_approve_screen"
+                  element={<SetApproveScreen />}
+                />
+                <Route path="upload_screen" element={<UploadScreen />} />
               </Route>
               <Route path="create_job_requisition" element={<Home />} />
-              <Route path="job_requisition" element={<JobRequisition/>}/>
-
-              
-
+              <Route path="job_requisition" element={<JobRequisition />} />
             </Route>
           </Route>
 
-
           <Route path="/recruiter">
-          <Route element={<RecruiterLayout />}>
-          <Route path="dashboard" element={<RecruiterDashboard/>}/>
-          <Route path="schedule_interview" element={<ScheduleInteview/>}/>
-          <Route path="candidate" element={<CandidateScreen/>}/>
-          </Route>
-          </Route>
-
-
-          <Route path="/business_ops">  
-            <Route element={<BuisnessLayout />}>
-              <Route path="dashboard" element={<BuisnessOpsDashboard/>}/>
-              <Route path="buisness_review" element={<JobBuisnessReview/>}/>
+            <Route element={<RecruiterLayout />}>
+              <Route path="dashboard" element={<RecruiterDashboard />} />
+              <Route path="schedule_interview" element={<ScheduleInteview />} />
+              <Route path="candidate" element={<CandidateScreen />} />
+              <Route path="recruiter_screening" element={<RecruiterScreening />} />
               
+            </Route>
           </Route>
+
+          <Route path="/business_ops">
+            <Route element={<BuisnessLayout />}>
+              <Route path="dashboard" element={<BuisnessOpsDashboard />} />
+              <Route path="buisness_review" element={<JobBuisnessReview />} />
+            </Route>
           </Route>
 
           <Route path="*" element={<Error />} />
         </Route>
       </Routes>
-
     </React.Fragment>
   );
 }
