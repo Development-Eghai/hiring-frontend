@@ -23,6 +23,8 @@ import ResponsibilitySetting from "Views/Hiring_manager/Docs/resposbility";
 import SetApproveScreen from "Views/Hiring_manager/Docs/SetApproveScreen";
 import UploadScreen from "Views/Hiring_manager/Docs/UploadScreen";
 import { Layout } from "Views/Hiring_manager/Hiring_manager_utils/Layout";
+import InterviewerDashboard from "Views/Interviewer/Docs/InterviewerDashboard";
+import { InterviwerLayout } from "Views/Interviewer/Interviewer_utils/InterviwerLayout";
 import CandidateScreen from "Views/Recruiter/Docs/CandidateScreen";
 import RecruiterScreening from "Views/Recruiter/Docs/RecruiterScreening";
 import { RecruiterDashboard } from "Views/Recruiter/Docs/RecuirmentDashboard";
@@ -81,20 +83,19 @@ function App() {
           </Route>
 
           <Route path="/recruiter">
-            <Route element={<RecruiterLayout />}>
-              <Route path="dashboard" element={<RecruiterDashboard />} />
-              <Route path="schedule_interview" element={<ScheduleInteview />} />
-              <Route path="candidate" element={<CandidateScreen />} />
-              <Route path="recruiter_screening" element={<RecruiterScreening />} />
-              
-            </Route>
+          <Route element={<RecruiterLayout />}>
+          <Route path="dashboard" element={<RecruiterDashboard/>}/>
+          <Route path="schedule_interview" element={<ScheduleInteview/>}/>
+          <Route path="candidate" element={<CandidateScreen/>}/>
+          </Route>
           </Route>
 
           <Route path="/business_ops">
             <Route element={<BuisnessLayout />}>
-              <Route path="dashboard" element={<BuisnessOpsDashboard />} />
-              <Route path="buisness_review" element={<JobBuisnessReview />} />
-            </Route>
+              <Route path="dashboard" element={<BuisnessOpsDashboard/>}/>
+              <Route path="buisness_review" element={<JobBuisnessReview/>}/>
+              
+          </Route>
           </Route>
 
           <Route path="*" element={<Error />} />

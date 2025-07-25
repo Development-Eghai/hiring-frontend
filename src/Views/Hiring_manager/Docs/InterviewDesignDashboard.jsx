@@ -92,16 +92,16 @@ const InterviewDesignDashboard = () => {
             name: `Interview Round ${i + 1}`,
             selector: (row) => row.interview_rounds[i] || "-",
             wrap: true,
-            grow: 2,
+            grow: 3,
           });
         }
 
-        dynamicColumns.push({
-          name: "Status",
-          selector: (row) => row.status  || "-",
-          wrap: true,
-          grow: 1,
-        });
+        // dynamicColumns.push({
+        //   name: "Status",
+        //   selector: (row) => row.status  || "-",
+        //   wrap: true,
+        //   grow: 1,
+        // });
 
         dynamicColumns.push({
           name: "Action",
@@ -141,7 +141,7 @@ const InterviewDesignDashboard = () => {
           techStack: item.tech_stacks,
           screeningtype: item.screening_type,
           interview_rounds: item.interview_rounds || [],
-          status: item.status,
+          // status: item.status,
         }));
 
         setColumns(dynamicColumns);

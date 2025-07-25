@@ -14,6 +14,7 @@ import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import { ToastContainer, toast } from "react-toastify";
 import { BsArrowLeft } from "react-icons/bs";
+
 const AccordionItem = ({ title, children, isOpen, onClick }) => (
   <div className="mb-2">
     <div
@@ -43,7 +44,6 @@ const RequisitionForm = (handleNext) => {
   const [reqtempid, setreqtempid] = useState("");
 
   const routelocation = useLocation();
-  console.log(routelocation,"zdasdasd")
 
   const createreqformData = routelocation?.state
 
@@ -52,7 +52,7 @@ const RequisitionForm = (handleNext) => {
       setreqtempid(createreqformData?.reqid)
     }
   },[createreqformData])
-
+  
   const { user_role, user_id } = commonState?.app_data;
 
   const [Competencies, setCompetencies] = useState([
@@ -80,8 +80,6 @@ const RequisitionForm = (handleNext) => {
       requisition: reqtempid || null,
     },
   ]);
-
-  console.log(questions, "sdfds");
 
   const [questionsHeader, setQuestionsHeader] = useState([
     {
@@ -282,24 +280,24 @@ const RequisitionForm = (handleNext) => {
     });
   }, []);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await axiosInstance.post(
-          "/get_plan_id_position_role/",
-          {},
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     try {
+  //       const response = await axiosInstance.post(
+  //         "/get_plan_id_position_role/",
+  //         {},
+  //         {
+  //           headers: { "Content-Type": "application/json" },
+  //         }
+  //       );
 
-        setPlanId(response?.data?.data);
-      } catch (error) {
-        console.log(error, "errr");
-      }
-    }
-    fetchData();
-  }, []);
+  //       setPlanId(response?.data?.data);
+  //     } catch (error) {
+  //       console.log(error, "errr");
+  //     }
+  //   }
+  //   fetchData();
+  // }, []);
 
   async function fetch_reqs() {
     try {
@@ -345,6 +343,7 @@ const RequisitionForm = (handleNext) => {
 
         const { primary_skills, secondary_skills } = skills_required;
 
+        setPlanId(Planning_id)
         let formattedPrimarySkills;
         if (primary_skills) {
           formattedPrimarySkills = primary_skills.map((item) => ({
@@ -781,7 +780,7 @@ const jobTitle = [
             </p>
           </div>
           <div className="mb-3 col-md-3">
-            <p>Planning ID: {createreqformData?.hiring_plan_id}</p>
+            <p>Planning ID: { planid || createreqformData?.hiring_plan_id}</p>
           </div>
         </div>
         <AccordionItem

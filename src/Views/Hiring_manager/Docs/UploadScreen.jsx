@@ -148,7 +148,7 @@ const UploadScreen = () => {
     const fetchDropdownData = async () => {
       try {
         const designRes = await axios.get(
-          "https://api.pixeladvant.com/design_screen_list_data/"
+          "https://api.pixeladvant.com/design_screen_list_data_interviewer/"
         );
 
         if (designRes.data?.success) {
