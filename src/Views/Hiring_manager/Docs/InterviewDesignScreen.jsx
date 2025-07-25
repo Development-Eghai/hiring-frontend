@@ -7,7 +7,7 @@ import axios from "axios";
 import axiosInstance from "Services/axiosInstance";
 
 const InterviewForm = () => {
-  const [status, setStatus] = useState("rejected");
+  const [status, setStatus] = useState("");
   const [parameters, setParameters] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [rating, setRating] = useState(0);
