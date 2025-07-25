@@ -122,17 +122,17 @@ const CandidateApproverStatus = () => {
       sortable: true,
     },
     {
-      name: "Job Title",
+      name: "Designation",
       selector: (row) => row.job_title || "-",
       sortable: true,
     },
+    // {
+    //   name: "Status",
+    //   selector: (row) => row.overall_status || "-",
+    //   sortable: true,
+    // },
     {
       name: "Status",
-      selector: (row) => row.overall_status || "-",
-      sortable: true,
-    },
-    {
-      name: "Decision",
       selector: (row) => row.decision || "N/A",
       sortable: true,
     },
@@ -144,8 +144,8 @@ const CandidateApproverStatus = () => {
   ];
 
   return (
-    <div className=" mt-4">
-      <h4 className="mb-3">Approver Details</h4>
+    <div className="">
+      {/* <h4 className="mb-3">Approver Details</h4> */}
       {loading ? (
         <div className="text-center py-5">
           <Spinner animation="border" variant="primary" />

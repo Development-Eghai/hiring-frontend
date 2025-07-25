@@ -146,6 +146,7 @@ const Creatmodel = () => {
       );
 
       if (res?.data?.success) {
+        const requisitionIdFromAPI = res.data.data?.RequisitionID;
         setStatusMessage({
           type: "success",
           text: "Job requisition created successfully!",
@@ -168,7 +169,7 @@ const Creatmodel = () => {
             no_of_openings,
             client_name,
             requisition_template,
-            reqid: requisition_template || res?.data?.data?.RequisitionID,
+            reqid: requisitionIdFromAPI,
           },
         });
         // You can close modal after success if needed:
