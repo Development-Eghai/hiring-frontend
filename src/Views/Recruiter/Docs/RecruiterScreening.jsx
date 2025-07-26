@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Form, Table, Button } from "react-bootstrap";
 import axios from "axios";
 import RecruiterHeader from "../Recruiter_utils/Navbar";
+import { useLocation } from "react-router-dom";
 // import "react-toastify/dist/ReactToastify.css";
 
 const RecruiterScreening = () => {
@@ -32,8 +33,11 @@ const RecruiterScreening = () => {
 
   const [rows, setRows] = useState([]);
 
+  const location = useLocation();
+  const routeState = location?.state
+
   function fetchCandidateData() {
-    let pay_load = { candidate_id: 1 };
+    let pay_load = { candidate_id: routeState?.candidate_id };
     axios
       .post("https://api.pixeladvant.com/candidates/detail/", pay_load)
       .then((response) => {
@@ -61,11 +65,10 @@ const RecruiterScreening = () => {
   }, []);
 
   function interviewDesignScreenParams() {
-    let params = { hiring_plan_id: "PL0001" };
+    let params = { interview_design_id: 30 };
     axios
-      .get("http://localhost:8000/interview_design_screen/", { params })
+      .get("https://api.pixeladvant.com/interview_design_screen/", { params })
       .then((response) => {
-        console.log(response.data.data);
         setRows(response.data.data);
       })
       .catch((error) => {

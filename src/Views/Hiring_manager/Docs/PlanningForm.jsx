@@ -197,11 +197,13 @@ const useEditDetails = (edit_id, setFormData, setLoading, set_is_edit) =>
 const PlanningForm = () => {
   const edit_id = new URLSearchParams(window.location.search).get("edit_id");
   const [formData, setFormData] = useState(initialState);
+  console.log(formData,"dsfads")
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [sections, setSections] = useState([]);
   const [is_edit, set_is_edit] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [communication_languages,setCommunication_languages] = useState([]);
   const navigate = useNavigate();
 
   useEditDetails(edit_id, setFormData, setLoading, set_is_edit);
@@ -309,6 +311,19 @@ const PlanningForm = () => {
     [setFormData]
   );
 
+  const hanldeMultiChnage = (selectedOptions,name)=>{
+    console.log(selectedOptions,"Adasdqw")
+    // setCommunication_languages((prev) => ({
+    //         ...prev,
+    //         [name]: true
+    //           ? selectedOptions?.map((opt) => opt.value).join(", ")
+    //           : selectedOptions?.value || "",
+    //       }))
+
+    setSections([...sections,{ name: "social_media_links", label: "Social Media Link" }])
+}
+        console.log(communication_languages?.tech_stacks,"saawEW")
+
   const handleSubmit = useCallback(async () => {
     if (!validateForm(formData)) return;
     const payload = new FormData();
@@ -389,21 +404,22 @@ const PlanningForm = () => {
     label,
     name,
     optionsList = [],
-    isMulti = false
+    isMulti = true
   ) => (
     <div className="mb-3 col-md-5 mx-5" key={name}>
       <label className="form-label">{getLabelWithAsterisk(name, label)}</label>
       <CreatableSelect
         isClearable
         isMulti={isMulti}
-        onChange={(selectedOptions) =>
-          setFormData((prev) => ({
-            ...prev,
-            [name]: isMulti
-              ? selectedOptions?.map((opt) => opt.value).join(", ")
-              : selectedOptions?.value || "",
-          }))
-        }
+onChange={(selectedOptions) => {
+  hanldeMultiChnage(selectedOptions, name);
+  setFormData((prev) => ({
+    ...prev,
+    [name]: isMulti
+      ? selectedOptions?.map((opt) => opt.value).join(", ")
+      : selectedOptions?.value || "",
+  }));
+}}
         value={
           isMulti
             ? (formData[name]?.split(", ") || []).map((v) => ({
@@ -528,16 +544,13 @@ const PlanningForm = () => {
                       {section.fields.map(({ name, label }) => (
                         <React.Fragment key={name}>
                           {[
-                            "job_position",
-                            "designation",
                             "tech_stacks",
-                            "target_companies",
-                            "location",
+                            "communication_language",
                           ].includes(name)
                             ? renderCreatableSelect(
                                 label,
                                 name,
-                                dropdownOptions[name] || []
+                                dropdownOptions[name] || [],
                               )
                             : name === "jd_details"
                             ? renderJobDescriptionField()

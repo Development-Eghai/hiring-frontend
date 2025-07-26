@@ -26,7 +26,9 @@ import { Layout } from "Views/Hiring_manager/Hiring_manager_utils/Layout";
 import InterviewerDashboard from "Views/Interviewer/Docs/InterviewerDashboard";
 import { InterviwerLayout } from "Views/Interviewer/Interviewer_utils/InterviwerLayout";
 import CandidateScreen from "Views/Recruiter/Docs/CandidateScreen";
+import HiringManagerApproval from "Views/Recruiter/Docs/HiringManagerApproval";
 import RecruiterScreening from "Views/Recruiter/Docs/RecruiterScreening";
+import RecruiterScreeningDashboard from "Views/Recruiter/Docs/RecruiterScreeningDashboard";
 import { RecruiterDashboard } from "Views/Recruiter/Docs/RecuirmentDashboard";
 import ScheduleInteview from "Views/Recruiter/Docs/ScheduleInteview";
 import { RecruiterLayout } from "Views/Recruiter/Recruiter_utils/layout";
@@ -88,7 +90,8 @@ function App() {
           <Route path="schedule_interview" element={<ScheduleInteview/>}/>
           <Route path="candidate" element={<CandidateScreen/>}/>
           <Route path="recruiter_screening" element={<RecruiterScreening/>}/>
-
+          <Route path="recruiter_screening_dashboard" element={<RecruiterScreeningDashboard/>}/>
+          <Route path="recruiter_approval" element={<HiringManagerApproval/>}/>
           </Route>
           </Route>
 

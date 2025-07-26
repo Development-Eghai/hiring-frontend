@@ -31,13 +31,13 @@ const RecruiterHeader = () => {
               />
               <span className="input-group-text bg-white border-start-0">
                 <FaSearch />
-              </span>
-            </div>
-
-              Icons
-              <FaBell className="fs-6 " />
-              <FaUser className="fs-6" />
-            </div> */}
+                </span>
+                </div>
+                
+                Icons
+                <FaBell className="fs-6 " />
+                <FaUser className="fs-6" />
+                </div> */}
           </div>
           <div className="row mt-2 p-2">
             <div className="col d-flex flex-wrap gap-2">
@@ -46,6 +46,16 @@ const RecruiterHeader = () => {
                 className="btn-primary"
                 clickFunction={() => navigate("/recruiter/candidate")}
               />
+                <ButtonComponent
+                 buttonName="Screening" 
+                 className="btn-primary" 
+                  clickFunction={() => navigate("/recruiter/recruiter_screening_dashboard")}
+                 />
+                <ButtonComponent
+                  buttonName="Hiring Manager Approval"
+                  className="btn-primary"
+                   clickFunction={() => navigate("/recruiter/recruiter_approval")}
+                />
               <ButtonComponent
                 buttonName="Schedule interview"
                 className="btn-primary"
@@ -55,16 +65,7 @@ const RecruiterHeader = () => {
                 buttonName="Recruiter Negotiation"
                 className="btn-primary"
               />
-              <ButtonComponent
-               buttonName="Screening" 
-               className="btn-primary" 
-                clickFunction={() => navigate("/recruiter/recruiter_screening")}
-               />
 
-              <ButtonComponent
-                buttonName="Hiring Manager Approval"
-                className="btn-primary"
-              />
               <ButtonComponent
                 buttonName="Interview Stages"
                 className="btn-primary"
