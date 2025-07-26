@@ -14,20 +14,16 @@ import axiosInstance from "Services/axiosInstance";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CandidateApprovalStatus from "./CandidateApprovalStatus";
-import { BsPencilSquare, BsTrash } from "react-icons/bs";
-
 import DataTable from "react-data-table-component";
-import axios from "axios";
 
 const SetApproveScreen = () => {
   const [approvers, setApprovers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [step, setStep] = useState(1);
   const [loadingClient, setLoadingClient] = useState(false);
-  const [showEditModal,setShowEditModal] =useState(false);
-  // const [showViewModal, setShowViewModal] = useState(false);
-  // const [viewApproversData, setViewApproversData] = useState([]);
-
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [viewApproversData, setViewApproversData] = useState([]);
+console.log(viewApproversData,"dada")
   const [dropdownOptions, setDropdownOptions] = useState({
     requisition_id: [],
     plan_id: [],
@@ -107,27 +103,34 @@ const SetApproveScreen = () => {
     ],
   });
 
-  console.log(formState,"adqwdqw")
-
   const fetchApprovers = async () => {
-    try {
-      const res = await axiosInstance.get("/api/set-approver/");
-      if (res.data.success) {
-        const data = res?.data?.data?.approvers;
-        if (data && typeof data === "object") {
-          setApprovers(data);
-        } else {
-          setApprovers([]);
-          console.warn("Invalid approver data format:", data);
-        }
+  try {
+    const res = await axiosInstance.get("/api/set-approver/");
+    if (res.data.success) {
+      const approversList = res.data.data?.approvers;
+      const approver = res?.data?.data
+      if (Array.isArray(approversList)) {
+        setViewApproversData(approversList);
+        setApprovers([{
+          req_id:approver?.req_id,
+          planning_id:approver?.planning_id,
+        client_name:approver?.client_name,
+      client_id:approver?.client_id,
+    no_of_approvers:approver?.no_of_approvers,
+  approvers:approversList}
+        ])
       } else {
-        toast.error(res.data.message || "Failed to fetch approvers.");
+        setViewApproversData([]);
+        console.warn("Approvers list is invalid:", approversList);
       }
-    } catch (error) {
-      console.error("Error fetching approvers:", error);
-      toast.error("Error fetching approvers.");
+    } else {
+      toast.error(res.data.message || "Failed to fetch approvers.");
     }
-  };
+  } catch (error) {
+    console.error("Error fetching approvers:", error);
+    toast.error("Error fetching approvers.");
+  }
+};
 
   useEffect(() => {
     fetchApprovers();
@@ -222,59 +225,6 @@ const SetApproveScreen = () => {
     }
   };
 
-
-  const handleEdit = async(req_id)=>{
-     try {
-      const res = await axiosInstance.post("/api/approvers/by-requisition/", {req_id});
-      console.log(res,"asd")
-      if (res.data.success) {
-        setShowEditModal(true)
-        setFormState(res?.data?.data)
-
-      } else {
-        toast.error(res.data.message || "Failed to submit approvers.");
-      }
-    } catch (err) {
-      console.error("Final submit error:", err);
-      toast.error("Submission failed.");
-    }
-  }
-
-  const handleUpdate = async()=>{
-        try {
-      const res = await axiosInstance.put("/api/set-approver/", formState);
-      if (res.data.success) {
-        toast.success("Approvers Updated successfully!");
-        setShowEditModal(false)
-        fetchApprovers();
-      } else {
-        toast.error(res.data.message || "Failed to submit approvers.");
-      }
-    } catch (err) {
-      console.error("Final submit error:", err);
-      toast.error("Submission failed.");
-    }
-  }
-
-  const handleDelete = async(approver_id) => {
-            try {
-const res = await axiosInstance.delete("https://api.pixeladvant.com/api/set-approver/", {
-  data: {
-    id: approver_id,
-  },
-});
-          if (res.data.success) {
-        toast.success("Approvers Deleted successfully!");
-        fetchApprovers();
-      } else {
-        toast.error(res.data.message || "Failed to submit approvers.");
-      }
-    } catch (err) {
-      console.error("Final submit error:", err);
-      toast.error("Submission failed.");
-    }
-  }
-
   return (
     <div>
       <Container fluid className="py-4 px-md-5 bg-light min-vh-100">
@@ -302,14 +252,7 @@ const res = await axiosInstance.delete("https://api.pixeladvant.com/api/set-appr
                   <th>Req ID</th>
                   <th>Planning ID</th>
                   <th>Client Name</th>
-                  <th>First Name</th>
-                  <th>Last Name</th>
-                  <th>Email</th>
-                  <th>Contact</th>
                   <th>No. of Approver</th>
-                  <th>Role</th>
-                  <th>Job Title</th>
-                  <th>Approver</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -319,41 +262,28 @@ const res = await axiosInstance.delete("https://api.pixeladvant.com/api/set-appr
                     <td>{a.req_id}</td>
                     <td>{a.planning_id}</td>
                     <td>{a.client_name}</td>
-                    <td>{a.first_name}</td>
-                    <td>{a.last_name}</td>
-                    <td>{a.email}</td>
-                    <td>{a.contact_number}</td>
                     <td>{a.no_of_approvers}</td>
-                    <td>{a.role}</td>
-                    <td>{a.job_title}</td>
-                    <td>{a.set_as_approver}</td>
-                    <td className="d-flex gap-2 p-2">
-                                                          <Button
-                                    variant="outline-secondary"
-                                    size="sm"
-                                    onClick={() => handleEdit(a.req_id)}
-                                  >
-                <BsPencilSquare className="me-1" />
-                                  </Button>
-                                    <Button
-                                    variant="outline-danger"
-                                    size="sm"
-                                    onClick={() => handleDelete(a.approver_id)}
-                                  >
-                                    <BsTrash className="me-1" />
-                                  </Button>
-                    </td>
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      onClick={() => {
+                        setViewApproversData(a.approvers || []);
+                        setShowViewModal(true);
+                      }}
+                    >
+                      View
+                    </Button>
                   </tr>
                 ))}
               </tbody>
             </Table>
-          </div>
+          </div> 
         </Card>
         {/* <hr /> */}
 
         {/* <div>
           <CandidateApprovalStatus />
-        </div> */}
+        </div>
 
         {/* Modal */}
         <Modal show={showModal} onHide={handleCloseModal} centered size="xl">
@@ -566,159 +496,7 @@ const res = await axiosInstance.delete("https://api.pixeladvant.com/api/set-appr
           </Modal.Footer>
         </Modal>
 
-        {/* edit */}
-
-          <Modal show={showEditModal} onHide={()=>setShowEditModal(false)} centered size="xl">
-          <Modal.Header closeButton>
-            <Modal.Title>Update Approver</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-              <>
-                <Row className="mb-3">
-                  <Col md={6}>
-                    <Form.Group>
-                      <Form.Label>Client Name</Form.Label>
-                      <Form.Control
-                        name="client_name"
-                        placeholder="Enter client name"
-                        value={formState.client_name}
-                        onChange={handleMainChange}
-                        disabled
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={6}>
-                    <Form.Group>
-                      <Form.Label>Client ID</Form.Label>
-                      <Form.Control
-                        name="client_id"
-                        placeholder="Enter client ID"
-                        value={formState.client_id}
-                        onChange={handleMainChange}
-                        disabled
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
-
-                <Form.Group className="mb-3">
-                  <Form.Label>Number of Approvers</Form.Label>
-                  <Form.Control
-                    type="number"
-                    min="1"
-                    name="no_of_approvers"
-                    value={formState.no_of_approvers}
-                    onChange={handleNoOfApproversChange}
-                  />
-                </Form.Group>
-
-                {formState.approvers.map((approver, index) => (
-                  <div key={index} className="border rounded p-3 mb-4">
-                    <h6 className="fw-bold">Approver {index + 1}</h6>
-                    <Row className="mb-3">
-                      <Col md={6}>
-                        <Form.Group>
-                          <Form.Label>Role</Form.Label>
-                          <Form.Select
-                            name="role"
-                            value={approver.role}
-                            onChange={(e) => handleApproverChange(index, e)}
-                          >
-                            <option value="">-- Select Role --</option>
-                            <option value="MANAGER">Manager</option>
-                            <option value="HR">HR</option>
-                            <option value="FINANCE">Finance</option>
-                            <option value="REVIEWER">Reviewer</option>
-                          </Form.Select>
-                        </Form.Group>
-                      </Col>
-                      <Col md={6}>
-                        <Form.Group>
-                          <Form.Label>Job Title</Form.Label>
-                          <Form.Control
-                            name="job_title"
-                            value={approver.job_title}
-                            onChange={(e) => handleApproverChange(index, e)}
-                            placeholder="Enter job title"
-                          />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-
-                    <Row className="mb-3">
-                      <Col md={6}>
-                        <Form.Group>
-                          <Form.Label>First Name</Form.Label>
-                          <Form.Control
-                            name="first_name"
-                            value={approver.first_name}
-                            onChange={(e) => handleApproverChange(index, e)}
-                          />
-                        </Form.Group>
-                      </Col>
-                      <Col md={6}>
-                        <Form.Group>
-                          <Form.Label>Last Name</Form.Label>
-                          <Form.Control
-                            name="last_name"
-                            value={approver.last_name}
-                            onChange={(e) => handleApproverChange(index, e)}
-                          />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-
-                    <Row className="mb-3">
-                      <Col md={6}>
-                        <Form.Group>
-                          <Form.Label>Email</Form.Label>
-                          <Form.Control
-                            type="email"
-                            name="email"
-                            value={approver.email}
-                            onChange={(e) => handleApproverChange(index, e)}
-                          />
-                        </Form.Group>
-                      </Col>
-                      <Col md={6}>
-                        <Form.Group>
-                          <Form.Label>Contact Number</Form.Label>
-                          <Form.Control
-                            name="contact_number"
-                            value={approver.contact_number}
-                            onChange={(e) => handleApproverChange(index, e)}
-                          />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-
-                    <Form.Group>
-                      <Form.Label>Set as Approver</Form.Label>
-                      <Form.Select
-                        name="set_as_approver"
-                        value={approver.set_as_approver}
-                        onChange={(e) => handleApproverChange(index, e)}
-                      >
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                      </Form.Select>
-                    </Form.Group>
-                  </div>
-                ))}
-              </>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={()=>setShowEditModal(false)}>
-              Cancel
-            </Button>
-              <Button variant="success" onClick={handleUpdate}>
-                Update
-              </Button>
-     
-          </Modal.Footer>
-        </Modal>
-
-        {/* <Modal
+        <Modal
           show={showViewModal}
           onHide={() => setShowViewModal(false)}
           size="xl"
@@ -750,7 +528,7 @@ const res = await axiosInstance.delete("https://api.pixeladvant.com/api/set-appr
               Close
             </Button>
           </Modal.Footer>
-        </Modal> */}
+        </Modal>
 
         <ToastContainer position="top-right" autoClose={3000} />
       </Container>

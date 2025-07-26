@@ -322,7 +322,6 @@ const PlanningForm = () => {
 
     setSections([...sections,{ name: "social_media_links", label: "Social Media Link" }])
 }
-        console.log(communication_languages?.tech_stacks,"saawEW")
 
   const handleSubmit = useCallback(async () => {
     if (!validateForm(formData)) return;
@@ -404,7 +403,7 @@ const PlanningForm = () => {
     label,
     name,
     optionsList = [],
-    isMulti = true
+    isMulti = false
   ) => (
     <div className="mb-3 col-md-5 mx-5" key={name}>
       <label className="form-label">{getLabelWithAsterisk(name, label)}</label>
@@ -412,7 +411,7 @@ const PlanningForm = () => {
         isClearable
         isMulti={isMulti}
 onChange={(selectedOptions) => {
-  hanldeMultiChnage(selectedOptions, name);
+  // hanldeMultiChnage(selectedOptions, name);
   setFormData((prev) => ({
     ...prev,
     [name]: isMulti
