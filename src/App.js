@@ -18,6 +18,7 @@ import InterviewDesignDashboard from "Views/Hiring_manager/Docs/InterviewDesignD
 import InterviewDesignScreen from "Views/Hiring_manager/Docs/InterviewDesignScreen";
 import JobRequisition from "Views/Hiring_manager/Docs/JobRequisition";
 import PlanningForm from "Views/Hiring_manager/Docs/PlanningForm";
+import PlanninggForm from "Views/Hiring_manager/Docs/PlanningFormm";
 import { PlanningScreen } from "Views/Hiring_manager/Docs/PlanningScreen";
 import ResponsibilitySetting from "Views/Hiring_manager/Docs/resposbility";
 import SetApproveScreen from "Views/Hiring_manager/Docs/SetApproveScreen";
@@ -48,7 +49,8 @@ function App() {
               {/* <Route path="hiring_manager_dashboard" element={<Home />} /> */}
               <Route path="planning">
                 <Route index element={<PlanningScreen />} />
-                <Route path="hiring_planning_form" element={<PlanningForm />} />
+                {/* <Route path="hiring_planning_form" element={<PlanningForm />} /> */}
+                <Route path = "hiring_planning_form" element={<PlanninggForm/>}/>
                 <Route
                   path="interview_design_screen"
                   element={<InterviewDesignScreen />}

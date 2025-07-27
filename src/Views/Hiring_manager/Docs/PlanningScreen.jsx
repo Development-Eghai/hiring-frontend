@@ -170,7 +170,7 @@ useEffect(() => {
             size="sm"
             onClick={() =>
               navigate(
-                `/hiring_manager/planning/hiring_planning_form?edit_id=${row.id}`
+                `/hiring_manager/planning/planningg_form?edit_id=${row.id}`
               )
             }
           >
