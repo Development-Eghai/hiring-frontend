@@ -10,7 +10,7 @@ const Header = ({ offcanvasOn, offcanvasOnButton }) => {
   const { commonState } = useCommonState();
   const dispatch = useDispatch();
   const userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};
-  const { username, role } = userInfo;
+  const { Name,username, role } = userInfo;
 
   const navigate = useNavigate();
 
@@ -47,7 +47,7 @@ const Header = ({ offcanvasOn, offcanvasOnButton }) => {
 
           <div className="col d-inline-flex flex-wrap justify-content-end align-items-center">
             <div className="d-inline-block me-3 text-end">
-              <div className="fw-bold">{username}</div>
+              <div className="fw-bold">{Name}</div>
               <div className="text-muted small">{role}</div>
             </div>
 

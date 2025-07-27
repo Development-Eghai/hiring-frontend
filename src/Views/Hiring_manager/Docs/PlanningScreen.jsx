@@ -125,21 +125,35 @@ export const PlanningScreen = () => {
   useEffect(() => {
     dispatch(HandleGetPlanningScreen({ fields: selectedFields }));
   }, [selectedFields]);
+useEffect(() => {
+  const data = planningScreenState?.reporting?.data || [];
+  const lowerSearch = searchTerm.trim().toLowerCase();
 
-  useEffect(() => {
-    const data = planningScreenState?.reporting?.data || [];
-    const lowerSearch = searchTerm.toLowerCase();
+  if (!lowerSearch) {
+    setFilteredData(data);
+    return;
+  }
 
-    const filtered = data.filter((item) =>
-      selectedFields.some((field) =>
-        String(item[field] || "")
-          .toLowerCase()
-          .includes(lowerSearch)
-      )
-    );
+  const filtered = data.filter((item) =>
+    selectedFields.some((field) => {
+      if (!item.hasOwnProperty(field)) return false;
 
-    setFilteredData(filtered);
-  }, [planningScreenState?.reporting?.data, searchTerm, selectedFields]);
+      const value = String(item[field] || "");
+
+      // Only use first 2 words for "Jd" field
+      const contentToSearch =
+        field === "Jd"
+          ? value.split(/\s+/).slice(0, 2).join(" ")
+          : value;
+
+      return contentToSearch.toLowerCase().includes(lowerSearch);
+    })
+  );
+
+  setFilteredData(filtered);
+}, [planningScreenState?.reporting?.data, searchTerm, selectedFields]);
+
+
 
   const columns = [
     ...selectedFields.map((field) => ({

@@ -15,6 +15,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CandidateApprovalStatus from "./CandidateApprovalStatus";
 import DataTable from "react-data-table-component";
+import { BsPencilSquare, BsTrash } from "react-icons/bs";
 
 const SetApproveScreen = () => {
   const [approvers, setApprovers] = useState([]);
@@ -23,7 +24,9 @@ const SetApproveScreen = () => {
   const [loadingClient, setLoadingClient] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewApproversData, setViewApproversData] = useState([]);
-console.log(viewApproversData,"dada")
+  const [showEditModal, setShowEditModal] = useState(false);
+
+  console.log(viewApproversData, "dada");
   const [dropdownOptions, setDropdownOptions] = useState({
     requisition_id: [],
     plan_id: [],
@@ -51,7 +54,7 @@ console.log(viewApproversData,"dada")
   useEffect(() => {
     fetchApprovers();
     fetchDropdownData();
-  }, []);
+  }, [showEditModal]);
 
   const fetchClientDetails = async (req_id, plan_id) => {
     if (!req_id || !plan_id) return;
@@ -104,33 +107,35 @@ console.log(viewApproversData,"dada")
   });
 
   const fetchApprovers = async () => {
-  try {
-    const res = await axiosInstance.get("/api/set-approver/");
-    if (res.data.success) {
-      const approversList = res.data.data?.approvers;
-      const approver = res?.data?.data
-      if (Array.isArray(approversList)) {
-        setViewApproversData(approversList);
-        setApprovers([{
-          req_id:approver?.req_id,
-          planning_id:approver?.planning_id,
-        client_name:approver?.client_name,
-      client_id:approver?.client_id,
-    no_of_approvers:approver?.no_of_approvers,
-  approvers:approversList}
-        ])
+    try {
+      const res = await axiosInstance.get("/api/set-approver/");
+      if (res.data.success) {
+        const approversList = res.data.data?.approvers;
+        const approver = res?.data?.data;
+        if (Array.isArray(approversList)) {
+          setViewApproversData(approversList);
+          setApprovers([
+            {
+              req_id: approver?.req_id,
+              planning_id: approver?.planning_id,
+              client_name: approver?.client_name,
+              client_id: approver?.client_id,
+              no_of_approvers: approver?.no_of_approvers,
+              approvers: approversList,
+            },
+          ]);
+        } else {
+          setViewApproversData([]);
+          console.warn("Approvers list is invalid:", approversList);
+        }
       } else {
-        setViewApproversData([]);
-        console.warn("Approvers list is invalid:", approversList);
+        // toast.error("Failed to fetch approvers."); 
       }
-    } else {
-      toast.error(res.data.message || "Failed to fetch approvers.");
+    } catch (error) {
+      console.error("Error fetching approvers:", error);
+      toast.error("Error fetching approvers.");
     }
-  } catch (error) {
-    console.error("Error fetching approvers:", error);
-    toast.error("Error fetching approvers.");
-  }
-};
+  };
 
   useEffect(() => {
     fetchApprovers();
@@ -225,18 +230,77 @@ console.log(viewApproversData,"dada")
     }
   };
 
+  const handleEdit = async (req_id) => {
+    try {
+      const res = await axiosInstance.post("/api/approvers/by-requisition/", {
+        req_id,
+      });
+      if (res.data.success) {
+        setShowEditModal(true);
+        setFormState(res?.data?.data);
+      } else {
+        toast.error(res.data.message || "Failed to submit approvers.");
+      }
+    } catch (err) {
+      console.error("Final submit error:", err);
+      toast.error("Submission failed.");
+    }
+  };
+
+  const handleUpdate = async () => {
+    try {
+      const res = await axiosInstance.put("/api/set-approver/", formState);
+      if (res.data.success) {
+        toast.success("Approvers Updated successfully!");
+        setShowEditModal(false);
+        fetchApprovers();
+      } else {
+        toast.error(res.data.message || "Failed to submit approvers.");
+      }
+    } catch (err) {
+      console.error("Final submit error:", err);
+      toast.error("Submission failed.");
+    }
+  };
+
+  const handleDelete = async (row) => {
+    console.log(row,"dadq")
+
+    try {
+      const res = await axiosInstance.delete(
+        "https://api.pixeladvant.com/api/set-approver/",
+        {
+          data: {
+            id: row?.approver_id,
+          },
+        }
+      );
+      if (res.data.success) {
+        fetchApprovers();
+        setViewApproversData([])
+        toast.success("Approvers Deleted successfully!");
+        setShowViewModal(false)
+      } else {
+        toast.error(res.data.message || "Failed to submit approvers.");
+      }
+    } catch (err) {
+      console.error("Final submit error:", err);
+      toast.error("Submission failed.");
+    }
+  };
+
   return (
     <div>
       <Container fluid className="py-4 px-md-5 bg-light min-vh-100">
         <Card className="shadow-sm p-4">
           <div>
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <h5 className="fw-bold m-0">Approver Details</h5>
-            <Button variant="success" onClick={handleAddNew}>
-              + Add Approver
-            </Button>
-          </div>
-          
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h5 className="fw-bold m-0">Approver Details</h5>
+              <Button variant="success" onClick={handleAddNew}>
+                + Add Approver
+              </Button>
+            </div>
+
             {/* <CandidateApprovalStatus /> */}
           </div>
           <div className="table-responsive">
@@ -263,21 +327,31 @@ console.log(viewApproversData,"dada")
                     <td>{a.planning_id}</td>
                     <td>{a.client_name}</td>
                     <td>{a.no_of_approvers}</td>
-                    <Button
-                      size="sm"
-                      variant="primary"
-                      onClick={() => {
-                        setViewApproversData(a.approvers || []);
-                        setShowViewModal(true);
-                      }}
-                    >
-                      View
-                    </Button>
+                    <td className="d-flex p-2 gap-2 justify-content-center">
+                      <Button
+                        size="sm"
+                        variant="outline-primary"
+                        onClick={() => {
+                          setViewApproversData(a.approvers || []);
+                          setShowViewModal(true);
+                        }}
+                      >
+                        View
+                      </Button>
+                      <Button
+                        variant="outline-secondary"
+                        size="sm"
+                        onClick={() => handleEdit(a.req_id)}
+                      >
+                        <BsPencilSquare className="me-1" />
+                      </Button>
+
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </Table>
-          </div> 
+          </div>
         </Card>
         {/* <hr /> */}
 
@@ -515,7 +589,23 @@ console.log(viewApproversData,"dada")
                 { name: "Email", selector: (row) => row.email },
                 { name: "Contact", selector: (row) => row.contact_number },
                 { name: "Approver", selector: (row) => row.set_as_approver },
-              ]}
+                {
+      name: "Action",
+      cell: (row) => (
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => handleDelete(row)}
+                      >
+                        <BsTrash className="me-1" />
+                      </Button>
+      ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+    },
+  ]}
+
               data={viewApproversData}
               // pagination
               // highlightOnHover
@@ -530,6 +620,161 @@ console.log(viewApproversData,"dada")
           </Modal.Footer>
         </Modal>
 
+        {/* edit */}
+
+        <Modal
+          show={showEditModal}
+          onHide={() => setShowEditModal(false)}
+          centered
+          size="xl"
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Update Approver</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <>
+              <Row className="mb-3">
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label>Client Name</Form.Label>
+                    <Form.Control
+                      name="client_name"
+                      placeholder="Enter client name"
+                      value={formState.client_name}
+                      onChange={handleMainChange}
+                      disabled
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label>Client ID</Form.Label>
+                    <Form.Control
+                      name="client_id"
+                      placeholder="Enter client ID"
+                      value={formState.client_id}
+                      onChange={handleMainChange}
+                      disabled
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Number of Approvers</Form.Label>
+                <Form.Control
+                  type="number"
+                  min="1"
+                  name="no_of_approvers"
+                  value={formState.no_of_approvers}
+                  onChange={handleNoOfApproversChange}
+                />
+              </Form.Group>
+
+              {formState.approvers.map((approver, index) => (
+                <div key={index} className="border rounded p-3 mb-4">
+                  <h6 className="fw-bold">Approver {index + 1}</h6>
+                  <Row className="mb-3">
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label>Role</Form.Label>
+                        <Form.Select
+                          name="role"
+                          value={approver.role}
+                          onChange={(e) => handleApproverChange(index, e)}
+                        >
+                          <option value="">-- Select Role --</option>
+                          <option value="MANAGER">Manager</option>
+                          <option value="HR">HR</option>
+                          <option value="FINANCE">Finance</option>
+                          <option value="REVIEWER">Reviewer</option>
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label>Job Title</Form.Label>
+                        <Form.Control
+                          name="job_title"
+                          value={approver.job_title}
+                          onChange={(e) => handleApproverChange(index, e)}
+                          placeholder="Enter job title"
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+
+                  <Row className="mb-3">
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label>First Name</Form.Label>
+                        <Form.Control
+                          name="first_name"
+                          value={approver.first_name}
+                          onChange={(e) => handleApproverChange(index, e)}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label>Last Name</Form.Label>
+                        <Form.Control
+                          name="last_name"
+                          value={approver.last_name}
+                          onChange={(e) => handleApproverChange(index, e)}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+
+                  <Row className="mb-3">
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label>Email</Form.Label>
+                        <Form.Control
+                          type="email"
+                          name="email"
+                          value={approver.email}
+                          onChange={(e) => handleApproverChange(index, e)}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label>Contact Number</Form.Label>
+                        <Form.Control
+                          name="contact_number"
+                          value={approver.contact_number}
+                          onChange={(e) => handleApproverChange(index, e)}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+
+                  <Form.Group>
+                    <Form.Label>Set as Approver</Form.Label>
+                    <Form.Select
+                      name="set_as_approver"
+                      value={approver.set_as_approver}
+                      onChange={(e) => handleApproverChange(index, e)}
+                    >
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </Form.Select>
+                  </Form.Group>
+                </div>
+              ))}
+            </>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+              Cancel
+            </Button>
+            <Button variant="success" onClick={handleUpdate}>
+              Update
+            </Button>
+          </Modal.Footer>
+        </Modal>
         <ToastContainer position="top-right" autoClose={3000} />
       </Container>
     </div>
