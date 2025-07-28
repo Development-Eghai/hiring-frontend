@@ -6,7 +6,7 @@ import "react-quill/dist/quill.snow.css";
 import "../../../Stylesheet/Css/App.css";
 import DataTable from "react-data-table-component";
 import { PlusCircle } from "react-bootstrap-icons";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Modal } from "react-bootstrap";
 import axiosInstance from "Services/axiosInstance";
 import { useCommonState } from "Components/CustomHooks";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -36,14 +36,16 @@ const RequisitionForm = (handleNext) => {
 
   const [internalDesc, setInternalDesc] = useState("");
   const [externalDesc, setExternalDesc] = useState("");
-
+  const [actionType, setActionType] = useState(""); 
   const [planid, setPlanId] = useState([]);
   const [reqtempid, setreqtempid] = useState("");
+  const [showConfirmActionModal, setShowConfirmActionModal] = useState(false);
+  const [actionComment, setActionComment] = useState("");
 
   const routelocation = useLocation();
 
-  const createreqformData = routelocation?.state
-
+  const createreqformData = routelocation?.state;
+  console.log(createreqformData, "asdas");
   //   const handleSubmitBulkAction = async () => {
   //   setIsSubmitting(true);
   //   const payload = {
@@ -73,14 +75,12 @@ const RequisitionForm = (handleNext) => {
 
   // };
 
-
-  useEffect(()=>{
-    if(createreqformData?.id){
-      setreqtempid(createreqformData?.id)
+  useEffect(() => {
+    if (createreqformData?.id) {
+      setreqtempid(createreqformData?.id);
     }
-  },[createreqformData])
+  }, [createreqformData]);
 
-  
   async function fetch_reqs() {
     try {
       let gettempleteDetail;
@@ -93,7 +93,7 @@ const RequisitionForm = (handleNext) => {
           }
         );
       }
-      console.log(gettempleteDetail,"sdfs")
+      console.log(gettempleteDetail, "sdfs");
       if (gettempleteDetail?.data?.error_code == 200) {
         const templeteDetails = gettempleteDetail?.data?.data;
         const {
@@ -109,7 +109,7 @@ const RequisitionForm = (handleNext) => {
           skills_required,
         } = templeteDetails;
 
-        setPlanId(Planning_id)
+        setPlanId(Planning_id);
         const {
           internalDesc,
           externalDesc,
@@ -217,19 +217,43 @@ const RequisitionForm = (handleNext) => {
     reset,
   } = useForm();
 
+
+  const handleSubmitStatus = async()=>{
+        try {
+
+        const payload = {
+          user_role: commonState?.app_data?.user_id,
+          req_data: [{
+            req_id:createreqformData?.id,
+            status: actionType,
+            comment: actionComment,
+          }],
+        };
+
+      const response = await axiosInstance.post(
+        "https://api.pixeladvant.com/api/jobrequisition/approve_requisition/",
+        payload
+      );
+
+      if (response?.data?.success) {
+        toast.success(`${actionType} successful`);
+        navigate("/business_ops/dashboard")
+      } else {
+        toast.error("Action failed.");
+      }
+    } catch (error) {
+      console.error("single action error:", error);
+      toast.error("API error during action.");
+    }
+  }
+
   return (
     <div style={{ maxHeight: "500px", overflowY: "auto" }}>
       <ToastContainer />
-      <form
-        className="py-1 mt-2"
-        noValidate
-      >
+      <form className="py-1 mt-2"  noValidate>
         <div className="row">
           <div className="mb-3 col-md-3">
-            <p>
-              Requisition Id:{" "}
-              {reqtempid || createreqformData?.reqid}
-            </p>
+            <p>Requisition Id: {reqtempid || createreqformData?.reqid}</p>
           </div>
           <div className="mb-3 col-md-3">
             <p>Planning ID: {planid}</p>
@@ -255,20 +279,18 @@ const RequisitionForm = (handleNext) => {
                 {...register("internal_title")}
                 className="form-control"
                 disabled
-              >
-              </input>
+              ></input>
             </div>
 
             {/* External Job Title */}
             <div className="col-md-3">
               <label className="form-label">External Job Title</label>
 
-                            <input
+              <input
                 {...register("external_title")}
                 className="form-control"
                 disabled
-              >
-              </input>
+              ></input>
             </div>
 
             {/* Position */}
@@ -276,7 +298,7 @@ const RequisitionForm = (handleNext) => {
               <label className="form-label">
                 Position<span className="text-danger">*</span>
               </label>
-                                          <input
+              <input
                 {...register("job_position")}
                 className="form-control"
                 disabled
@@ -293,17 +315,17 @@ const RequisitionForm = (handleNext) => {
               />
             </div>
 
-                        <div className="col-md-3">
+            <div className="col-md-3">
               <label className="form-label">Date of Requisition</label>
               <input
-              type="date"
+                type="date"
                 {...register("date_of_requisition")}
                 className="form-control"
-                               disabled
+                disabled
               />
             </div>
 
-                        <div className="col-md-3">
+            <div className="col-md-3">
               <label className="form-label">Due Date of Requisition </label>
               <input
                 {...register("due_date_of_requisition")}
@@ -315,7 +337,7 @@ const RequisitionForm = (handleNext) => {
             {/* Business Line */}
             <div className="col-md-3">
               <label className="form-label">Business Line</label>
-                            <input
+              <input
                 {...register("business_line")}
                 className="form-control"
                 disabled
@@ -325,7 +347,7 @@ const RequisitionForm = (handleNext) => {
             {/* Business Unit */}
             <div className="col-md-3">
               <label className="form-label">Business Unit</label>
-                                          <input
+              <input
                 {...register("business_unit")}
                 className="form-control"
                 disabled
@@ -335,7 +357,7 @@ const RequisitionForm = (handleNext) => {
             {/* Division */}
             <div className="col-md-3">
               <label className="form-label">Division</label>
-                                                        <input
+              <input
                 {...register("division")}
                 className="form-control"
                 disabled
@@ -345,7 +367,7 @@ const RequisitionForm = (handleNext) => {
             {/* Department */}
             <div className="col-md-3">
               <label className="form-label">Department</label>
-                                                                      <input
+              <input
                 {...register("department")}
                 className="form-control"
                 disabled
@@ -354,10 +376,8 @@ const RequisitionForm = (handleNext) => {
 
             {/* Location */}
             <div className="col-md-3">
-              <label className="form-label">
-                Location
-              </label>
-                                                                                    <input
+              <label className="form-label">Location</label>
+              <input
                 {...register("location")}
                 className="form-control"
                 disabled
@@ -366,10 +386,8 @@ const RequisitionForm = (handleNext) => {
 
             {/* Geo Zone */}
             <div className="col-md-3">
-              <label className="form-label">
-                Geo Zone
-              </label>
-                                                                                                  <input
+              <label className="form-label">Geo Zone</label>
+              <input
                 {...register("geo_zone")}
                 className="form-control"
                 disabled
@@ -379,7 +397,11 @@ const RequisitionForm = (handleNext) => {
             {/* Career Level */}
             <div className="col-md-3">
               <label className="form-label">Career Level</label>
-              <input {...register("career_level")} className="form-control" disabled />
+              <input
+                {...register("career_level")}
+                className="form-control"
+                disabled
+              />
             </div>
 
             {/* Band */}
@@ -387,22 +409,27 @@ const RequisitionForm = (handleNext) => {
               <label className="form-label">
                 Band <span className="text-danger">*</span>
               </label>
-                            <input {...register("band")} className="form-control" disabled />
-
+              <input {...register("band")} className="form-control" disabled />
             </div>
 
             {/* Sub Band */}
             <div className="col-md-3">
               <label className="form-label">Sub Band</label>
-            <input {...register("sub_band")} className="form-control" disabled />
-
+              <input
+                {...register("sub_band")}
+                className="form-control"
+                disabled
+              />
             </div>
 
             {/* Mode of Working */}
             <div className="col-md-3">
               <label className="form-label">Mode of Working</label>
-                          <input {...register("working_model")} className="form-control" disabled />
-
+              <input
+                {...register("working_model")}
+                className="form-control"
+                disabled
+              />
             </div>
 
             {/* Client Interview */}
@@ -410,15 +437,21 @@ const RequisitionForm = (handleNext) => {
               <label className="form-label">
                 Client Interview<span className="text-danger">*</span>
               </label>
-                                <input {...register("client_interview")} className="form-control" disabled />
-        
+              <input
+                {...register("client_interview")}
+                className="form-control"
+                disabled
+              />
             </div>
 
             {/* Requisition Type */}
             <div className="col-md-3">
               <label className="form-label">Requisition Type</label>
-                                              <input {...register("requisition_type")} className="form-control" disabled />
-
+              <input
+                {...register("requisition_type")}
+                className="form-control"
+                disabled
+              />
             </div>
           </div>
         </AccordionItem>
@@ -431,9 +464,7 @@ const RequisitionForm = (handleNext) => {
           <div className="row d-flex gap-3">
             {/* primary skills */}
             <div className="col-md-3">
-              <label className="form-label">
-                Primary Skills
-              </label>
+              <label className="form-label">Primary Skills</label>
               <Controller
                 name="primary_skills"
                 control={control}
@@ -443,8 +474,8 @@ const RequisitionForm = (handleNext) => {
                     isMulti
                     // disabled={true}
                     isDisabled={true}
-                    />
-                  )}
+                  />
+                )}
               />
             </div>
 
@@ -455,11 +486,7 @@ const RequisitionForm = (handleNext) => {
                 name="secondary_skills"
                 control={control}
                 render={({ field }) => (
-                  <CreatableSelect
-                    {...field}
-                    isMulti
-                    isDisabled={true}
-                  />
+                  <CreatableSelect {...field} isMulti isDisabled={true} />
                 )}
               />
             </div>
@@ -474,11 +501,12 @@ const RequisitionForm = (handleNext) => {
           <div className="row d-flex gap-3">
             {/* billing type */}
             <div className="col-md-3">
-              <label className="form-label">
-                Billing Type
-              </label>
-                                              <input {...register("billing_type")} className="form-control" disabled />
-
+              <label className="form-label">Billing Type</label>
+              <input
+                {...register("billing_type")}
+                className="form-control"
+                disabled
+              />
             </div>
 
             {/* Billing Start Date */}
@@ -507,9 +535,7 @@ const RequisitionForm = (handleNext) => {
           <div className="row d-flex gap-3">
             {/* Contract Start Date */}
             <div className="col-md-3">
-              <label className="form-label">
-                Contract Start Date 
-              </label>
+              <label className="form-label">Contract Start Date</label>
               <input
                 type="date"
                 {...register("contract_start_date")}
@@ -520,9 +546,7 @@ const RequisitionForm = (handleNext) => {
             {/* Contract End Date */}
 
             <div className="col-md-3">
-              <label className="form-label">
-                Contract End Date 
-              </label>
+              <label className="form-label">Contract End Date</label>
               <input
                 type="date"
                 {...register("contract_end_date")}
@@ -545,19 +569,13 @@ const RequisitionForm = (handleNext) => {
           <div className="row py-3 d-flex gap-3">
             {/* Experience */}
             <div className="col-md-3 mb-3">
-              <label className="form-label">
-                Experience
-              </label>
+              <label className="form-label">Experience</label>
 
               <Controller
                 name="experience"
                 control={control}
                 render={({ field }) => (
-                  <CreatableSelect
-                    {...field}
-                    isMulti
-                    isDisabled={true}
-                  />
+                  <CreatableSelect {...field} isMulti isDisabled={true} />
                 )}
               />
             </div>
@@ -572,11 +590,7 @@ const RequisitionForm = (handleNext) => {
                 name="qualification"
                 control={control}
                 render={({ field }) => (
-                  <CreatableSelect
-                    {...field}
-                    isMulti
-                  isDisabled={true}
-                  />
+                  <CreatableSelect {...field} isMulti isDisabled={true} />
                 )}
               />
             </div>
@@ -591,11 +605,7 @@ const RequisitionForm = (handleNext) => {
                 name="designation"
                 control={control}
                 render={({ field }) => (
-                  <CreatableSelect
-                    {...field}
-                    isMulti
-                  isDisabled={true}
-                  />
+                  <CreatableSelect {...field} isMulti isDisabled={true} />
                 )}
               />
             </div>
@@ -610,11 +620,7 @@ const RequisitionForm = (handleNext) => {
                 name="job_region"
                 control={control}
                 render={({ field }) => (
-                  <CreatableSelect
-                    {...field}
-                    isMulti
-                  isDisabled={true}
-                  />
+                  <CreatableSelect {...field} isMulti isDisabled={true} />
                 )}
               />
             </div>
@@ -632,7 +638,7 @@ const RequisitionForm = (handleNext) => {
                 value={internalDesc}
                 theme="snow"
                 className="quill-editor"
-                  readOnly={true}
+                readOnly={true}
               />
             </div>
 
@@ -658,24 +664,25 @@ const RequisitionForm = (handleNext) => {
         >
           <div className="row mt-3 d-flex gap-3">
             <div className="col-md-3">
-              <label className="form-label">
-                Laptop Needed: 
-              </label>
-                                                            <input {...register("laptop_needed")} className="form-control" disabled />
-
+              <label className="form-label">Laptop Needed:</label>
+              <input
+                {...register("laptop_needed")}
+                className="form-control"
+                disabled
+              />
             </div>
 
             <div className="col-md-3">
-              <label className="form-label">
-                Laptop Type:
-              </label>
-              <input {...register("laptop_type")} className="form-control" disabled />
+              <label className="form-label">Laptop Type:</label>
+              <input
+                {...register("laptop_type")}
+                className="form-control"
+                disabled
+              />
             </div>
 
             <div className="col-md-3">
-              <label className="form-label">
-                Comments:
-              </label>
+              <label className="form-label">Comments:</label>
               <input
                 type="text"
                 {...register("comments")}
@@ -686,19 +693,64 @@ const RequisitionForm = (handleNext) => {
           </div>
         </AccordionItem>
 
-
-<div className="row">
-  <div className="col d-flex justify-content-end gap-2 mt-3">
-    <button className="btn btn-danger" type="submit">
-      Reject
-    </button>
-    <button className="btn btn-success" type="submit">
-      Approve
-    </button>
-  </div>
-</div>
-
+        {(createreqformData?.status?.toLowerCase() === "pending" ||
+          createreqformData?.status === "-") && (
+          <div className="row">
+            <div className="col d-flex justify-content-end gap-2 mt-3">
+              <button className="btn btn-danger"    onClick={(e) => {
+                e.preventDefault();
+                setActionType("Rejected");
+                setShowConfirmActionModal(true);
+              }}>
+                Reject
+              </button>
+              <button className="btn btn-success" onClick={(e) => {
+                 e.preventDefault();
+                setActionType("Approved");
+                setShowConfirmActionModal(true);
+              }}>
+                Approve
+              </button>
+            </div>
+          </div>
+       )}
       </form>
+
+            <Modal
+        show={showConfirmActionModal}
+        onHide={() => setShowConfirmActionModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm {actionType}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group className="mb-3">
+            <Form.Label>Comment</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              value={actionComment}
+              onChange={(e) => setActionComment(e.target.value)}
+              placeholder="Enter your comment here"
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setShowConfirmActionModal(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant={actionType === "Approved" ? "success" : "danger"}
+            onClick={handleSubmitStatus}
+          >
+            {actionType}
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

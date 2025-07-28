@@ -105,6 +105,14 @@ function App() {
           </Route>
           </Route>
 
+          <Route path="/interviewer">
+          <Route element={<InterviwerLayout />}>
+          <Route path="dashboard" element={<InterviewerDashboard/>}/>              
+          </Route>
+          </Route>
+
+
+
           <Route path="*" element={<Error />} />
         </Route>
       </Routes>

@@ -36,19 +36,13 @@ const PlanninggForm = (handleNext) => {
   const [openSection, setOpenSection] = useState(null);
   const [completedSections, setCompletedSections] = useState([]);
 
-  const [internalDesc, setInternalDesc] = useState("");
-  const [externalDesc, setExternalDesc] = useState("");
+  const [jobdesc, setJobDesc] = useState("");
+  console.log(jobdesc,"dfsdsa")
 
-  const [Reqid, setReqid] = useState([]);
-  const [planid, setPlanId] = useState([]);
-  const [tempDetails, setTempDetails] = useState();
-  const [reqtempid, setreqtempid] = useState("");
   const [inputOptions, setInputOptions] = useState([]);
-  const { user_role, user_id } = commonState?.app_data;
   const [dropdownOptions, setDropdownOptions] = useState([]);
     const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [languageProficiency, setLanguageProficiency] = useState({});
-  const [editFormdata,setEditFormdata] = useState([]);
 
   console.log(dropdownOptions, "dsfds");
   const experienceOptions = [
@@ -95,7 +89,7 @@ const PlanninggForm = (handleNext) => {
   };
   });
   setLanguageProficiency(profMap);
-
+  setJobDesc(data?.jd_details)
           reset({
             job_role: data?.job_role,
             no_of_openings: data?.no_of_openings,
@@ -126,10 +120,9 @@ const PlanninggForm = (handleNext) => {
             career_gap: data?.career_gap,
             social_media_link: data?.social_media_link,
             social_media: data?.social_media_data,
-
+            citizen_describe:data?.citizen_describe,
+            health_describe:data?.health_describe,
           });
-          setEditFormdata(response?.data?.data);
-          console.log(response?.data?.data, "weqeqw");
         }
       } catch (error) {
         console.error("Failed to fetch config data", error);
@@ -191,6 +184,8 @@ const PlanninggForm = (handleNext) => {
   const hasVisa = watch("visa_required");
   const hasBgVerfication = watch("background_verfication");
    const socialMediaLinkValue = watch("social_media_link");
+   const hasHealthRecruirment = watch("health_requirmnebt")
+   const hasCitizenRequirment = watch("citizen_requirement")
 
      const { fields, append, remove } = useFieldArray({
     control,
@@ -238,6 +233,9 @@ const PlanninggForm = (handleNext) => {
       career_gap:data?.career_gap,
       social_media_link:data?.social_media_link,
       social_media_data:data?.social_media,
+      jd_details:jobdesc,
+      citizen_describe:data?.citizen_describe,
+      health_describe:data?.health_describe,
     };
     if(!edit_id){
           const response = await axiosInstance.post(
@@ -382,6 +380,19 @@ const PlanninggForm = (handleNext) => {
                 </div>
               )}
             </div>
+
+                        <div className="mb-4">
+                          <label className="form-label fw-semibold">
+                           Job Description<span className="text-danger">*</span>:
+                          </label>
+                          <ReactQuill
+                            value={jobdesc}
+                            onChange={setJobDesc}
+                            theme="snow"
+                            placeholder="Enter your text here"
+                            className="quill-editor"
+                          />
+                        </div>
 
             {/* Tech Stacks*/}
             <div className="col-md-3">
@@ -762,7 +773,7 @@ const PlanninggForm = (handleNext) => {
         </AccordionItem>
 
         <AccordionItem
-          title="Educatuion & Mobility"
+          title="Education & Mobility"
           isOpen={openSection === "edu&mob"}
           onClick={() => toggleSection("edu&mob")}
           className={`accordion-title p-2 ${
@@ -949,43 +960,43 @@ const PlanninggForm = (handleNext) => {
 
           <div className="row d-flex gap-3">
             {/* Communication Language  */}
- <div className="col-md-3 mb-3">
-        <label className="form-label">Communication Language</label>
-        <Controller
-          name="communication_language"
-          control={control}
-          render={({ field }) => (
-            <CreatableSelect
-              {...field}
-              isMulti
-              options={dropdownOptions?.communication_language}
-              placeholder="Select communication languages"
-              onChange={(selected) => {
-                setSelectedLanguages(selected || []);
-                field.onChange(selected);
-              }}
-            />
-          )}
-        />
-      </div>
+            <div className="col-md-3 mb-3">
+              <label className="form-label">Communication Language</label>
+              <Controller
+                name="communication_language"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    isMulti
+                    options={dropdownOptions?.communication_language}
+                    placeholder="Select communication languages"
+                    onChange={(selected) => {
+                      setSelectedLanguages(selected || []);
+                      field.onChange(selected);
+                    }}
+                  />
+                )}
+              />
+            </div>
 
-        {/* Proficiency Fields Based on Language Selection */}
-      {selectedLanguages.map((lang) => (
-        <div className="col-md-3 mb-3" key={lang.value}>
-          <label className="form-label">{`${lang.label} Communication Proficiency`}</label>
-          <Select
-            options={proficiencyOptions}
-            placeholder={`Select ${lang.label} proficiency`}
-            value={languageProficiency[lang.value] || null}
-            onChange={(selected) =>
-              setLanguageProficiency((prev) => ({
-                ...prev,
-                [lang.value]: selected,
-              }))
-            }
-          />
-        </div>
-      ))}
+            {/* Proficiency Fields Based on Language Selection */}
+            {selectedLanguages.map((lang) => (
+              <div className="col-md-3 mb-3" key={lang.value}>
+                <label className="form-label">{`${lang.label} Communication Proficiency`}</label>
+                <Select
+                  options={proficiencyOptions}
+                  placeholder={`Select ${lang.label} proficiency`}
+                  value={languageProficiency[lang.value] || null}
+                  onChange={(selected) =>
+                    setLanguageProficiency((prev) => ({
+                      ...prev,
+                      [lang.value]: selected,
+                    }))
+                  }
+                />
+              </div>
+            ))}
 
             {/* Citizen Requirement*/}
             <div className="col-md-3">
@@ -1008,6 +1019,20 @@ const PlanninggForm = (handleNext) => {
               )}
             </div>
 
+            {hasCitizenRequirment === "Yes" && (
+              <>
+                {/* citizen describe */}
+                <div className="col-md-3">
+                  <label className="form-label">Describe Citizen</label>
+                  <input
+                    {...register("citizen_describe")}
+                    className="form-control"
+                    placeholder="Describe Citizen"
+                  />
+                </div>
+              </>
+            )}
+
             {/*Job Health Requirement */}
             <div className="col-md-3">
               <label className="form-label">Job Health Requirement </label>
@@ -1029,6 +1054,21 @@ const PlanninggForm = (handleNext) => {
               )}
             </div>
 
+            
+            {hasHealthRecruirment === "Yes" && (
+              <>
+                {/* health reason */}
+                <div className="col-md-3">
+                  <label className="form-label">Describe Health Reason</label>
+                  <input
+                    {...register("health_describe")}
+                    className="form-control"
+                    placeholder="Describe health reason"
+                  />
+                </div>
+              </>
+            )}
+
             {/* Career Gap */}
             <div className="col-md-3">
               <label className="form-label">Career Gap </label>
@@ -1049,75 +1089,80 @@ const PlanninggForm = (handleNext) => {
                 </div>
               )}
             </div>
-            
-      {/* Social Media Link Dropdown */}
-      <div className="col-md-3 mb-3">
-        <label className="form-label">Social Media Link</label>
-        <select
-          {...register("social_media_link", { required: "This field is required" })}
-          className={`form-select ${errors.social_media_link ? "is-invalid" : ""}`}
-        >
-          <option value="">Select requirement</option>
-          <option value="Yes">Yes</option>
-          <option value="No">No</option>
-          <option value="Decide Later">Decide Later</option>
-        </select>
-        {errors.social_media_link && (
-          <div className="invalid-feedback">{errors.social_media_link.message}</div>
-        )}
-      </div>
 
-       {/* Conditionally Render Media Inputs */}
-      {socialMediaLinkValue === "Yes" &&
-        fields.map((item, index) => (
-          <div className="row mb-2" key={item.id}>
-            <div className="col-md-3">
-              <label className="form-label">Media Type</label>
-              <input
-                {...register(`social_media.${index}.media_type`, {
-                  required: "Required",
+            {/* Social Media Link Dropdown */}
+            <div className="col-md-3 mb-3">
+              <label className="form-label">Social Media Link</label>
+              <select
+                {...register("social_media_link", {
+                  required: "This field is required",
                 })}
-                className="form-control"
-                placeholder="e.g., LinkedIn"
-              />
-            </div>
-            <div className="col-md-5">
-              <label className="form-label">Media Link</label>
-              <input
-                {...register(`social_media.${index}.media_link`, {
-                  required: "Required",
-                })}
-                className="form-control"
-                placeholder="e.g., https://linkedin.com/in/..."
-              />
-            </div>
-            <div className="col-md-2 d-flex align-items-end">
-              {index > 0 && (
-                <button
-                  type="button"
-                  className="btn btn-danger"
-                  onClick={() => remove(index)}
-                >
-                  Remove
-                </button>
+                className={`form-select ${
+                  errors.social_media_link ? "is-invalid" : ""
+                }`}
+              >
+                <option value="">Select requirement</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="Decide Later">Decide Later</option>
+              </select>
+              {errors.social_media_link && (
+                <div className="invalid-feedback">
+                  {errors.social_media_link.message}
+                </div>
               )}
             </div>
-          </div>
-        ))}
 
-      {/* Add Button */}
-      {socialMediaLinkValue === "Yes" && (
-        <div className="col-md-3 mb-3">
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={() => append({ media_type: "", media_link: "" })}
-          >
-            + Add Social Media
-          </button>
-        </div>
-      )}
+            {/* Conditionally Render Media Inputs */}
+            {socialMediaLinkValue === "Yes" &&
+              fields.map((item, index) => (
+                <div className="row mb-2" key={item.id}>
+                  <div className="col-md-3">
+                    <label className="form-label">Media Type</label>
+                    <input
+                      {...register(`social_media.${index}.media_type`, {
+                        required: "Required",
+                      })}
+                      className="form-control"
+                      placeholder="e.g., LinkedIn"
+                    />
+                  </div>
+                  <div className="col-md-5">
+                    <label className="form-label">Media Link</label>
+                    <input
+                      {...register(`social_media.${index}.media_link`, {
+                        required: "Required",
+                      })}
+                      className="form-control"
+                      placeholder="e.g., https://linkedin.com/in/..."
+                    />
+                  </div>
+                  <div className="col-md-2 d-flex align-items-end">
+                    {index > 0 && (
+                      <button
+                        type="button"
+                        className="btn btn-danger"
+                        onClick={() => remove(index)}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
 
+            {/* Add Button */}
+            {socialMediaLinkValue === "Yes" && (
+              <div className="col-md-3 mb-3">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => append({ media_type: "", media_link: "" })}
+                >
+                  + Add Social Media
+                </button>
+              </div>
+            )}
           </div>
         </AccordionItem>
 

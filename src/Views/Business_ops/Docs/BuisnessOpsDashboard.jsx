@@ -176,13 +176,13 @@ export const BuisnessOpsDashboard = () => {
 
     dynamicColumns.unshift({
       name: "Select",
-      cell: (row) => (
-        <input
+      cell: (row) => 
+       { row?.status.toLowerCase().includes("pending") || "-" && <input
           type="checkbox"
           checked={selectedRows.some((r) => r.id === row.id)}
           onChange={() => handleCheckBoxChange(row)}
-        />
-      ),
+        />}
+      ,
       ignoreRowClick: true,
       allowOverflow: true,
       button: true,
