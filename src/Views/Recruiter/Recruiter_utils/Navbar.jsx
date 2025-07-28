@@ -42,42 +42,44 @@ const RecruiterHeader = () => {
           <div className="row mt-2 p-2">
             <div className="col d-flex flex-wrap gap-2">
               <ButtonComponent
-                buttonName="Candidates"
+                buttonName="1. Candidates"
                 className="btn-primary"
                 clickFunction={() => navigate("/recruiter/candidate")}
               />
                 <ButtonComponent
-                 buttonName="Screening" 
+                 buttonName="2. Screening" 
                  className="btn-primary" 
                   clickFunction={() => navigate("/recruiter/recruiter_screening_dashboard")}
                  />
                 <ButtonComponent
-                  buttonName="Hiring Manager Approval"
+                  buttonName="3. Hiring Manager Approval"
                   className="btn-primary"
                    clickFunction={() => navigate("/recruiter/recruiter_approval")}
                 />
               <ButtonComponent
-                buttonName="Schedule interview"
+                buttonName="4. Schedule interview"
                 className="btn-primary"
                 clickFunction={() => navigate("/recruiter/schedule_interview")}
               />
-              <ButtonComponent
-                buttonName="Recruiter Negotiation"
-                className="btn-primary"
-              />
+              
 
               <ButtonComponent
-                buttonName="Interview Stages"
+                buttonName="5. Interview Stages"
                 className="btn-primary"
               />
               <ButtonComponent
-                buttonName="Scorecard / Debrief"
+                buttonName="6. Scorecard / Debrief"
                 className="btn-primary"
               />
-              <ButtonComponent buttonName="Offer" className="btn-primary" />
-              <ButtonComponent buttonName="Approval" className="btn-primary" />
               <ButtonComponent
-                buttonName="Onboarding"
+                buttonName="7. Recruiter Negotiation"
+                className="btn-primary"
+              />
+              <ButtonComponent buttonName="8. Approval" className="btn-primary" />
+              <ButtonComponent buttonName="9. Offer & BGV" className="btn-primary" />
+              
+              <ButtonComponent
+                buttonName="10. Onboarding"
                 className="btn-primary"
               />
             </div>

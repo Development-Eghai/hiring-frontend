@@ -197,7 +197,7 @@ const RecruiterScreeningDashboard = () => {
                                 </>
                               )}
                             </td>
-                            <td>{data?.final_rating}</td>
+                            <td>{data?.score}</td>
                             <td>{data?.result}</td>
                             <td>{data?.final_feedback}</td>
                             {/* <td>{data?.Final_stage}</td>
@@ -320,7 +320,7 @@ const RecruiterScreeningDashboard = () => {
                 <input
                   className="form-control"
                   name="resumeScore"
-                  defaultValue={selectedCandidate?.final_rating || ""}
+                  defaultValue={selectedCandidate?.score || ""}
                 />
               </div>
             </div>

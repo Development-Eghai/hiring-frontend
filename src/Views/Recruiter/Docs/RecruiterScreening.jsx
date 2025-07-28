@@ -42,6 +42,8 @@ const RecruiterScreening = () => {
       .post("https://api.pixeladvant.com/candidates/detail/", pay_load)
       .then((response) => {
         const obj_candidate = response.data.data;
+        const interview_design_id = obj_candidate.interview_design_id;
+
         console.log(obj_candidate);
         let response_data = {
           req_id: obj_candidate.Req_id_fk,
@@ -49,12 +51,14 @@ const RecruiterScreening = () => {
           candidate_id: obj_candidate.CandidateID,
           hiring_manager: obj_candidate.hr_name,
           posistion_applied: obj_candidate.position_title,
+          interview_design_id,
           date_of_screening: formattedDate,
         };
 
         setCandidateDetails(response_data);
+        interviewDesignScreenParams(interview_design_id);
       })
-      .catch((error) => {
+      .catch((error) => { 
         console.error("API call failed:", error);
       });
   }
@@ -64,8 +68,8 @@ const RecruiterScreening = () => {
     interviewDesignScreenParams();
   }, []);
 
-  function interviewDesignScreenParams() {
-    let params = { interview_design_id: 30 };
+  function interviewDesignScreenParams(id) {
+    let params = { interview_design_id: id };
     axios
       .get("https://api.pixeladvant.com/interview_design_screen/", { params })
       .then((response) => {
@@ -247,11 +251,12 @@ const RecruiterScreening = () => {
           <Col md={3}>
             <Form.Group>
               <Form.Label>Result/Recommendations</Form.Label>
-              <Form.Select>
-                <option>Select option</option>
-                <option>Recommended</option>
-                <option>Not Recommended</option>
+              <Form.Select value={result} onChange={(e) => setResult(e.target.value)}>
+                <option value="">Select option</option>
+                <option value="Recommended">Recommended</option>
+                <option value="Not Recommended">Not Recommended</option>
               </Form.Select>
+
             </Form.Group>
           </Col>
         </Row>
