@@ -311,17 +311,6 @@ const PlanningForm = () => {
     [setFormData]
   );
 
-  const hanldeMultiChnage = (selectedOptions,name)=>{
-    console.log(selectedOptions,"Adasdqw")
-    // setCommunication_languages((prev) => ({
-    //         ...prev,
-    //         [name]: true
-    //           ? selectedOptions?.map((opt) => opt.value).join(", ")
-    //           : selectedOptions?.value || "",
-    //       }))
-
-    setSections([...sections,{ name: "social_media_links", label: "Social Media Link" }])
-}
 
   const handleSubmit = useCallback(async () => {
     if (!validateForm(formData)) return;
