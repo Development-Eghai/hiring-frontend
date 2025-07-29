@@ -32,6 +32,7 @@ import RecruiterScreening from "Views/Recruiter/Docs/RecruiterScreening";
 import RecruiterScreeningDashboard from "Views/Recruiter/Docs/RecruiterScreeningDashboard";
 import { RecruiterDashboard } from "Views/Recruiter/Docs/RecuirmentDashboard";
 import ScheduleInteview from "Views/Recruiter/Docs/ScheduleInteview";
+import ScoreCard from "Views/Recruiter/Docs/ScoreCard";
 import { RecruiterLayout } from "Views/Recruiter/Recruiter_utils/layout";
 
 function App() {
@@ -94,6 +95,7 @@ function App() {
           <Route path="recruiter_screening" element={<RecruiterScreening/>}/>
           <Route path="recruiter_screening_dashboard" element={<RecruiterScreeningDashboard/>}/>
           <Route path="recruiter_approval" element={<HiringManagerApproval/>}/>
+          <Route path="score_card" element={<ScoreCard/>}/>
           </Route>
           </Route>
 
