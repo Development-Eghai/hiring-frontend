@@ -209,7 +209,7 @@ export const BuisnessOpsDashboard = () => {
         "/api/jobrequisition/delete-requisition/",
         {
           data: {
-            user_role: commonState?.app_data?.user_id || "",
+            user_role: commonState?.app_data?.user_id || 3,
             requisition_id: rowToDelete.id,
           },
         }
@@ -233,7 +233,7 @@ export const BuisnessOpsDashboard = () => {
   const handleSubmitBulkAction = async () => {
     setIsSubmitting(true);
     const payload = {
-      user_role: commonState?.app_data?.user_id,
+      user_role: commonState?.app_data?.user_id || 3,
       req_data: selectedRows.map((row) => ({
         req_id: row.id,
         status: actionType,
