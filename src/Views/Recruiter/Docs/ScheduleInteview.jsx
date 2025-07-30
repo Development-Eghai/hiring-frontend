@@ -26,6 +26,9 @@ const ScheduleInterview = () => {
 
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
+  const [interviewers, setInterviewers] = useState([]);
+  const [selectedInterviewer, setSelectedInterviewer] = useState("");
+
   //Get api calll
   useEffect(() => {
     fetchScheduleData();
@@ -116,6 +119,7 @@ const ScheduleInterview = () => {
     setSelectedReqId(reqId);
     setSelectedCandidate("");
     await fetchCandidateName(reqId);
+    await fetchInterviewers(reqId); // <-- Add this
 
     try {
       const response = await axiosInstance.post("/api/schedule/context/", {
@@ -142,6 +146,7 @@ const ScheduleInterview = () => {
             guests: [],
           }))
         );
+        setSelectedInterviewer(ctx.interviewer_name || "");
       }
     } catch (error) {
       console.error("Error fetching context", error);
@@ -182,7 +187,7 @@ const ScheduleInterview = () => {
           schedule_id: data.schedule_id,
         });
 
-        await fetchCandidateName(data.req_id); // load candidates for dropdown
+        await fetchCandidateName(data.req_id);
         setShowFormModal(true);
       } else {
         toast.error("Failed to fetch schedule details");
@@ -229,6 +234,23 @@ const ScheduleInterview = () => {
     setGuests([]);
     setInterviewRounds(1);
     setScheduleSlots([{ date: "", time: "", guests: [] }]);
+  };
+
+  const fetchInterviewers = async (reqId) => {
+    try {
+      const response = await axiosInstance.post(
+        "/interviewer/by-requisition/",
+        { requisition_id: reqId }
+      );
+      if (response.data.success) {
+        setInterviewers(response.data.data);
+      } else {
+        setInterviewers([]);
+      }
+    } catch (error) {
+      console.error("Error fetching interviewers:", error);
+      setInterviewers([]);
+    }
   };
 
   const columns = [
@@ -453,7 +475,7 @@ const ScheduleInterview = () => {
             : "Interview scheduled successfully!"
         );
         handleModalClose();
-        fetchScheduleData(); 
+        fetchScheduleData();
       } else {
         toast.warning("Operation failed. Please check inputs.");
       }
@@ -676,10 +698,17 @@ const ScheduleInterview = () => {
               <Row>
                 <Col>
                   <Form.Label>Interviewer Name</Form.Label>
-                  <Form.Control
-                    placeholder="Interviewer Name here"
-                    value={editData?.interviewer || ""}
-                  />
+                  <Form.Select
+                    value={selectedInterviewer}
+                    onChange={(e) => setSelectedInterviewer(e.target.value)}
+                  >
+                    <option value="">Select Interviewer</option>
+                    {interviewers.map((item) => (
+                      <option key={item.id} value={item.name}>
+                        {item.name}
+                      </option>
+                    ))}
+                  </Form.Select>
                 </Col>
               </Row>
 
