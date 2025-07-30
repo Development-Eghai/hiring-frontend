@@ -219,7 +219,7 @@ const PlanninggForm = (handleNext) => {
         relocation_amount:data?.relocation_amount,
         has_domain:data?.has_domain,
         domain_name:data?.domain_name,
-        shift_timing:data?.shift_timings,
+        shift_timings:data?.shift_timings,
         education_qualification:data?.education_qualification,
         travel_opportunities:data?.travel_opportunities,
         visa_required:data?.visa_required,
@@ -691,7 +691,7 @@ const PlanninggForm = (handleNext) => {
                 className={`form-control ${
                   errors.relocation_amount ? "is-invalid" : ""
                 }`}
-                placeholder="Enter domain name"
+                placeholder="Enter relocation amount"
               />
               {errors.relocation_amount && (
                 <div className="invalid-feedback">
@@ -749,9 +749,9 @@ const PlanninggForm = (handleNext) => {
               <label className="form-label">Shift Timings</label>
               <Controller
                 className={`form-select ${
-                  errors.shift_timing ? "is-invalid" : ""
+                  errors.shift_timings ? "is-invalid" : ""
                 }`}
-                name="shift_timing"
+                name="shift_timings"
                 control={control}
                 render={({ field }) => (
                   <CreatableSelect
@@ -763,9 +763,9 @@ const PlanninggForm = (handleNext) => {
                   />
                 )}
               />
-              {errors.shift_timing && (
+              {errors.shift_timings && (
                 <div className="invalid-feedback">
-                  {errors.shift_timing.message}
+                  {errors.shift_timings.message}
                 </div>
               )}
             </div>
