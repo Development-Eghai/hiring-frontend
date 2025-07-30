@@ -87,12 +87,12 @@ const InterviewForm = () => {
   }, [interview_design_id]);
 
   useEffect(() => {
-    if (reqId && planIds) {
+    if (reqId ) {
       const getClientdetails = async () => {
         const getclientdetails = await axios.post(
           "https://api.pixeladvant.com/api/client-lookup/",
           {
-            plan_id: planIds,
+            plan_id: planIds || "",
             req_id: reqId,
           }
         );
@@ -296,7 +296,6 @@ const InterviewForm = () => {
     e.preventDefault();
 
     if (
-      planIds &&
       reqId &&
       techStacks &&
       screeningType &&
@@ -370,7 +369,7 @@ const InterviewForm = () => {
             <Col md={3} className="mb-3">
               <Form.Group>
                 <Form.Label>
-                  Planning Id<span className="text-danger">*</span>
+                  Planning Id
                 </Form.Label>
                 <Form.Select
                   value={planIds}

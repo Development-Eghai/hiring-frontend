@@ -82,7 +82,7 @@ const tableStyles = {
   },
 };
 
-export const InterviewerDashboard = () => {
+export const InterviewerStages = () => {
   const { hiringManagerState, commonState } = useCommonState();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -105,58 +105,42 @@ export const InterviewerDashboard = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const actionColumn = {
-    name: "Actions",
-    cell: (row) => (
-      <div className="d-flex gap-2">
-        <Button
-          size="sm"
-          variant="success"
-          // onClick={() => handleEdit(data)}
-        >
-          <FaEdit />
-        </Button>
-        <Button
-          size="sm"
-          variant="danger"
-          // onClick={() => handleDelete(data?.Candidate_Id)}
-        >
-          <FaTrash />
-        </Button>
-      </div>
-    ),
-    ignoreRowClick: true,
-    allowOverflow: true,
-    button: true,
-    //  style: {
-    //   minWidth: "140px",
-    //   maxWidth: "160px",
-    //   whiteSpace: "nowrap",
-    // },
-  };
-  const checkboxColumn = {
-    name: "",
-    cell: (row) =>
-      row.interview_result === "" || row.interview_result == null ? (
-        <input
-          type="checkbox"
-          checked={selectedRows.includes(row)}
-          onChange={() => handleCheckboxToggle(row)}
-        />
-      ) : null,
-    ignoreRowClick: true,
-    allowOverflow: true,
-    button: true,
-  };
+  // const actionColumn = {
+  //   name: "Actions",
+  //   cell: (row) => (
+  //     <div className="d-flex gap-2">
+  //       <Button
+  //         size="sm"
+  //         variant="success"
+  //         // onClick={() => handleEdit(data)}
+  //       >
+  //         <FaEdit />
+  //       </Button>
+  //       <Button
+  //         size="sm"
+  //         variant="danger"
+  //         // onClick={() => handleDelete(data?.Candidate_Id)}
+  //       >
+  //         <FaTrash />
+  //       </Button>
+  //     </div>
+  //   ),
+  //   ignoreRowClick: true,
+  //   allowOverflow: true,
+  //   button: true,
+  //   //  style: {
+  //   //   minWidth: "140px",
+  //   //   maxWidth: "160px",
+  //   //   whiteSpace: "nowrap",
+  //   // },
+  // };
 
   const columns = [
-    checkboxColumn,
     ...DEFAULT_FIELDS.map((field) => ({
       name: field,
       selector: (row) => row[field] ?? "-",
       sortable: true,
     })),
-    actionColumn,
   ];
 
   const filteredData = tableData.map((item) => {
@@ -168,12 +152,6 @@ export const InterviewerDashboard = () => {
     });
     return filteredItem;
   });
-
-  const handleCheckboxToggle = (row) => {
-    setSelectedRows((prev) =>
-      prev.includes(row) ? prev.filter((item) => item !== row) : [...prev, row]
-    );
-  };
 
   const handleRowClick = (row) => {
     console.log(row, "adfas");
@@ -193,7 +171,7 @@ export const InterviewerDashboard = () => {
             const newObj = {};
             Object.entries(obj).forEach(([key, value]) => {
               const cleanedKey = key.trim().toLowerCase().replace(/\s+/g, "_");
-              newObj[cleanedKey] = value;
+              newObj[cleanedKey] = value || "-";
             });
             return newObj;
           });
@@ -216,7 +194,7 @@ export const InterviewerDashboard = () => {
           <div className="col-3">
             <h4 className="fw-bold mb-0">Interview</h4>
           </div>
-          <div className="col-6 d-flex justify-content-end gap-3">
+          {/* <div className="col-6 d-flex justify-content-end gap-3">
             <button
               className="btn btn-primary"
               disabled={selectedRows.length === 0}
@@ -238,7 +216,16 @@ export const InterviewerDashboard = () => {
             >
               View Guidelines
             </button>
-          </div>
+
+            <Button
+              variant="outline-secondary"
+              className="d-flex ps-4 align-items-center"
+              onClick={() => setShowModal(true)}
+            >
+              <span>{Icons.Filter} Display Option</span>
+            </Button>
+          </div> */}
+          <div className="col-6"></div>
 
           <div className="col-3 d-flex justify-content-end">
             <InputGroup style={{ maxWidth: "300px" }}>
@@ -285,7 +272,6 @@ export const InterviewerDashboard = () => {
           <Modal.Title>Interview Details</Modal.Title>
         </Modal.Header>
 
-        {/* Remove default scrolling behavior */}
         <div style={{ padding: "20px" }}>
           <Table bordered hover responsive>
             <tbody>
@@ -330,4 +316,4 @@ export const InterviewerDashboard = () => {
   );
 };
 
-export default InterviewerDashboard;
+export default InterviewerStages;

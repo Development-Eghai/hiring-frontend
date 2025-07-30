@@ -66,6 +66,8 @@ const RecruiterHeader = () => {
               <ButtonComponent
                 buttonName="5. Interview Stages"
                 className="btn-primary"
+                                clickFunction={() => navigate("/recruiter/interview_stages")}
+
               />
               <ButtonComponent
                 buttonName="6. Scorecard / Debrief"

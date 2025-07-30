@@ -57,7 +57,7 @@ const SetApproveScreen = () => {
   }, [showEditModal]);
 
   const fetchClientDetails = async (req_id, plan_id) => {
-    if (!req_id || !plan_id) return;
+    if (!req_id ) return;
     setLoadingClient(true);
 
     try {
@@ -147,12 +147,12 @@ const SetApproveScreen = () => {
     setFormState(updatedState);
 
     if (
-      (name === "req_id" && updatedState.planning_id) ||
-      (name === "planning_id" && updatedState.req_id)
+      (name === "req_id" && updatedState.req_id) 
+      // (name === "planning_id" && updatedState.req_id)
     ) {
       fetchClientDetails(
         name === "req_id" ? value : updatedState.req_id,
-        name === "planning_id" ? value : updatedState.planning_id
+        // name === "planning_id" ? value : updatedState.planning_id
       );
     }
   };
@@ -410,7 +410,7 @@ const SetApproveScreen = () => {
                     </Button>
                   ) : (
                     formState.req_id &&
-                    formState.planning_id &&
+                    // formState.planning_id &&
                     formState.client_name &&
                     formState.client_id && (
                       <Button variant="primary" onClick={() => setStep(2)}>

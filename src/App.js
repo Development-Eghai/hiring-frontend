@@ -25,9 +25,11 @@ import SetApproveScreen from "Views/Hiring_manager/Docs/SetApproveScreen";
 import UploadScreen from "Views/Hiring_manager/Docs/UploadScreen";
 import { Layout } from "Views/Hiring_manager/Hiring_manager_utils/Layout";
 import InterviewerDashboard from "Views/Interviewer/Docs/InterviewerDashboard";
+import LaunchInterview from "Views/Interviewer/Docs/interviewLaunchScreen";
 import { InterviwerLayout } from "Views/Interviewer/Interviewer_utils/InterviwerLayout";
 import CandidateScreen from "Views/Recruiter/Docs/CandidateScreen";
 import HiringManagerApproval from "Views/Recruiter/Docs/HiringManagerApproval";
+import InterviewerStages from "Views/Recruiter/Docs/InterviewerStages";
 import RecruiterScreening from "Views/Recruiter/Docs/RecruiterScreening";
 import RecruiterScreeningDashboard from "Views/Recruiter/Docs/RecruiterScreeningDashboard";
 import { RecruiterDashboard } from "Views/Recruiter/Docs/RecuirmentDashboard";
@@ -94,6 +96,8 @@ function App() {
           <Route path="recruiter_screening" element={<RecruiterScreening/>}/>
           <Route path="recruiter_screening_dashboard" element={<RecruiterScreeningDashboard/>}/>
           <Route path="recruiter_approval" element={<HiringManagerApproval/>}/>
+          <Route path="interview_stages" element={<InterviewerStages/>}/>
+
           </Route>
           </Route>
 
@@ -107,7 +111,9 @@ function App() {
 
           <Route path="/interviewer">
           <Route element={<InterviwerLayout />}>
-          <Route path="dashboard" element={<InterviewerDashboard/>}/>              
+          <Route path="dashboard" element={<InterviewerDashboard/>}/>    
+          <Route path="launch_interview" element={<LaunchInterview/>}/>    
+
           </Route>
           </Route>
 
