@@ -31,6 +31,7 @@ import ApprovalScreen from "Views/Recruiter/Docs/ApprovalScreen";
 import CandidateScreen from "Views/Recruiter/Docs/CandidateScreen";
 import HiringManagerApproval from "Views/Recruiter/Docs/HiringManagerApproval";
 import InterviewerStages from "Views/Recruiter/Docs/InterviewerStages";
+import RecruiterNegotiation from "Views/Recruiter/Docs/RecruiterNegotiation";
 import OfferBGV from "Views/Recruiter/Docs/OfferBGV";
 import RecruiterScreening from "Views/Recruiter/Docs/RecruiterScreening";
 import RecruiterScreeningDashboard from "Views/Recruiter/Docs/RecruiterScreeningDashboard";
@@ -113,6 +114,7 @@ function App() {
               />
               <Route path="score_card" element={<ScoreCard />} />
               <Route path="interview_stages" element={<InterviewerStages />} />
+              <Route path="recruiter_negotiation" element={<RecruiterNegotiation/>}/>
               <Route path="approval" element={<ApprovalScreen />} />
               <Route path="offer&bgv" element={<OfferBGV />} />
             </Route>

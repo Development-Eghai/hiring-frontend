@@ -29,6 +29,11 @@ const ScheduleInterview = () => {
   const [interviewers, setInterviewers] = useState([]);
   const [selectedInterviewer, setSelectedInterviewer] = useState("");
 
+  const [mode, setMode] = useState("");
+  const [rounds, setRounds] = useState([]);
+  const [selectedRoundIndex, setSelectedRoundIndex] = useState(0);
+  const [selectedSlots, setSelectedSlots] = useState([]);
+
   //Get api calll
   useEffect(() => {
     fetchScheduleData();
@@ -119,7 +124,7 @@ const ScheduleInterview = () => {
     setSelectedReqId(reqId);
     setSelectedCandidate("");
     await fetchCandidateName(reqId);
-    await fetchInterviewers(reqId); // <-- Add this
+    await fetchInterviewers(reqId); 
 
     try {
       const response = await axiosInstance.post("/api/schedule/context/", {
@@ -129,7 +134,7 @@ const ScheduleInterview = () => {
         const ctx = response.data.data.data;
         setEditData({
           candidateName: ctx.candidate_name,
-          position: ctx.job_postion,
+          position: ctx.job_position,
           planningId: ctx.planning_id,
           interviewer: ctx.interviewer_name,
           location: ctx.location,
@@ -137,7 +142,7 @@ const ScheduleInterview = () => {
           durations: ctx.durations,
           purpose: ctx.purpose,
           mode: ctx.mode,
-          interviewRounds: ctx.no_of_rounds,
+          selectedRoundIndex: ctx.round_name,
         });
         setScheduleSlots(
           ctx.schedule_slots.map((slot) => ({
@@ -183,7 +188,7 @@ const ScheduleInterview = () => {
           durations: data.durations,
           purpose: data.purpose,
           mode: data.mode,
-          interviewRounds: data.no_of_rounds,
+          selectedRoundIndex: data.round_name,
           schedule_id: data.schedule_id,
         });
 
@@ -250,6 +255,36 @@ const ScheduleInterview = () => {
     } catch (error) {
       console.error("Error fetching interviewers:", error);
       setInterviewers([]);
+    }
+  };
+
+  const handleInterviewerSelect = async (interviewerId) => {
+    if (!interviewerId) return;
+
+    try {
+      const response = await axiosInstance.post("/api/interviewer-context/", {
+        interviewer_id: Number(interviewerId),
+      });
+      if (response.data.success) {
+        setMode(response.data.data.mode || "");
+        setRounds(response.data.data.rounds || []);
+        setSelectedRoundIndex(0);
+        setSelectedSlots((response.data.data.rounds || []).map(() => 0));
+        setEditData((prev) => ({
+          ...prev,
+          mode: response.data.data.mode || "",
+        }));
+        updateRounds((response.data.data.rounds || []).length);
+        setScheduleSlots(
+          (response.data.data.rounds || []).map((r) =>
+            r.slots && r.slots[0]
+              ? { date: r.slots[0].date, time: r.slots[0].time, guests: [] }
+              : { date: "", time: "", guests: [] }
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching interviewer context", error);
     }
   };
 
@@ -438,15 +473,20 @@ const ScheduleInterview = () => {
       schedule_id: editData?.schedule_id,
       req_id: selectedReqId,
       candidate_name: selectedCandidate,
+      round_name: rounds[selectedRoundIndex]?.round_name || "",
       planning_id: editData?.planningId,
-      interviewer_name: editData?.interviewer,
+      interviewer_name: (() => {
+        const selectedObj = interviewers.find(
+          (i) => String(i.id) === String(selectedInterviewer)
+        );
+        return selectedObj ? selectedObj.name : "";
+      })(),
       job_position: editData?.position,
       location: editData?.location,
       time_zone: editData?.timeZone,
       durations: editData?.durations,
-      purpose: editData?.purpose,
+      purpose: rounds[selectedRoundIndex]?.round_name || "",
       mode: editData?.mode,
-      no_of_rounds: editData?.interviewRounds,
       guests,
       schedule_slots: scheduleSlots.map((slot) => ({
         date: slot.date,
@@ -501,7 +541,7 @@ const ScheduleInterview = () => {
       time_zone,
       purpose,
       mode,
-      no_of_rounds,
+      round_name,
       meet_link,
       guests = [],
       schedule_slots = [],
@@ -552,7 +592,7 @@ const ScheduleInterview = () => {
           </tr>
           <tr>
             <th>No. of Rounds</th>
-            <td>{no_of_rounds}</td>
+            <td>{purpose}</td>
           </tr>
           <tr>
             <th>Meet Link</th>
@@ -700,11 +740,14 @@ const ScheduleInterview = () => {
                   <Form.Label>Interviewer Name</Form.Label>
                   <Form.Select
                     value={selectedInterviewer}
-                    onChange={(e) => setSelectedInterviewer(e.target.value)}
+                    onChange={async (e) => {
+                      setSelectedInterviewer(e.target.value);
+                      await handleInterviewerSelect(e.target.value);
+                    }}
                   >
                     <option value="">Select Interviewer</option>
                     {interviewers.map((item) => (
-                      <option key={item.id} value={item.name}>
+                      <option key={item.id} value={item.id}>
                         {item.name}
                       </option>
                     ))}
@@ -783,16 +826,13 @@ const ScheduleInterview = () => {
                     value={editData?.durations || ""}
                   />
                 </Col>
-                <Col>
+                {/* <Col>
                   <Form.Label>Purpose</Form.Label>
                   <Form.Control
                     placeholder="Enter"
-                    value={editData?.purpose || ""}
+                    value={editData?.selectedRoundIndex || ""}
                   />
-                </Col>
-              </Row>
-
-              <Row className="mb-3 gap-2">
+                </Col> */}
                 <Col>
                   <Form.Label>Mode</Form.Label>
                   <Form.Control
@@ -800,14 +840,36 @@ const ScheduleInterview = () => {
                     value={editData?.mode || ""}
                   />
                 </Col>
-                <Col>
-                  <Form.Label>Rounds</Form.Label>
+              </Row>
+
+              <Row className="mb-3 gap-2">
+                {/* <Col>
+                  <Form.Label>Mode</Form.Label>
                   <Form.Control
-                    type="number"
-                    min="1"
-                    value={editData?.interviewRounds || ""}
-                    // onChange={(e) => updateRounds(Number(e.target.value))}
+                    placeholder="enter"
+                    value={editData?.mode || ""}
                   />
+                </Col> */}
+                <Col>
+                  {rounds.length > 0 && (
+                    <Row className="mb-3 gap-2">
+                      <Col>
+                        <Form.Label>Round Name</Form.Label>
+                        <Form.Select
+                          value={selectedRoundIndex}
+                          onChange={(e) =>
+                            setSelectedRoundIndex(e.target.value)
+                          }
+                        >
+                          {rounds.map((round, idx) => (
+                            <option value={idx} key={idx}>
+                              {round.round_name}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Col>
+                    </Row>
+                  )}
                 </Col>
               </Row>
 
