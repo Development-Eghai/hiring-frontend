@@ -30,6 +30,7 @@ import { InterviwerLayout } from "Views/Interviewer/Interviewer_utils/Interviwer
 import CandidateScreen from "Views/Recruiter/Docs/CandidateScreen";
 import HiringManagerApproval from "Views/Recruiter/Docs/HiringManagerApproval";
 import InterviewerStages from "Views/Recruiter/Docs/InterviewerStages";
+import RecruiterNegotiation from "Views/Recruiter/Docs/RecruiterNegotiation";
 import RecruiterScreening from "Views/Recruiter/Docs/RecruiterScreening";
 import RecruiterScreeningDashboard from "Views/Recruiter/Docs/RecruiterScreeningDashboard";
 import { RecruiterDashboard } from "Views/Recruiter/Docs/RecuirmentDashboard";
@@ -99,6 +100,9 @@ function App() {
           <Route path="recruiter_approval" element={<HiringManagerApproval/>}/>
           <Route path="score_card" element={<ScoreCard/>}/>
           <Route path="interview_stages" element={<InterviewerStages/>}/>
+          <Route path="recruiter_negotiation" element={<RecruiterNegotiation/>}/>
+
+          
 
           </Route>
           </Route>
