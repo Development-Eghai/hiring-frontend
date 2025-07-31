@@ -78,8 +78,13 @@ const RecruiterHeader = () => {
                 buttonName="7. Recruiter Negotiation"
                 className="btn-primary"
               />
-              <ButtonComponent buttonName="8. Approval" className="btn-primary" />
-              <ButtonComponent buttonName="9. Offer & BGV" className="btn-primary" />
+              <ButtonComponent buttonName="8. Approval" className="btn-primary"
+              clickFunction={() => navigate("/recruiter/approval")}
+              />
+              <ButtonComponent buttonName="9. Offer & BGV" className="btn-primary"
+              clickFunction={() => navigate("/recruiter/offer&bgv")}
+
+              />
               
               <ButtonComponent
                 buttonName="10. Onboarding"

@@ -27,9 +27,11 @@ import { Layout } from "Views/Hiring_manager/Hiring_manager_utils/Layout";
 import InterviewerDashboard from "Views/Interviewer/Docs/InterviewerDashboard";
 import LaunchInterview from "Views/Interviewer/Docs/interviewLaunchScreen";
 import { InterviwerLayout } from "Views/Interviewer/Interviewer_utils/InterviwerLayout";
+import ApprovalScreen from "Views/Recruiter/Docs/ApprovalScreen";
 import CandidateScreen from "Views/Recruiter/Docs/CandidateScreen";
 import HiringManagerApproval from "Views/Recruiter/Docs/HiringManagerApproval";
 import InterviewerStages from "Views/Recruiter/Docs/InterviewerStages";
+import OfferBGV from "Views/Recruiter/Docs/OfferBGV";
 import RecruiterScreening from "Views/Recruiter/Docs/RecruiterScreening";
 import RecruiterScreeningDashboard from "Views/Recruiter/Docs/RecruiterScreeningDashboard";
 import { RecruiterDashboard } from "Views/Recruiter/Docs/RecuirmentDashboard";
@@ -53,7 +55,10 @@ function App() {
               <Route path="planning">
                 <Route index element={<PlanningScreen />} />
                 {/* <Route path="hiring_planning_form" element={<PlanningForm />} /> */}
-                <Route path = "hiring_planning_form" element={<PlanninggForm/>}/>
+                <Route
+                  path="hiring_planning_form"
+                  element={<PlanninggForm />}
+                />
                 <Route
                   path="interview_design_screen"
                   element={<InterviewDesignScreen />}
@@ -90,36 +95,42 @@ function App() {
           </Route>
 
           <Route path="/recruiter">
-          <Route element={<RecruiterLayout />}>
-          <Route path="dashboard" element={<RecruiterDashboard/>}/>
-          <Route path="schedule_interview" element={<ScheduleInteview/>}/>
-          <Route path="candidate" element={<CandidateScreen/>}/>
-          <Route path="recruiter_screening" element={<RecruiterScreening/>}/>
-          <Route path="recruiter_screening_dashboard" element={<RecruiterScreeningDashboard/>}/>
-          <Route path="recruiter_approval" element={<HiringManagerApproval/>}/>
-          <Route path="score_card" element={<ScoreCard/>}/>
-          <Route path="interview_stages" element={<InterviewerStages/>}/>
-
-          </Route>
+            <Route element={<RecruiterLayout />}>
+              <Route path="dashboard" element={<RecruiterDashboard />} />
+              <Route path="schedule_interview" element={<ScheduleInteview />} />
+              <Route path="candidate" element={<CandidateScreen />} />
+              <Route
+                path="recruiter_screening"
+                element={<RecruiterScreening />}
+              />
+              <Route
+                path="recruiter_screening_dashboard"
+                element={<RecruiterScreeningDashboard />}
+              />
+              <Route
+                path="recruiter_approval"
+                element={<HiringManagerApproval />}
+              />
+              <Route path="score_card" element={<ScoreCard />} />
+              <Route path="interview_stages" element={<InterviewerStages />} />
+              <Route path="approval" element={<ApprovalScreen />} />
+              <Route path="offer&bgv" element={<OfferBGV />} />
+            </Route>
           </Route>
 
           <Route path="/business_ops">
             <Route element={<BuisnessLayout />}>
-              <Route path="dashboard" element={<BuisnessOpsDashboard/>}/>
-              <Route path="buisness_review" element={<JobBuisnessReview/>}/>
-              
-          </Route>
+              <Route path="dashboard" element={<BuisnessOpsDashboard />} />
+              <Route path="buisness_review" element={<JobBuisnessReview />} />
+            </Route>
           </Route>
 
           <Route path="/interviewer">
-          <Route element={<InterviwerLayout />}>
-          <Route path="dashboard" element={<InterviewerDashboard/>}/>    
-          <Route path="launch_interview" element={<LaunchInterview/>}/>    
-
+            <Route element={<InterviwerLayout />}>
+              <Route path="dashboard" element={<InterviewerDashboard />} />
+              <Route path="launch_interview" element={<LaunchInterview />} />
+            </Route>
           </Route>
-          </Route>
-
-
 
           <Route path="*" element={<Error />} />
         </Route>

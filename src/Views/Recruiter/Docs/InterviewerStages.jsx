@@ -19,6 +19,7 @@ import axiosInstance from "Services/axiosInstance";
 import Cookies from "js-cookie";
 import { FaBan, FaEdit, FaTrash } from "react-icons/fa";
 import { toast } from "react-toastify";
+import RecruiterHeader from "../Recruiter_utils/Navbar";
 
 const DEFAULT_FIELDS = [
   "req_id",
@@ -189,6 +190,7 @@ export const InterviewerStages = () => {
 
   return (
     <div className="h-100">
+      <RecruiterHeader />
       <Card className="p-4 home_data_table">
         <div className="row align-items-center mb-3">
           <div className="col-3">
