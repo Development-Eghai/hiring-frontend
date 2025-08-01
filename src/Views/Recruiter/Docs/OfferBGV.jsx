@@ -9,6 +9,8 @@ import { saveAs } from "file-saver";
 import Modal from "react-bootstrap/Modal";
 import axiosInstance from "Services/axiosInstance";
 import { useNavigate } from "react-router-dom";
+import DataTable from "react-data-table-component";
+import { BsTrash } from "react-icons/bs";
 
 const OfferBGV = () => {
   //  states
@@ -20,20 +22,23 @@ const OfferBGV = () => {
     "Candidate Id",
     "Candidate First Name",
     "Candidate Second Name",
+    "Applied Position",
     "HM Approver",
-    "FPNA/Business Ops",
     "Generate Offer",
     "Status",
     "action",
   ];
+  const [viewApproversData, setViewApproversData] = useState([]);
+  const [showViewModal, setShowViewModal] = useState(false);
 
   const [Screeningdetails, setScreeningDetails] = useState([]);
   const [showgenerateModal, setshowGenerateModal] = useState(false);
   const [variablePays, setVariablePays] = useState([{ name: "", value: "" }]);
-
+  const [selectedGenerateRow, setselectedGenerateRow] = useState([]);
+  const [generateValue, setGenerateValue] = useState([]);
   const [showModal, setShowModal] = useState(false);
 
-  const [selectedCandidate, setSelectedCandidate] = useState({});
+  const [selectedRow, setSelectedRow] = useState({});
   const [candidateDeleted, setCandidateDeleted] = useState(false);
 
   const navigate = useNavigate();
@@ -78,23 +83,22 @@ const OfferBGV = () => {
     },
   ];
 
+  const fetchData = async () => {
+    try {
+      const response = await axiosInstance.get(
+        "https://api.pixeladvant.com/api/offer-details/"
+      );
+
+      if (response?.data?.success) {
+        setScreeningDetails(response?.data?.data);
+      }
+    } catch (err) {
+      console.error("Error fetching recruiter table data", err);
+    }
+  };
+
   useEffect(() => {
-    setScreeningDetails(dummyCandidateData);
-    // const fetchData = async () => {
-    //   try {
-    //     const response = await axiosInstance.get(
-    //       "https://api.pixeladvant.com/candidates/screening/"
-    //     );
-
-    //     if (response?.data?.success) {
-    //       setScreeningDetails(response?.data?.data);
-    //     }
-    //   } catch (err) {
-    //     console.error("Error fetching recruiter table data", err);
-    //   }
-    // };
-
-    // fetchData();
+    fetchData();
   }, []);
 
   //functions
@@ -106,14 +110,46 @@ const OfferBGV = () => {
     // setShowModal(true);
   };
 
-  const handleGenerate = (e) => {
+  const handleGenerate = async (e, data) => {
     e.preventDefault();
+    setselectedGenerateRow(data);
+    const requisition_id = data?.Req_ID;
+    const candidate_id = data?.Candidate_Id;
+
+    if (
+      Array.isArray(data?.Generate_Offer) &&
+      data?.Generate_Offer.length === 0
+    ) {
+      try {
+        const response = await axios.post(
+          "https://api.pixeladvant.com/offer-details/prefill-generate-offer/",
+          {
+            requisition_id,
+            candidate_id,
+          }
+        );
+        if (response?.data?.success) {
+          const { data } = response?.data;
+          setGenerateValue(data);
+          if (Array.isArray(data?.variable_pay)) {
+            setVariablePays(data?.variable_pay);
+          } else {
+            setVariablePays([{ name: "", value: "" }]);
+          }
+        }
+      } catch (error) {
+        console.log("error from get prefilled value");
+      }
+    } else {
+      {
+        const { Generate_Offer } = data;
+        setGenerateValue(...Generate_Offer);
+      }
+    }
     setshowGenerateModal(true);
   };
 
   const handleDelete = async (candidate_id) => {
-    console.log(",:adcassadkl");
-
     // try {
     //   const response = await axios.delete(
     //     "https://api.pixeladvant.com/candidates/delete/", {
@@ -131,6 +167,35 @@ const OfferBGV = () => {
     // }
   };
 
+  const handleSubmitModal = async (formData) => {
+    const { name, value, ...filteredData } = Object.fromEntries(
+      formData.entries()
+    );
+    const salary = [{ name: name, value: value }];
+    const req_id = selectedGenerateRow?.Req_ID;
+    const candidate_id = selectedGenerateRow?.Candidate_Id;
+    const data = {
+      ...filteredData,
+      req_id,
+      candidate_id,
+      variablePays,
+      salary,
+    };
+
+    try {
+      const response = await axios.post(
+        "https://api.pixeladvant.com/offer/generate/",
+        data
+      );
+
+      if (response?.data?.success) {
+        fetchData();
+        setshowGenerateModal(false);
+      }
+    } catch (error) {
+      console.log("error from post generate modal in offerbvg", error);
+    }
+  };
   return (
     <>
       <RecruiterHeader />
@@ -172,37 +237,39 @@ const OfferBGV = () => {
                       {Screeningdetails.length > 0 ? (
                         Screeningdetails.map((data, idx) => (
                           <tr key={idx}>
-                            <th>{data?.req_id}</th>
-                            <td>{data?.client_id}</td>
-                            <td>{data?.client_name}</td>
-                            <td>{data?.candidate_id}</td>
-                            <td>{data?.Candidate_first_name}</td>
-                            <td>{data?.Candidate_last_name}</td>
+                            <th>{data?.Req_ID}</th>
+                            <td>{data?.CL0001}</td>
+                            <td>{data?.Client_Name}</td>
+                            <td>{data?.Candidate_Id}</td>
+                            <td>{data?.Candidate_First_Name}</td>
+                            <td>{data?.Candidate_Last_Name}</td>
 
-                            <td>{data?.hm_approver}</td>
-                            <td>{data?.buisness_ops}</td>
+                            <td>{data?.Applied_Position}</td>
                             <td>
-                              {data?.generate_offer && (
+                              <Button
+                                size="sm"
+                                variant="outline-primary"
+                                onClick={() => {
+                                  setViewApproversData(data.Approvers || []);
+                                  setShowViewModal(true);
+                                }}
+                              >
+                                View
+                              </Button>
+                            </td>
+                            <td>
+                              {data?.Generate_Offer && (
                                 <>
-                                  <a href={""} onClick={handleGenerate}>
+                                  <a
+                                    href={""}
+                                    onClick={(e) => handleGenerate(e, data)}
+                                  >
                                     Generate
                                   </a>
                                 </>
                               )}
-                              {/* {data?.Cover_Letter && (
-                                <>
-                                  <a
-                                    href="#!"
-                                    // onClick={(e) =>
-                                    //   handleShow(e, data?.Candidate_Id, "cl")
-                                    // }
-                                  >
-                                    CL
-                                  </a>
-                                </>
-                              )} */}
                             </td>
-                            <td>{data?.status}</td>
+                            <td>{data?.Status}</td>
 
                             <td>
                               <div className="d-flex gap-2">
@@ -246,7 +313,7 @@ const OfferBGV = () => {
       </div>
 
       {/* edit modal */}
-      <Modal
+      {/* <Modal
         show={showModal}
         onHide={() => setShowModal(false)}
         size="lg"
@@ -338,7 +405,7 @@ const OfferBGV = () => {
             Save Changes
           </button>
         </Modal.Footer>
-      </Modal>
+      </Modal> */}
 
       {/* Generate modal */}
       <Modal
@@ -352,24 +419,24 @@ const OfferBGV = () => {
           <Modal.Title>Basic Information</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <form id="candidateForm">
+          <form id="genrateForm">
             <div className="row mb-2 d-flex gap-3">
               <div className="col">
                 <label>First Name</label>
                 <input
                   className="form-control"
                   placeholder="Enter First Name"
-                  name="req_id"
-                  defaultValue={selectedCandidate?.req_id || ""}
+                  name="first_name"
+                  defaultValue={generateValue?.first_name || ""}
                 />
               </div>
               <div className="col">
                 <label>Last Name</label>
                 <input
                   className="form-control"
-                  name="req_id"
+                  name="last_name"
                   placeholder="Enter Last Name"
-                  defaultValue={selectedCandidate?.candidate_id || ""}
+                  defaultValue={generateValue?.last_name || ""}
                 />
               </div>
             </div>
@@ -380,8 +447,8 @@ const OfferBGV = () => {
                 <input
                   className="form-control"
                   placeholder="Enter candidate email"
-                  name="Candidate_First_Name"
-                  defaultValue={selectedCandidate?.client_name || ""}
+                  name="candidate_email"
+                  defaultValue={generateValue?.candidate_email || ""}
                 />
               </div>
               <div className="col">
@@ -389,8 +456,8 @@ const OfferBGV = () => {
                 <input
                   placeholder="Enter recruiter email"
                   className="form-control"
-                  name="appliedPosition"
-                  defaultValue={selectedCandidate?.applied_position || ""}
+                  name="recruiter_email"
+                  defaultValue={generateValue?.recruiter_email || ""}
                 />
               </div>
             </div>
@@ -403,24 +470,32 @@ const OfferBGV = () => {
                 <input
                   placeholder="Enter Job Title"
                   className="form-control"
-                  name="timeInStage"
-                  defaultValue={selectedCandidate?.time_in_stage || ""}
+                  name="job_title"
+                  defaultValue={generateValue?.job_title || ""}
                 />
               </div>
               <div className="col">
                 <label>Estimated Start Date</label>
                 <input
                   className="form-control"
-                  name="resumeScore"
+                  name="estimated_start_date"
                   type="date"
-                  defaultValue={selectedCandidate?.score || ""}
+                  defaultValue={generateValue?.estimated_start_date || ""}
                 />
               </div>
             </div>
             <div className="row mt-2 mb-2 d-flex gap-3">
               <div className="col">
                 <label>Job City</label>
-                <select className="form-select">
+                <select
+                  className="form-select"
+                  name="job_city"
+                  defaultValue={
+                    (generateValue?.job_city?.value &&
+                      generateValue?.job_city?.value) ||
+                    ""
+                  }
+                >
                   <option>Select city</option>
                   <option>chennai</option>
                   <option>coimbatore</option>
@@ -428,7 +503,15 @@ const OfferBGV = () => {
               </div>
               <div className="col">
                 <label>Job Country</label>
-                <select className="form-select">
+                <select
+                  className="form-select"
+                  name="job_country"
+                  defaultValue={
+                    (generateValue?.job_country?.value &&
+                      generateValue?.job_country?.value) ||
+                    ""
+                  }
+                >
                   <option>Select country</option>
                   <option>India</option>
                   <option>China</option>
@@ -437,10 +520,18 @@ const OfferBGV = () => {
             </div>
             <div className="col-6">
               <label>Currency</label>
-              <select className="form-select">
+              <select
+                className="form-select"
+                name="currency"
+                defaultValue={
+                  (generateValue?.currency?.value &&
+                    generateValue?.currency?.value) ||
+                  ""
+                }
+              >
                 {" "}
                 <option>select currency</option>
-                <option>Indian currency</option>
+                <option>INR</option>
               </select>
             </div>
 
@@ -452,8 +543,13 @@ const OfferBGV = () => {
                 <input
                   placeholder="salary"
                   className="form-control"
-                  name="Candidate_First_Name"
-                  defaultValue={selectedCandidate?.client_name || ""}
+                  name="name"
+                  defaultValue={
+                    Array.isArray(generateValue?.salary) &&
+                    generateValue.salary.length > 0
+                      ? generateValue.salary[0]?.name || ""
+                      : ""
+                  }
                 />
               </div>
               <div className="col">
@@ -461,8 +557,13 @@ const OfferBGV = () => {
                 <input
                   placeholder="0"
                   className="form-control"
-                  name="appliedPosition"
-                  defaultValue={selectedCandidate?.applied_position || ""}
+                  name="value"
+                  defaultValue={
+                    Array.isArray(generateValue?.salary) &&
+                    generateValue.salary.length > 0
+                      ? generateValue.salary[0]?.value || ""
+                      : ""
+                  }
                 />
               </div>
             </div>
@@ -470,38 +571,43 @@ const OfferBGV = () => {
             <hr />
             <Modal.Title>Variable Pay</Modal.Title>
 
-            {variablePays.map((pay, index) => (
-              <div className="row mb-2 d-flex gap-3" key={index}>
-                <div className="col">
-                  <label>Name</label>
-                  <input
-                    className="form-control"
-                    placeholder="variable"
-                    name={`variablePayName_${index}`}
-                    value={pay.name}
-                    onChange={(e) => {
-                      const updated = [...variablePays];
-                      updated[index].name = e.target.value;
-                      setVariablePays(updated);
-                    }}
-                  />
+            {Array.isArray(variablePays) &&
+              variablePays.map((pay, index) => (
+                <div className="row mb-2 d-flex gap-3" key={index}>
+                  <div className="col">
+                    <label>Name</label>
+                    <input
+                      className="form-control"
+                      placeholder="variable"
+                      value={pay.name || ""}
+                      onChange={(e) => {
+                        const updated = [...variablePays];
+                        updated[index] = {
+                          ...updated[index],
+                          name: e.target.value,
+                        };
+                        setVariablePays(updated);
+                      }}
+                    />
+                  </div>
+                  <div className="col">
+                    <label>Value</label>
+                    <input
+                      className="form-control"
+                      placeholder="0"
+                      value={pay.value || ""}
+                      onChange={(e) => {
+                        const updated = [...variablePays];
+                        updated[index] = {
+                          ...updated[index],
+                          value: e.target.value,
+                        };
+                        setVariablePays(updated);
+                      }}
+                    />
+                  </div>
                 </div>
-                <div className="col">
-                  <label>Value</label>
-                  <input
-                    className="form-control"
-                    placeholder="0"
-                    name={`variablePayValue_${index}`}
-                    value={pay.value}
-                    onChange={(e) => {
-                      const updated = [...variablePays];
-                      updated[index].value = e.target.value;
-                      setVariablePays(updated);
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
+              ))}
 
             <div>
               <button
@@ -528,13 +634,64 @@ const OfferBGV = () => {
             type="button"
             className="btn btn-primary"
             onClick={() => {
-              const form = document.getElementById("candidateForm");
+              const form = document.getElementById("genrateForm");
               const formData = new FormData(form);
-              //   handleSubmitModal(formData);
+              handleSubmitModal(formData);
             }}
           >
             Save Changes
           </button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* view approver */}
+
+      <Modal
+        show={showViewModal}
+        onHide={() => setShowViewModal(false)}
+        size="xl"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Approver Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <DataTable
+            columns={[
+              { name: "Role", selector: (row) => row.role, sortable: true },
+              { name: "Job Title", selector: (row) => row.job_title },
+              { name: "First Name", selector: (row) => row.first_name },
+              { name: "Last Name", selector: (row) => row.last_name },
+              { name: "Email", selector: (row) => row.email },
+              { name: "Contact", selector: (row) => row.contact_number },
+              { name: "Approver", selector: (row) => row.set_as_approver },
+              //             {
+              //   name: "Action",
+              //   cell: (row) => (
+              //                   <Button
+              //                     variant="outline-danger"
+              //                     size="sm"
+              //                     onClick={() => handleDelete(row)}
+              //                   >
+              //                     <BsTrash className="me-1" />
+              //                   </Button>
+              //   ),
+              //   ignoreRowClick: true,
+              //   allowOverflow: true,
+              //   button: true,
+              // },
+            ]}
+            data={viewApproversData}
+            // pagination
+            // highlightOnHover
+            // striped
+            responsive
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowViewModal(false)}>
+            Close
+          </Button>
         </Modal.Footer>
       </Modal>
     </>
