@@ -5,6 +5,8 @@ import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import RecruiterHeader from "../Recruiter_utils/Navbar";
 import axios from "axios";
 import axiosInstance from "Services/axiosInstance";
+import { ToastContainer } from "react-toastify";
+import ScheduleMeetModal from "./ScheduleMeetModal";
 
 const API_URL = "https://api.pixeladvant.com/api/offer-negotiations/";
 
@@ -24,6 +26,9 @@ const RecruiterNegotiation = () => {
   const [editModal, setEditModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
+
+    const [showModal, setShowModal] = useState(false);
+
 
   const fetchData = async () => {
     setLoading(true);
@@ -107,83 +112,103 @@ const RecruiterNegotiation = () => {
       width: "70px",
       center: true,
     },
-    { name: "Req ID", selector: (row) => row.requisition  || "-", sortable: true , 
-      width: "100px", },
-    { name: "Client ID", selector: (row) => row.client_id  || "-",  sortable: true },
-    { name: "First Name", selector: (row) => row.first_name  || "-", sortable: true },
-    { name: "Last Name", selector: (row) => row.last_name  || "-", sortable: true },
+    {
+      name: "Req ID",
+      selector: (row) => row.requisition || "-",
+      sortable: true,
+      width: "100px",
+    },
+    {
+      name: "Client ID",
+      selector: (row) => row.client_id || "-",
+      sortable: true,
+    },
+    {
+      name: "First Name",
+      selector: (row) => row.first_name || "-",
+      sortable: true,
+    },
+    {
+      name: "Last Name",
+      selector: (row) => row.last_name || "-",
+      sortable: true,
+    },
     {
       name: "Position/Role Applied for",
-      selector: (row) => row.position_applied  || "-",
-      sortable: true, 
-       width: "220px",
+      selector: (row) => row.position_applied || "-",
+      sortable: true,
+      width: "220px",
     },
     {
       name: "Expected Salary",
-      selector: (row) => row.expected_salary  || "-",
-      sortable: true, 
-       width: "200px",
+      selector: (row) => row.expected_salary || "-",
+      sortable: true,
+      width: "200px",
     },
     {
       name: "Offered Salary",
-      selector: (row) => row.offered_salary  || "-",
-      sortable: true, 
-       width: "200px",
+      selector: (row) => row.offered_salary || "-",
+      sortable: true,
+      width: "200px",
     },
     {
       name: "Expected Job Title",
-      selector: (row) => row.expected_title  || "-",
-      sortable: true, 
-       width: "200px",
+      selector: (row) => row.expected_title || "-",
+      sortable: true,
+      width: "200px",
     },
     {
       name: "Offered Job Title",
-      selector: (row) => row.offered_title  || "-",
-      sortable: true, 
-       width: "200px",
+      selector: (row) => row.offered_title || "-",
+      sortable: true,
+      width: "200px",
     },
     {
       name: "Expected Location",
-      selector: (row) => row.expected_location  || "-",
-      sortable: true, 
-       width: "200px",
+      selector: (row) => row.expected_location || "-",
+      sortable: true,
+      width: "200px",
     },
     {
       name: "Offered Location",
-      selector: (row) => row.offered_location  || "-",
-      sortable: true, 
-       width: "200px",
+      selector: (row) => row.offered_location || "-",
+      sortable: true,
+      width: "200px",
     },
     {
       name: "Expected DOJ",
-      selector: (row) => row.expected_doj  || "-",
-      sortable: true, 
-       width: "200px",
+      selector: (row) => row.expected_doj || "-",
+      sortable: true,
+      width: "200px",
     },
-    { name: "Offered DOJ", selector: (row) => row.offered_doj, sortable: true }  || "-",
+    {
+      name: "Offered DOJ",
+      selector: (row) => row.offered_doj,
+      sortable: true,
+    } || "-",
     {
       name: "Expected Work Mode",
-      selector: (row) => row.expected_work_mode  || "-",
-      sortable: true, 
-       width: "200px",
+      selector: (row) => row.expected_work_mode || "-",
+      sortable: true,
+      width: "200px",
     },
     {
       name: "Offered Work Mode",
-      selector: (row) => row.offered_work_mode  || "-",
-      sortable: true, 
-       width: "200px",
+      selector: (row) => row.offered_work_mode || "-",
+      sortable: true,
+      width: "200px",
     },
     {
       name: "Benefits",
       selector: (row) => (row.benefit_details || []).join(", ") || "-",
-      sortable: true, 
-       width: "200px",
+      sortable: true,
+      width: "200px",
     },
     {
-      name: "Negotiation Status" ,
-      selector: (row) => row.negotiation_status  || "-",
-      sortable: true, 
-       width: "200px",
+      name: "Negotiation Status",
+      selector: (row) => row.negotiation_status || "-",
+      sortable: true,
+      width: "200px",
       cell: (row) => {
         const statusColors = {
           Successful: "badge bg-success",
@@ -202,7 +227,11 @@ const RecruiterNegotiation = () => {
         );
       },
     },
-    { name: "Comments/Notes", selector: (row) => row.comments  || "-", width: "200px", },
+    {
+      name: "Comments/Notes",
+      selector: (row) => row.comments || "-",
+      width: "200px",
+    },
     {
       name: "Action",
       cell: (row) => (
@@ -225,7 +254,7 @@ const RecruiterNegotiation = () => {
           </Button> */}
         </div>
       ),
-      ignoreRowClick: true, 
+      ignoreRowClick: true,
       allowOverflow: true,
       button: true,
     },
@@ -236,49 +265,58 @@ const RecruiterNegotiation = () => {
       <RecruiterHeader />
       <div className="bg-white rounded p-3">
         <div className="row gap-2 mt-3 col-12 d-flex">
-        <h4 className="mb-3 mt-3 col">Recruiter Negotiation</h4>
-        <div className="col text-end">
-          <button type="button" className="btn btn-primary ">
-            Schedule Meet
-          </button>
-        </div>
-      </div>
+          <h4 className="mb-3 mt-3 col">Recruiter Negotiation</h4>
+          <div className="col text-end">
+            <div className="p-3">
+              <Button variant="success" onClick={() => setShowModal(true)}>
+                Schedule Meeting
+              </Button>
 
-      {loading ? (
-        <div className="text-center p-4">
-          <Spinner animation="border" />
+              <ScheduleMeetModal
+                show={showModal}
+                handleClose={() => setShowModal(false)}
+              />
+
+              <ToastContainer position="top-right" autoClose={3000} />
+            </div>
+          </div>
         </div>
-      ) : (
-        <DataTable
-          columns={columns}
-          data={tableData}
-          dense
-          responsive
-          persistTableHead
-          fixedHeader
-          fixedHeaderScrollHeight="500px"
-          customStyles={{
-            headCells: {
-              style: {
-                backgroundColor: "#e8edff",
-                fontWeight: "600",
-                fontSize: "14px",
-                color: "#1d1d1f",
-                paddingTop: "20px",
-                paddingBottom: "20px",
+
+        {loading ? (
+          <div className="text-center p-4">
+            <Spinner animation="border" />
+          </div>
+        ) : (
+          <DataTable
+            columns={columns}
+            data={tableData}
+            dense
+            responsive
+            persistTableHead
+            fixedHeader
+            fixedHeaderScrollHeight="500px"
+            customStyles={{
+              headCells: {
+                style: {
+                  backgroundColor: "#e8edff",
+                  fontWeight: "600",
+                  fontSize: "14px",
+                  color: "#1d1d1f",
+                  paddingTop: "20px",
+                  paddingBottom: "20px",
+                },
               },
-            },
-            cells: {
-              style: {
-                fontSize: "14px",
-                paddingTop: "15px",
-                paddingBottom: "15px",
-                whiteSpace: "nowrap",
+              cells: {
+                style: {
+                  fontSize: "14px",
+                  paddingTop: "15px",
+                  paddingBottom: "15px",
+                  whiteSpace: "nowrap",
+                },
               },
-            },
-          }}
-        />
-      )}
+            }}
+          />
+        )}
       </div>
 
       {/* Edit Modal */}

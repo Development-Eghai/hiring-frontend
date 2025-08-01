@@ -39,6 +39,7 @@ import { RecruiterDashboard } from "Views/Recruiter/Docs/RecuirmentDashboard";
 import ScheduleInteview from "Views/Recruiter/Docs/ScheduleInteview";
 import ScoreCard from "Views/Recruiter/Docs/ScoreCard";
 import { RecruiterLayout } from "Views/Recruiter/Recruiter_utils/layout";
+import PersonalDetailsForm from "Views/Recruiter/Docs/PersonalDetailsform";
 
 function App() {
   return (
@@ -117,6 +118,9 @@ function App() {
               <Route path="recruiter_negotiation" element={<RecruiterNegotiation/>}/>
               <Route path="approval" element={<ApprovalScreen />} />
               <Route path="offer&bgv" element={<OfferBGV />} />
+              <Route path="personal_details_form" element={<PersonalDetailsForm />} />
+
+              PersonalDetailsForm
             </Route>
           </Route>
 
