@@ -106,36 +106,32 @@ const SetApproveScreen = () => {
     ],
   });
 
-  const fetchApprovers = async () => {
-    try {
-      const res = await axiosInstance.get("/api/set-approver/");
-      if (res.data.success) {
-        const approversList = res.data.data?.approvers;
-        const approver = res?.data?.data;
-        if (Array.isArray(approversList)) {
-          setViewApproversData(approversList);
-          setApprovers([
-            {
-              req_id: approver?.req_id,
-              planning_id: approver?.planning_id,
-              client_name: approver?.client_name,
-              client_id: approver?.client_id,
-              no_of_approvers: approver?.no_of_approvers,
-              approvers: approversList,
-            },
-          ]);
-        } else {
-          setViewApproversData([]);
-          console.warn("Approvers list is invalid:", approversList);
-        }
-      } else {
-        // toast.error("Failed to fetch approvers."); 
-      }
-    } catch (error) {
-      console.error("Error fetching approvers:", error);
-      toast.error("Error fetching approvers.");
+ const fetchApprovers = async () => {
+  try {
+    const res = await axiosInstance.get("/api/set-approver/");
+    const requisitionGroups = res?.data?.data;
+
+    if (res.data.success && Array.isArray(requisitionGroups)) {
+      const formattedGroups = requisitionGroups.map((group) => ({
+        req_id: group?.req_id,
+        planning_id: group?.planning_id,
+        client_name: group?.client_name,
+        client_id: group?.client_id,
+        no_of_approvers: group?.no_of_approvers,
+        approvers: Array.isArray(group?.approvers) ? group.approvers : [],
+      }));
+
+      setViewApproversData(formattedGroups);
+      setApprovers(formattedGroups); // or apply any filtering logic here
+    } else {
+      setViewApproversData([]);
+      console.warn("Approvers list is invalid:", requisitionGroups);
     }
-  };
+  } catch (error) {
+    console.error("Error fetching approvers:", error);
+    toast.error("Error fetching approvers.");
+  }
+};
 
   useEffect(() => {
     fetchApprovers();
