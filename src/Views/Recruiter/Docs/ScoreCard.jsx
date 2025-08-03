@@ -2,13 +2,18 @@ import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import RecruiterHeader from "../Recruiter_utils/Navbar";
 import axiosInstance from "Services/axiosInstance"; // ✅ make sure this path is correct
+import { Button, Form } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const ScoreCard = () => {
   const [data, setData] = useState([]);
   const [selectedCandidateId, setSelectedCandidateId] = useState(null);
   const [interviewDetailsMap, setInterviewDetailsMap] = useState({});
   const [selectedCandidateName, setSelectedCandidateName] = useState("");
+  const [selectedRadioRow, setSelectedRadioRow] = useState(null);
 
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -34,14 +39,16 @@ const ScoreCard = () => {
       );
 
       if (res.data.success) {
-        const interviewJourney = res.data.data.Interview_Journey.map((item) => ({
-          stage: item.Stage || "-",
-          date: item.Date || "-",
-          mode: item.Mode || "-",
-          who: item.Interviewer || "-",
-          feedback: item.Feedback || "-",
-          status: item.Status || "-",
-        }));
+        const interviewJourney = res.data.data.Interview_Journey.map(
+          (item) => ({
+            stage: item.Stage || "-",
+            date: item.Date || "-",
+            mode: item.Mode || "-",
+            who: item.Interviewer || "-",
+            feedback: item.Feedback || "-",
+            status: item.Status || "-",
+          })
+        );
 
         setInterviewDetailsMap((prev) => ({
           ...prev,
@@ -56,6 +63,21 @@ const ScoreCard = () => {
   };
 
   const columns = [
+    {
+      name: "Select",
+      cell: (row) => (
+        <Form.Check
+          type="radio"
+          name="selectedRow"
+          checked={selectedRadioRow?.Candidate_ID === row?.Candidate_ID}
+          onChange={() => setSelectedRadioRow(row)}
+        />
+      ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+      width: "80px",
+    },
     {
       name: "S.No",
       selector: (row, index) => index + 1,
@@ -142,9 +164,30 @@ const ScoreCard = () => {
       <RecruiterHeader />
       <div className="interview-table-wrapper pt-3">
         <div className="scroll-container bg-white rounded p-2">
-          <div className="row align-items-center mb-3">
+          <div className="row justify-content-between align-items-center mb-3">
             <div className="col-md-2">
               <h5 className="fw-bold mb-0">Screening Round</h5>
+            </div>
+            <div className="col-2">
+              <Button
+                variant="primary"
+                onClick={() => {
+                  if (selectedRadioRow) {
+                    console.log("Initiating BGV for:", selectedRadioRow);
+                    navigate("/recruiter/initiate_bg", {
+                      state: {
+                        selectedRadioRow,
+                        showInitiateModal: true,
+                        comesFrom: "/recruiter/score_card",
+                      },
+                    });
+                  } else {
+                    toast.warning("Please select a row to initiate BGV");
+                  }
+                }}
+              >
+                Initiate BGV
+              </Button>
             </div>
           </div>
 
@@ -182,49 +225,45 @@ const ScoreCard = () => {
                 },
               }}
             />
-
-            
           </div>
-         
         </div>
-         <div className="bg-white rounded">
-            {selectedCandidateId &&
-              interviewDetailsMap[selectedCandidateId] && (
-                <div className="mt-4 p-2 pt-4">
-                  <h5 className="fw-bold mb-3">
-                    Interview Stages for {selectedCandidateName}
-                  </h5>
-                  <div className="table-responsive">
-                    <table className="table table-bordered">
-                      <thead className="table-primary">
-                        <tr>
-                          <th>Interview Stage</th>
-                          <th>Interview Date</th>
-                          <th>Mode of Interview</th>
-                          <th>Who</th>
-                          <th>Feedback</th>
-                          <th>Status</th>
+        <div className="bg-white rounded">
+          {selectedCandidateId && interviewDetailsMap[selectedCandidateId] && (
+            <div className="mt-4 p-2 pt-4">
+              <h5 className="fw-bold mb-3">
+                Interview Stages for {selectedCandidateName}
+              </h5>
+              <div className="table-responsive">
+                <table className="table table-bordered">
+                  <thead className="table-primary">
+                    <tr>
+                      <th>Interview Stage</th>
+                      <th>Interview Date</th>
+                      <th>Mode of Interview</th>
+                      <th>Who</th>
+                      <th>Feedback</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {interviewDetailsMap[selectedCandidateId].map(
+                      (item, index) => (
+                        <tr key={index}>
+                          <td>{item.stage}</td>
+                          <td>{item.date}</td>
+                          <td>{item.mode}</td>
+                          <td>{item.who}</td>
+                          <td>{item.feedback || "-"}</td>
+                          <td>{item.status || "-"}</td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {interviewDetailsMap[selectedCandidateId].map(
-                          (item, index) => (
-                            <tr key={index}>
-                              <td>{item.stage}</td>
-                              <td>{item.date}</td>
-                              <td>{item.mode}</td>
-                              <td>{item.who}</td>
-                              <td>{item.feedback || "-"}</td>
-                              <td>{item.status || "-"}</td>
-                            </tr>
-                          )
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-          </div>
+                      )
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );

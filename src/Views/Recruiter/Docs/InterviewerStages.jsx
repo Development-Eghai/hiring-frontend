@@ -99,6 +99,8 @@ export const InterviewerStages = () => {
   console.log(selectedFields, "cdc");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [rowToDelete, setRowToDelete] = useState(null);
+  const [selectedRadioRow, setSelectedRadioRow] = useState(null);
+  const [showInitiateModal, setShowInitiateModal] = useState(false);
 
   const [showConfirmActionModal, setShowConfirmActionModal] = useState(false);
   const [actionType, setActionType] = useState(""); // Approved or Rejected
@@ -137,6 +139,21 @@ export const InterviewerStages = () => {
   // };
 
   const columns = [
+    {
+      name: "Select",
+      cell: (row) => (
+        <Form.Check
+          type="radio"
+          name="selectedRow"
+          checked={selectedRadioRow?.candidate_id === row?.candidate_id}
+          onChange={() => setSelectedRadioRow(row)}
+        />
+      ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+      width: "80px",
+    },
     ...DEFAULT_FIELDS.map((field) => ({
       name: field,
       selector: (row) => row[field] ?? "-",
@@ -227,7 +244,28 @@ export const InterviewerStages = () => {
               <span>{Icons.Filter} Display Option</span>
             </Button>
           </div> */}
-          <div className="col-6"></div>
+          <div className="col-4"></div>
+          <div className="col-2 text-end">
+            <Button
+              variant="primary"
+              onClick={() => {
+                if (selectedRadioRow) {
+                  console.log("Initiating BGV for:", selectedRadioRow);
+                  navigate("/recruiter/initiate_bg", {
+                    state: {
+                      selectedRadioRow,
+                      showInitiateModal: true,
+                      comesFrom: "/recruiter/interview_stages",
+                    },
+                  });
+                } else {
+                  toast.warning("Please select a row to initiate BGV");
+                }
+              }}
+            >
+              Initiate BGV
+            </Button>
+          </div>
 
           <div className="col-3 d-flex justify-content-end">
             <InputGroup style={{ maxWidth: "300px" }}>

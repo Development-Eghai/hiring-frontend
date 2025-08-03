@@ -5,8 +5,9 @@ import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import RecruiterHeader from "../Recruiter_utils/Navbar";
 import axios from "axios";
 import axiosInstance from "Services/axiosInstance";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import ScheduleMeetModal from "./ScheduleMeetModal";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = "https://api.pixeladvant.com/api/offer-negotiations/";
 
@@ -27,8 +28,10 @@ const RecruiterNegotiation = () => {
   const [deleteModal, setDeleteModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
 
-    const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedRadioRow, setSelectedRadioRow] = useState(null);
 
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     setLoading(true);
@@ -106,6 +109,21 @@ const RecruiterNegotiation = () => {
   };
 
   const columns = [
+    {
+      name: "Select",
+      cell: (row) => (
+        <Form.Check
+          type="radio"
+          name="selectedRow"
+          checked={selectedRadioRow?.client_id === row?.client_id}
+          onChange={() => setSelectedRadioRow(row)}
+        />
+      ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+      width: "80px",
+    },
     {
       name: "S.No",
       selector: (row, index) => index + 1,
@@ -264,23 +282,42 @@ const RecruiterNegotiation = () => {
     <div>
       <RecruiterHeader />
       <div className="bg-white rounded p-3">
-        <div className="row gap-2 mt-3 col-12 d-flex">
-          <h4 className="mb-3 mt-3 col">Recruiter Negotiation</h4>
-          <div className="col text-end">
-            <div className="p-3">
-              <Button variant="success" onClick={() => setShowModal(true)}>
-                Schedule Meeting
-              </Button>
+        <div className="row align-items-center mt-3 mb-3">
+          <div className="col-md-4">
+            <h4 className="mb-0">Recruiter Negotiation</h4>
+          </div>
+          <div className="col-md-8 text-end d-flex justify-content-end gap-3">
+            <Button
+              variant="primary"
+              onClick={() => {
+                if (selectedRadioRow) {
+                  navigate("/recruiter/initiate_bg", {
+                    state: {
+                      selectedRadioRow,
+                      showInitiateModal: true,
+                      comesFrom: "/recruiter/recruiter_negotiation",
+                    },
+                  });
+                } else {
+                  toast.warning("Please select a row to initiate BGV");
+                }
+              }}
+            >
+              Initiate BGV
+            </Button>
 
-              <ScheduleMeetModal
-                show={showModal}
-                handleClose={() => setShowModal(false)}
-              />
+            <Button variant="success" onClick={() => setShowModal(true)}>
+              Schedule Meeting
+            </Button>
 
-              <ToastContainer position="top-right" autoClose={3000} />
-            </div>
+            <ScheduleMeetModal
+              show={showModal}
+              handleClose={() => setShowModal(false)}
+            />
           </div>
         </div>
+
+        <ToastContainer position="top-right" autoClose={3000} />
 
         {loading ? (
           <div className="text-center p-4">

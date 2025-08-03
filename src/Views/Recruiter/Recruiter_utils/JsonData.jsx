@@ -13,6 +13,11 @@ const JsonData = () => {
         route: "dashboard",
         icon: Icons.Reporting,
       },
+        {
+        name: "Background Verification",
+        route: "/recruiter/initiate_bg",
+        icon: Icons.backgroundVerification,
+      },
     //   {
     //     name: "Planning",
     //     route: "planning",

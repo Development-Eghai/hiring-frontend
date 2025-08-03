@@ -2,12 +2,18 @@ import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import axiosInstance from "Services/axiosInstance";
 import RecruiterHeader from "../Recruiter_utils/Navbar";
+import { Button, Form } from "react-bootstrap";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const ApprovalScreen = () => {
   const [columns, setColumns] = useState([]);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRows, setSelectedRows] = useState([]);
+  const [selectedRadioRow, setSelectedRadioRow] = useState(null);
+  const navigate = useNavigate();
+  console.log(selectedRadioRow, "CxcweW");
 
   const fetchData = async () => {
     setLoading(true);
@@ -44,6 +50,21 @@ const ApprovalScreen = () => {
 
   useEffect(() => {
     const staticColumns = [
+      {
+        name: "Select",
+        cell: (row) => (
+          <Form.Check
+            type="radio"
+            name="selectedRow"
+            checked={selectedRadioRow?.candidate_id === row?.candidate_id}
+            onChange={() => setSelectedRadioRow(row)}
+          />
+        ),
+        ignoreRowClick: true,
+        allowOverflow: true,
+        button: true,
+        width: "80px",
+      },
       {
         name: "S.No",
         selector: (row, index) => index + 1,
@@ -145,6 +166,26 @@ const ApprovalScreen = () => {
             <div className="col-md-2">
               <h5 className="fw-bold mb-0">Approval</h5>
             </div>
+            <div className="col-9 text-end">
+              <Button
+                variant="primary"
+                onClick={() => {
+                  if (selectedRadioRow) {
+                    navigate("/recruiter/initiate_bg", {
+                      state: {
+                        selectedRadioRow,
+                        showInitiateModal: true,
+                        comesFrom: "/recruiter/approval",
+                      },
+                    });
+                  } else {
+                    toast.warning("Please select a row to initiate BGV");
+                  }
+                }}
+              >
+                Initiate BGV
+              </Button>
+            </div>
           </div>
 
           <DataTable
@@ -152,7 +193,6 @@ const ApprovalScreen = () => {
             data={data}
             striped
             dense
-            selectableRows
             //   onSelectedRowsChange={handleRowSelected}
             progressPending={loading}
             persistTableHead

@@ -11,6 +11,7 @@ import axiosInstance from "Services/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import { BsTrash } from "react-icons/bs";
+import { toast } from "react-toastify";
 
 const OfferBGV = () => {
   //  states
@@ -37,7 +38,8 @@ const OfferBGV = () => {
   const [selectedGenerateRow, setselectedGenerateRow] = useState([]);
   const [generateValue, setGenerateValue] = useState([]);
   const [showModal, setShowModal] = useState(false);
-
+  const [selectedRadioRow, setSelectedRadioRow] = useState(null);
+  console.log(selectedRadioRow, "czcweE");
   const [selectedRow, setSelectedRow] = useState({});
   const [candidateDeleted, setCandidateDeleted] = useState(false);
 
@@ -208,6 +210,24 @@ const OfferBGV = () => {
                 <div className="col-4"></div>
                 <div className="col-md-7 d-flex align-items-center justify-content-end gap-3 flex-wrap">
                   {/* Search Bar */}
+                  <Button
+                    variant="primary"
+                    onClick={() => {
+                      if (selectedRadioRow) {
+                        navigate("/recruiter/initiate_bg", {
+                          state: {
+                            selectedRadioRow,
+                            showInitiateModal: true,
+                            comesFrom: "/recruiter/offer&bgv",
+                          },
+                        });
+                      } else {
+                        toast.warning("Please select a row to initiate BGV");
+                      }
+                    }}
+                  >
+                    Initiate BGV
+                  </Button>
                   <div className="input-group input-group-sm w-50">
                     <input
                       type="text"
@@ -237,6 +257,14 @@ const OfferBGV = () => {
                       {Screeningdetails.length > 0 ? (
                         Screeningdetails.map((data, idx) => (
                           <tr key={idx}>
+                            <td>
+                              {
+                                <input
+                                  type="radio"
+                                  onChange={() => setSelectedRadioRow(data)}
+                                />
+                              }
+                            </td>
                             <th>{data?.Req_ID}</th>
                             <td>{data?.CL0001}</td>
                             <td>{data?.Client_Name}</td>

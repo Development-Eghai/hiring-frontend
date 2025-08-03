@@ -40,6 +40,8 @@ import ScheduleInteview from "Views/Recruiter/Docs/ScheduleInteview";
 import ScoreCard from "Views/Recruiter/Docs/ScoreCard";
 import { RecruiterLayout } from "Views/Recruiter/Recruiter_utils/layout";
 import PersonalDetailsForm from "Views/Recruiter/Docs/PersonalDetailsform";
+import Configure_bg_packages from "Views/Hiring_manager/Docs/Configure_bg_packages";
+import InitiateBG from "Views/Recruiter/Docs/InitiateBGDashboard";
 
 function App() {
   return (
@@ -65,6 +67,7 @@ function App() {
                   path="interview_design_screen"
                   element={<InterviewDesignScreen />}
                 />
+                <Route path="bg_packages" element={<Configure_bg_packages/>}/>
                 <Route
                   path="interview_design_dashboard"
                   element={<InterviewDesignDashboard />}
@@ -101,6 +104,8 @@ function App() {
               <Route path="dashboard" element={<RecruiterDashboard />} />
               <Route path="schedule_interview" element={<ScheduleInteview />} />
               <Route path="candidate" element={<CandidateScreen />} />
+              <Route path="initiate_bg" element={<InitiateBG/>}/>
+
               <Route
                 path="recruiter_screening"
                 element={<RecruiterScreening />}

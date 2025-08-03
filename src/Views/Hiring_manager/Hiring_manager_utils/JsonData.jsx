@@ -40,6 +40,11 @@ const JsonData = () => {
             route: "planning/interviewer_bandwidth_dashboard",
             icon: Icons.Planning,
           },
+                    {
+            name: "Configure BG Packages",
+            route: "planning/bg_packages",
+            icon: Icons.Planning,
+          },
 
           {
             name: "Set Approver Screen",
