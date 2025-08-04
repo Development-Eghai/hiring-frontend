@@ -175,7 +175,7 @@ const ApprovalScreen = () => {
                       state: {
                         selectedRadioRow,
                         showInitiateModal: true,
-                        comesFrom: "/recruiter/approval",
+                        comesFrom: "/recruiter/final_approval",
                       },
                     });
                   } else {

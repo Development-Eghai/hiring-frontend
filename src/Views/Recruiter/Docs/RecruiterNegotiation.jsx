@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
-import { Button, Modal, Form, Row, Col, Spinner } from "react-bootstrap";
+import { Button, Modal, Form, Row, Col, Spinner, Table } from "react-bootstrap";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import RecruiterHeader from "../Recruiter_utils/Navbar";
 import axios from "axios";
@@ -30,7 +30,8 @@ const RecruiterNegotiation = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedRadioRow, setSelectedRadioRow] = useState(null);
-
+  const [selectedRowDetails,setSelectedRowDetails]= useState([]);
+  const [showViewModal,setShowViewModal] = useState(false);
   const navigate = useNavigate();
 
   const fetchData = async () => {
@@ -108,7 +109,120 @@ const RecruiterNegotiation = () => {
     }
   };
 
+  const handleView = (row)=>{
+setSelectedRowDetails(row)
+setShowViewModal(true)
+  }
+
   const columns = [
+    {
+      name: "Select",
+      cell: (row) => (
+        <Form.Check
+          type="radio"
+          name="selectedRow"
+          checked={selectedRadioRow?.client_id === row?.client_id}
+          onChange={() => setSelectedRadioRow(row)}
+        />
+      ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+      width: "80px",
+    },
+    {
+      name: "S.No",
+      selector: (row, index) => index + 1,
+      width: "70px",
+      center: true,
+    },
+    {
+      name: "Req ID",
+      selector: (row) => row.requisition || "-",
+      sortable: true,
+      width: "100px",
+    },
+    {
+      name: "First Name",
+      selector: (row) => row.first_name || "-",
+      sortable: true,
+    },
+    {
+      name: "Last Name",
+      selector: (row) => row.last_name || "-",
+      sortable: true,
+    },
+    {
+      name: "Position/Role Applied for",
+      selector: (row) => row.position_applied || "-",
+      sortable: true,
+      width: "220px",
+    },
+    {
+      name: "Negotiation Status",
+      selector: (row) => row.negotiation_status || "-",
+      sortable: true,
+      width: "200px",
+      cell: (row) => {
+        const statusColors = {
+          Successful: "badge bg-success",
+          Closed: "badge bg-secondary",
+          "Sent for Realingment": "badge bg-warning text-dark",
+          Failed: "badge bg-danger",
+          Open: "badge bg-info text-dark",
+          "In progress": "badge bg-primary",
+        };
+        return (
+          <span
+            className={statusColors[row.negotiation_status] || "badge bg-light"}
+          >
+            {row.negotiation_status}
+          </span>
+        );
+      },
+    },
+    {
+      name: "Comments/Notes",
+      selector: (row) => row.comments || "-",
+      width: "200px",
+    },
+    {
+      name: "Action",
+      cell: (row) => (
+        <div className="d-flex gap-2">
+                   <Button
+            size="sm"
+            variant="primary"
+            title="Edit"
+            onClick={() => handleView(row)}
+          >
+            view
+          </Button> 
+          <Button
+            size="sm"
+            variant="warning"
+            title="Edit"
+            onClick={() => handleEdit(row)}
+          >
+            <FaEdit />
+          </Button>
+          {/* <Button
+            size="sm"
+            variant="danger"
+            title="Delete"
+            onClick={() => handleDelete(row)}
+          >
+            <FaTrash />
+          </Button> */}
+        </div>
+      ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+    },
+  ];
+
+  const ALLFIELDS =  [
     {
       name: "Select",
       cell: (row) => (
@@ -618,6 +732,121 @@ const RecruiterNegotiation = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* view details */}
+
+          <Modal show={showViewModal} onHide={()=>setShowViewModal(false)} size="lg" centered scrollable>
+      <Modal.Header closeButton>
+        <Modal.Title>Negotiation Full Details</Modal.Title>
+      </Modal.Header>
+
+      <Modal.Body style={{ maxHeight: "70vh", overflowY: "auto" }}>
+        <Table striped bordered hover responsive>
+          <thead>
+            <tr>
+              <th>Field</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td>Req ID</td>
+              <td>{selectedRowDetails?.requisition || "-"}</td>
+            </tr>
+            <tr>
+              <td>Client ID</td>
+              <td>{selectedRowDetails?.client_id || "-"}</td>
+            </tr>
+            <tr>
+              <td>First Name</td>
+              <td>{selectedRowDetails?.first_name || "-"}</td>
+            </tr>
+            <tr>
+              <td>Last Name</td>
+              <td>{selectedRowDetails?.last_name || "-"}</td>
+            </tr>
+            <tr>
+              <td>Position/Role Applied for</td>
+              <td>{selectedRowDetails?.position_applied || "-"}</td>
+            </tr>
+            <tr>
+              <td>Expected Salary</td>
+              <td>{selectedRowDetails?.expected_salary || "-"}</td>
+            </tr>
+            <tr>
+              <td>Offered Salary</td>
+              <td>{selectedRowDetails?.offered_salary || "-"}</td>
+            </tr>
+            <tr>
+              <td>Expected Job Title</td>
+              <td>{selectedRowDetails?.expected_title || "-"}</td>
+            </tr>
+            <tr>
+              <td>Offered Job Title</td>
+              <td>{selectedRowDetails?.offered_title || "-"}</td>
+            </tr>
+            <tr>
+              <td>Expected Location</td>
+              <td>{selectedRowDetails?.expected_location || "-"}</td>
+            </tr>
+            <tr>
+              <td>Offered Location</td>
+              <td>{selectedRowDetails?.offered_location || "-"}</td>
+            </tr>
+            <tr>
+              <td>Expected DOJ</td>
+              <td>{selectedRowDetails?.expected_doj || "-"}</td>
+            </tr>
+            <tr>
+              <td>Offered DOJ</td>
+              <td>{selectedRowDetails?.offered_doj || "-"}</td>
+            </tr>
+            <tr>
+              <td>Expected Work Mode</td>
+              <td>{selectedRowDetails?.expected_work_mode || "-"}</td>
+            </tr>
+            <tr>
+              <td>Offered Work Mode</td>
+              <td>{selectedRowDetails?.offered_work_mode || "-"}</td>
+            </tr>
+            <tr>
+              <td>Benefits</td>
+              <td>{(selectedRowDetails?.benefit_details || []).join(", ") || "-"}</td>
+            </tr>
+            <tr>
+              <td>Negotiation Status</td>
+              <td>
+                <span
+                  className={
+                    {
+                      Successful: "badge bg-success",
+                      Closed: "badge bg-secondary",
+                      "Sent for Realingment": "badge bg-warning text-dark",
+                      Failed: "badge bg-danger",
+                      Open: "badge bg-info text-dark",
+                      "In progress": "badge bg-primary",
+                    }[selectedRowDetails?.negotiation_status] || "badge bg-light"
+                  }
+                >
+                  {selectedRowDetails?.negotiation_status || "-"}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td>Comments/Notes</td>
+              <td>{selectedRowDetails?.comments || "-"}</td>
+            </tr>
+          </tbody>
+        </Table>
+      </Modal.Body>
+
+      <Modal.Footer>
+        <Button variant="secondary" onClick={()=>setShowViewModal(false)}>
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
     </div>
   );
 };

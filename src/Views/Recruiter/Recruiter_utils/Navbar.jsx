@@ -14,31 +14,8 @@ const RecruiterHeader = () => {
 
   return (
     <>
-      <div className="card rounded-3 shadow-sm p-2">
+      <div className="card rounded-3 shadow-sm p-2 mb-5">
         <div className="card-body p-0 card overflow-auto">
-          <div className="row align-items-center p-2 border-bottom ">
-            <div className="col-md-4">
-              <h4 className="fw-bold">
-                {"Recruiter"} {currentScreen}
-              </h4>
-            </div>
-            {/* <div className="col-md-4 d-flex align-items-center justify-content-end gap-4">
-              <div className="input-group input-group-sm w-100">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Search .."
-              />
-              <span className="input-group-text bg-white border-start-0">
-                <FaSearch />
-                </span>
-                </div>
-                
-                Icons
-                <FaBell className="fs-6 " />
-                <FaUser className="fs-6" />
-                </div> */}
-          </div>
           <div className="row mt-2 p-2">
             <div className="col d-flex flex-wrap gap-2">
               <ButtonComponent
@@ -54,7 +31,7 @@ const RecruiterHeader = () => {
                 <ButtonComponent
                   buttonName="3. Hiring Manager Approval"
                   className="btn-primary"
-                   clickFunction={() => navigate("/recruiter/recruiter_approval")}
+                   clickFunction={() => navigate("/recruiter/hiring_manager_approval")}
                 />
               <ButtonComponent
                 buttonName="4. Schedule interview"
@@ -80,7 +57,7 @@ const RecruiterHeader = () => {
                 clickFunction={() => navigate("/recruiter/recruiter_negotiation")} 
               />
               <ButtonComponent buttonName="8. Approval" className="btn-primary"
-              clickFunction={() => navigate("/recruiter/approval")}
+              clickFunction={() => navigate("/recruiter/final_approval")}
               />
               <ButtonComponent buttonName="9. Offer & BGV" className="btn-primary"
               clickFunction={() => navigate("/recruiter/offer&bgv")}

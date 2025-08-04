@@ -115,13 +115,13 @@ function App() {
                 element={<RecruiterScreeningDashboard />}
               />
               <Route
-                path="recruiter_approval"
+                path="hiring_manager_approval"
                 element={<HiringManagerApproval />}
               />
               <Route path="score_card" element={<ScoreCard />} />
               <Route path="interview_stages" element={<InterviewerStages />} />
               <Route path="recruiter_negotiation" element={<RecruiterNegotiation/>}/>
-              <Route path="approval" element={<ApprovalScreen />} />
+              <Route path="final_approval" element={<ApprovalScreen />} />
               <Route path="offer&bgv" element={<OfferBGV />} />
               <Route path="personal_details_form" element={<PersonalDetailsForm />} />
 
