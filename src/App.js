@@ -125,7 +125,6 @@ function App() {
               <Route path="offer&bgv" element={<OfferBGV />} />
               <Route path="personal_details_form" element={<PersonalDetailsForm />} />
 
-              PersonalDetailsForm
             </Route>
           </Route>
 
