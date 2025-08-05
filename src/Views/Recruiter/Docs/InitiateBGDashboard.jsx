@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -15,7 +16,21 @@ const InitiateBG = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const routeState = location.state;
-
+console.log(routeState,"sdcfsdda")
+  const [formState, setFormState] = useState({
+  requisition:"",
+  candidate:"",
+  first_name:"",
+  last_name:"",
+  email_id:"",
+  location: "",
+  vendor: "",
+  selected_package: "",
+  custom_checks: "",
+  current_stage: "",
+  bg_status: "",
+});
+  const [dropdownOptions,setdropDownOptions] = useState({});
   const [summeryModal, setSummeryModal] = useState(false);
   const dummyBGVData = [
     {
@@ -45,6 +60,32 @@ const InitiateBG = () => {
       decision: "Approved",
     },
   ];
+
+  async function fetchFormData(){
+     try {
+      const response = await axios.post("https://api.pixeladvant.com/api/bg-check/contextual-data/",{
+        candidate_id:routeState?.selectedRadioRow?.candidate_id,
+        requisition_id:routeState?.selectedRadioRow?.req_id,
+      })
+
+      const {success,data} = response?.data
+      if(success){
+        const { vendor_options, package_options, ...restData } = data;
+
+        setdropDownOptions({
+          vendor_options,
+          package_options
+        });
+        setFormState({requisition:routeState?.selectedRadioRow?.req_id,candidate:routeState?.selectedRadioRow?.candidate_id,...restData})
+        console.log(dropdownOptions,"asdasdas")
+      }
+    } catch (error) {
+      
+    }
+}
+  useEffect(()=>{
+fetchFormData()
+  },[])
 
   const verificationData = [
     {
@@ -87,6 +128,28 @@ const InitiateBG = () => {
   const handleCloseInitiateModal = () => {
     navigate(routeState?.comesFrom);
   };
+
+    const handleMainChange = (e) => {
+    const { name, value } = e.target;
+    setFormState((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+const handleSubmit =async()=>{
+  console.log(formState,"caxcasa")
+  try {
+    const response = await axios.post("https://api.pixeladvant.com/initiate-bg-check/",formState)
+    const {success,data} = response?.data;
+
+    if(success){
+          navigate(routeState?.comesFrom);
+    }
+  } catch (error) {
+    
+  }
+}
 
   const handleRowClick = (a) => {
     setSummeryModal(true);
@@ -168,9 +231,9 @@ const InitiateBG = () => {
               <Form.Group>
                 <Form.Label>Req ID</Form.Label>
                 <Form.Control
-                  name="req_id"
-                  value={routeState?.selectedRadioRow?.req_id || ""}
-                  // onChange={handleMainChange}
+                  name="requisition"
+                  value={formState?.requisition || ""}
+                  onChange={handleMainChange}
                   readOnly
                 />
               </Form.Group>
@@ -180,10 +243,10 @@ const InitiateBG = () => {
               <Form.Group>
                 <Form.Label>Candidate ID</Form.Label>
                 <Form.Control
-                  name="candidate_id"
-                  value={routeState?.selectedRadioRow?.candidate_id || ""}
+                  name="candidate"
+                  value={formState?.candidate || ""}
                   readOnly
-                  // onChange={handleMainChange}
+                  onChange={handleMainChange}
                 />
               </Form.Group>
             </Col>
@@ -191,9 +254,9 @@ const InitiateBG = () => {
               <Form.Group>
                 <Form.Label>First name</Form.Label>
                 <Form.Control
-                  name="first_name"
-                  value={routeState?.selectedRadioRow?.first_name || ""}
-                  // onChange={handleMainChange}
+                  name="candidate_first_name"
+                  value={formState?.candidate_first_name || ""}
+                  onChange={handleMainChange}
                   readOnly
                 />
               </Form.Group>
@@ -202,10 +265,10 @@ const InitiateBG = () => {
               <Form.Group>
                 <Form.Label>Last name</Form.Label>
                 <Form.Control
-                  value={routeState?.selectedRadioRow?.last_name || ""}
-                  name="last_name"
+                  value={formState?.candidate_last_name || ""}
+                  name="candidate_last_name"
                   readOnly
-                  // onChange={handleMainChange}
+                  onChange={handleMainChange}
                 />
               </Form.Group>
             </Col>
@@ -213,10 +276,10 @@ const InitiateBG = () => {
               <Form.Group>
                 <Form.Label>Email</Form.Label>
                 <Form.Control
-                  name="email"
-                  value={routeState?.selectedRadioRow?.email_id || ""}
+                  name="candidate_email"
+                  value={formState?.candidate_email || ""}
                   readOnly
-                  // onChange={handleMainChange}
+                  onChange={handleMainChange}
                 />
               </Form.Group>
             </Col>
@@ -225,8 +288,8 @@ const InitiateBG = () => {
                 <Form.Label>Location</Form.Label>
                 <Form.Control
                   name="location"
-                  // value={formState.req_id}
-                  // onChange={handleMainChange}
+                  value={formState?.location}
+                  onChange={handleMainChange}
                 />
               </Form.Group>
             </Col>
@@ -234,9 +297,9 @@ const InitiateBG = () => {
               <Form.Group>
                 <Form.Label>Vendor Name</Form.Label>
                 <Form.Select
-                  name="vendor_name"
-                  // value={formState.planning_id}
-                  // onChange={handleMainChange}
+                  name="vendor"
+                  value={formState.vendor}
+                  onChange={handleMainChange}
                 >
                   <option value="">-- Select Vendor name --</option>
                   {/* {dropdownOptions.plan_id.map((id, index) => (
@@ -252,16 +315,17 @@ const InitiateBG = () => {
               <Form.Group>
                 <Form.Label>Vendor Package</Form.Label>
                 <Form.Select
-                  name="vendor_package"
-                  // value={formState.planning_id}
-                  // onChange={handleMainChange}
+                  name="selected_package"
+                  value={formState.selected_package}
+                  onChange={handleMainChange}
                 >
                   <option value="">-- Select package --</option>
-                  {/* {dropdownOptions.plan_id.map((id, index) => (
-              <option key={index} value={id}>
-                {id}
-              </option>
-            ))} */}
+                  {Array.isArray(dropdownOptions?.package_options) &&
+                    dropdownOptions.vendor_options.map((val, index) => (
+                      <option key={index} value={val?.id}>
+                        {val?.name}
+                      </option>
+                    ))}
                 </Form.Select>
               </Form.Group>
             </Col>
@@ -270,16 +334,17 @@ const InitiateBG = () => {
               <Form.Group>
                 <Form.Label>Add on-check</Form.Label>
                 <Form.Select
-                  name="add_on_check"
-                  // value={formState.planning_id}
-                  // onChange={handleMainChange}
+                  name="custom_checks"
+                  value={formState.custom_checks}
+                  onChange={handleMainChange}
                 >
-                  <option value="">-- Select Vendor name --</option>
-                  {/* {dropdownOptions.plan_id.map((id, index) => (
-              <option key={index} value={id}>
-                {id}
-              </option>
-            ))} */}
+                  <option value="">-- Select add on check --</option>
+                  {Array.isArray(dropdownOptions?.vendor_options) &&
+                    dropdownOptions.vendor_options.map((val, index) => (
+                      <option key={index} value={val.id}>
+                        {val.name}
+                      </option>
+                    ))}
                 </Form.Select>
               </Form.Group>
             </Col>
@@ -288,8 +353,8 @@ const InitiateBG = () => {
                 <Form.Label>Current Stage</Form.Label>
                 <Form.Control
                   name="current_stage"
-                  // value={formState.req_id}
-                  // onChange={handleMainChange}
+                  value={formState.current_stage}
+                  onChange={handleMainChange}
                 />
               </Form.Group>
             </Col>
@@ -298,9 +363,9 @@ const InitiateBG = () => {
               <Form.Group>
                 <Form.Label>BG status</Form.Label>
                 <Form.Select
-                  name="current_stage"
-                  // value={formState.planning_id}
-                  // onChange={handleMainChange}
+                  name="bg_status"
+                  value={formState.bg_status}
+                  onChange={handleMainChange}
                 >
                   <option value="">-- Select BG status --</option>
 
@@ -313,7 +378,7 @@ const InitiateBG = () => {
             </Col>
           </Row>
 
-          <Button variant="success" onClick={"handleFinalSubmit"}>
+          <Button variant="success" onClick={handleSubmit}>
             Submit
           </Button>
         </Modal.Body>
