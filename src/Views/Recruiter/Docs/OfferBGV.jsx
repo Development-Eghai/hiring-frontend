@@ -266,7 +266,6 @@ const OfferBGV = () => {
                               }
                             </td>
                             <th>{data?.Req_ID}</th>
-                            <td>{data?.CL0001}</td>
                             <td>{data?.Client_Name}</td>
                             <td>{data?.Candidate_Id}</td>
                             <td>{data?.Candidate_First_Name}</td>
