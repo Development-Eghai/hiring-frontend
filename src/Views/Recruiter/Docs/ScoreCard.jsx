@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import RecruiterHeader from "../Recruiter_utils/Navbar";
-import axiosInstance from "Services/axiosInstance"; // ✅ make sure this path is correct
-import { Button, Form } from "react-bootstrap";
+import axiosInstance from "Services/axiosInstance";
+import { Button, Form, Modal, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -12,6 +12,12 @@ const ScoreCard = () => {
   const [interviewDetailsMap, setInterviewDetailsMap] = useState({});
   const [selectedCandidateName, setSelectedCandidateName] = useState("");
   const [selectedRadioRow, setSelectedRadioRow] = useState(null);
+
+  // Modal state
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [candidateToSend, setCandidateToSend] = useState(null);
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -59,6 +65,30 @@ const ScoreCard = () => {
       }
     } catch (err) {
       console.error("Error fetching interview journey:", err);
+    }
+  };
+
+  const sendFormLink = async () => {
+    if (!candidateToSend) return;
+    setLoading(true);
+    try {
+      const payload = { candidate_id: candidateToSend?.Candidate_ID };
+      const res = await axiosInstance.post(
+        "https://api.pixeladvant.com/send-form-link/",
+        payload
+      );
+
+      if (res.data.success) {
+        setShowConfirmModal(false);
+        setShowSuccessModal(true);
+      } else {
+        toast.error(res.data.message || "Failed to send form link.");
+      }
+    } catch (err) {
+      console.error("Error sending form link:", err);
+      toast.error("Something went wrong while sending form link.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -147,10 +177,16 @@ const ScoreCard = () => {
     },
     {
       name: "Link",
-      cell: () => (
-        <button type="button" className="btn btn-primary text-decoration-none">
+      cell: (row) => (
+        <Button
+          variant="primary"
+          onClick={() => {
+            setCandidateToSend(row);
+            setShowConfirmModal(true);
+          }}
+        >
           Link
-        </button>
+        </Button>
       ),
       width: "120px",
       ignoreRowClick: true,
@@ -265,6 +301,89 @@ const ScoreCard = () => {
           )}
         </div>
       </div>
+
+      {/* Confirm Modal */}
+      <Modal
+        show={showConfirmModal}
+        onHide={() => setShowConfirmModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Send Form Link</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to send the form link to{" "}
+          <b>{candidateToSend?.Candidate_Name}</b>?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setShowConfirmModal(false)}
+          >
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={sendFormLink} disabled={loading}>
+            {loading ? <Spinner animation="border" size="sm" /> : "Send"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Success Modal */}
+      <Modal
+        show={showSuccessModal}
+        onHide={() => setShowSuccessModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Form Link Sent</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="text-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            xmlnsXlink="http://www.w3.org/1999/xlink"
+            version="1.1"
+            width="180"
+            height="180"
+            x="0"
+            y="0"
+            viewBox="0 0 24.02 24"
+            style={{ enableBackground: "new 0 0 512 512" }}
+            xmlSpace="preserve"
+            className=""
+          >
+            <g transform="matrix(1,0,0,1,0,0)">
+              <g data-name="Layer 2">
+                <g data-name="Layer 1">
+                  <path
+                    fill="#8dc63f"
+                    d="m22.31 9.76-1-.76c.13-.46.24-.85.34-1.19.4-1.34.62-2.08.07-2.84s-1.3-.79-2.72-.83h-1.24c-.17-.44-.3-.83-.42-1.16-.46-1.32-.72-2-1.62-2.34s-1.53.14-2.69.94l-1 .69-1-.67C10 .79 9.24.29 8.33.59s-1.15 1-1.62 2.33c-.12.33-.26.72-.42 1.17L5 4.13c-1.4 0-2.17.05-2.72.81s-.28 1.5.1 2.85c.1.34.22.73.34 1.19l-1 .76C.63 10.58 0 11.05 0 12s.61 1.41 1.72 2.26l1 .76c-.12.46-.24.85-.34 1.19-.4 1.34-.62 2.08-.07 2.84s1.33.78 2.72.82h1.23c.17.44.3.83.42 1.16.47 1.32.72 2 1.62 2.34s1.53-.14 2.69-.94l1-.69 1 .67a4.2 4.2 0 0 0 2.19 1 1.71 1.71 0 0 0 .53-.09c.9-.29 1.15-1 1.62-2.33.12-.33.25-.72.42-1.16h1.24c1.4 0 2.17-.05 2.72-.82s.34-1.5-.06-2.84c-.1-.34-.22-.73-.34-1.19l1-.76C23.41 13.43 24 13 24 12s-.59-1.39-1.69-2.24z"
+                    opacity="1"
+                    data-original="#8dc63f"
+                  />
+                  <path
+                    fill="#ffffff"
+                    d="M10.37 17.26a1 1 0 0 1-.71-.34l-2.95-3.29a1 1 0 0 1 1.5-1.33l2.22 2.51 6.33-6.16a1 1 0 1 1 1.39 1.43L11.07 17a1 1 0 0 1-.7.26z"
+                    opacity="1"
+                    data-original="#ffffff"
+                    className=""
+                  />
+                </g>
+              </g>
+            </g>
+          </svg>
+
+          <div className="mt-4">
+            The form link has been successfully sent to{" "}
+            <b>{candidateToSend?.Candidate_Name}</b>.
+          </div>
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button variant="primary" onClick={() => setShowSuccessModal(false)}>
+            OK
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

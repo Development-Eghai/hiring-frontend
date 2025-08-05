@@ -60,8 +60,9 @@
 
 ::-webkit-scrollbar {
   width: 5px;
-  height: 4px;
-  background-color: #aaa;
+  height: 8px;
+  cursor: pointer;
+  background-color: #ececec;
 }
 
 
@@ -73,8 +74,9 @@ input::-webkit-inner-spin-button {
 }
 
 ::-webkit-scrollbar-thumb {
-  border-radius: 12px;
-  background: #d82d2d;
+  border-radius: 5px;
+  cursor: pointer;
+  background: #0d6dfd8a;
 }
 
 .is-invalid {
