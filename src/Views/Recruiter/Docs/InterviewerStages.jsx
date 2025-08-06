@@ -250,10 +250,10 @@ export const InterviewerStages = () => {
               variant="primary"
               onClick={() => {
                 if (selectedRadioRow) {
-                  console.log("Initiating BGV for:", selectedRadioRow);
                   navigate("/recruiter/initiate_bg", {
                     state: {
-                      selectedRadioRow,
+                      req_id: selectedRadioRow?.req_id,
+                      candidate_id: selectedRadioRow?.candidate_id,
                       showInitiateModal: true,
                       comesFrom: "/recruiter/interview_stages",
                     },

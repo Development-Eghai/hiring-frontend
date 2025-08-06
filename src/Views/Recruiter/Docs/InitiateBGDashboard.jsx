@@ -32,40 +32,13 @@ console.log(routeState,"sdcfsdda")
 });
   const [dropdownOptions,setdropDownOptions] = useState({});
   const [summeryModal, setSummeryModal] = useState(false);
-  const dummyBGVData = [
-    {
-      req_id: "REQ123",
-      candidate_id: "CAND001",
-      first_name: "John",
-      last_name: "Doe",
-      email_id: "john.doe@example.com",
-      location: "Bangalore",
-      vendor_name: "First Advantage",
-      vendor_package: "Standard",
-      add_on_check: "Criminal, Education",
-      status: "In Progress",
-      decision: "Pending",
-    },
-    {
-      req_id: "REQ124",
-      candidate_id: "CAND002",
-      first_name: "Jane",
-      last_name: "Smith",
-      email_id: "jane.smith@example.com",
-      location: "Mumbai",
-      vendor_name: "IDfy",
-      vendor_package: "Premium",
-      add_on_check: "Address, Drug Test",
-      status: "Completed",
-      decision: "Approved",
-    },
-  ];
-
+  const [bg_details,setBg_details] = useState([]);
+ 
   async function fetchFormData(){
      try {
       const response = await axios.post("https://api.pixeladvant.com/api/bg-check/contextual-data/",{
-        candidate_id:routeState?.selectedRadioRow?.candidate_id,
-        requisition_id:routeState?.selectedRadioRow?.req_id,
+        candidate_id:routeState?.candidate_id,
+        requisition_id:routeState?.req_id,
       })
 
       const {success,data} = response?.data
@@ -76,8 +49,7 @@ console.log(routeState,"sdcfsdda")
           vendor_options,
           package_options
         });
-        setFormState({requisition:routeState?.selectedRadioRow?.req_id,candidate:routeState?.selectedRadioRow?.candidate_id,...restData})
-        console.log(dropdownOptions,"asdasdas")
+        setFormState({requisition:routeState?.req_id,candidate:routeState?.candidate_id,...restData})
       }
     } catch (error) {
       
@@ -129,27 +101,60 @@ fetchFormData()
     navigate(routeState?.comesFrom);
   };
 
-    const handleMainChange = (e) => {
+    const handleMainChange = async(e) => {
     const { name, value } = e.target;
+
+    if(name === "selected_package"){
+      try {
+        const response = await axios.post("https://api.pixeladvant.com/bg/contextual/checks/",{package_id:value})
+
+        const {success,data} = response?.data;
+
+        if(success){
+          const {addon_checks} = data
+          setdropDownOptions({...dropdownOptions,addon_checks})
+        }
+
+      } catch (error) {
+        
+      }
+    }
     setFormState((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-const handleSubmit =async()=>{
-  console.log(formState,"caxcasa")
+const handleSubmit = async()=>{
   try {
-    const response = await axios.post("https://api.pixeladvant.com/initiate-bg-check/",formState)
+    const response = await axios.post("https://api.pixeladvant.com/initiate-bg-check/",formState);
+
     const {success,data} = response?.data;
 
     if(success){
           navigate(routeState?.comesFrom);
     }
   } catch (error) {
+    console.log(error)
+  }
+}
+
+async function fetchDetails(){
+  try {
+    const response = await axios.get("https://api.pixeladvant.com/initiate-bg-check/");
+
+    const {success,data} = response?.data;
+
+    if(success){
+      setBg_details(data)
+    }
+  } catch (error) {
     
   }
 }
+useEffect(()=>{
+  fetchDetails()
+},[])
 
   const handleRowClick = (a) => {
     setSummeryModal(true);
@@ -189,7 +194,7 @@ const handleSubmit =async()=>{
                 </tr>
               </thead>
               <tbody>
-                {dummyBGVData.map((a, i) => (
+                {bg_details.map((a, i) => (
                   <tr
                     key={i}
                     onClick={() => handleRowClick(a)}
@@ -302,11 +307,12 @@ const handleSubmit =async()=>{
                   onChange={handleMainChange}
                 >
                   <option value="">-- Select Vendor name --</option>
-                  {/* {dropdownOptions.plan_id.map((id, index) => (
-              <option key={index} value={id}>
-                {id}
-              </option>
-            ))} */}
+                  {Array.isArray(dropdownOptions?.vendor_options) &&
+                    dropdownOptions.vendor_options.map((val, index) => (
+                      <option key={index} value={val.id}>
+                        {val.name}
+                      </option>
+                    ))}
                 </Form.Select>
               </Form.Group>
             </Col>
@@ -321,7 +327,7 @@ const handleSubmit =async()=>{
                 >
                   <option value="">-- Select package --</option>
                   {Array.isArray(dropdownOptions?.package_options) &&
-                    dropdownOptions.vendor_options.map((val, index) => (
+                    dropdownOptions.package_options.map((val, index) => (
                       <option key={index} value={val?.id}>
                         {val?.name}
                       </option>
@@ -339,8 +345,8 @@ const handleSubmit =async()=>{
                   onChange={handleMainChange}
                 >
                   <option value="">-- Select add on check --</option>
-                  {Array.isArray(dropdownOptions?.vendor_options) &&
-                    dropdownOptions.vendor_options.map((val, index) => (
+                  {Array.isArray(dropdownOptions?.addon_checks) &&
+                    dropdownOptions.addon_checks.map((val, index) => (
                       <option key={index} value={val.id}>
                         {val.name}
                       </option>

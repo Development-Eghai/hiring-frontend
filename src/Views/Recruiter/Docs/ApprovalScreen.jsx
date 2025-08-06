@@ -173,7 +173,8 @@ const ApprovalScreen = () => {
                   if (selectedRadioRow) {
                     navigate("/recruiter/initiate_bg", {
                       state: {
-                        selectedRadioRow,
+                        req_id: selectedRadioRow["Req ID"],
+                        candidate_id: selectedRadioRow["Candidate ID"],
                         showInitiateModal: true,
                         comesFrom: "/recruiter/final_approval",
                       },

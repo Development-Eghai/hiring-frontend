@@ -209,10 +209,10 @@ const ScoreCard = () => {
                 variant="primary"
                 onClick={() => {
                   if (selectedRadioRow) {
-                    console.log("Initiating BGV for:", selectedRadioRow);
                     navigate("/recruiter/initiate_bg", {
                       state: {
-                        selectedRadioRow,
+                        req_id: selectedRadioRow["Req ID"],
+                        candidate_id: selectedRadioRow["Candidate ID"],
                         showInitiateModal: true,
                         comesFrom: "/recruiter/score_card",
                       },

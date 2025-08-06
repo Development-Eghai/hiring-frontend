@@ -10,8 +10,8 @@ import {
   Row,
   Table,
 } from "react-bootstrap";
-import { BsPencilSquare } from "react-icons/bs";
-import { ToastContainer } from "react-toastify";
+import { BsPencilSquare, BsTrash } from "react-icons/bs";
+import { toast, ToastContainer } from "react-toastify";
 
 const Configure_bg_packages = () => {
   const [showViewModal, setShowViewModal] = useState(false);
@@ -157,7 +157,7 @@ const Configure_bg_packages = () => {
       const { data, success } = response?.data;
       if (success) {
         console.log(response, "fsdfasdz");
-        setShowVedorModal(false);
+        setshowVendorEditModal(false);
         fetchData();
       }
     } catch (error) {
@@ -186,6 +186,21 @@ const Configure_bg_packages = () => {
       
     }
   };
+
+  const handleDelete = async(vendor_id)=>{
+try {
+  const response = await axios.delete("https://api.pixeladvant.com/bg-package-setup/",{data:{vendor_id}})
+
+  const {success,data,message} = response?.data;
+
+  if(success){
+    toast.success(message)
+    fetchData()
+  }
+} catch (error) {
+  console.log(error)
+}
+  }
 
   return (
     <div>
@@ -260,6 +275,13 @@ const Configure_bg_packages = () => {
                       >
                         <BsPencilSquare className="me-1" />
                       </Button>
+                                    <Button
+                                      variant="outline-danger"
+                                      size="sm"
+                                      onClick={() => handleDelete(a.vendor_id)}
+                                    >
+                                      <BsTrash className="me-1" />
+                                    </Button>
                     </td>
                   </tr>
                 ))}

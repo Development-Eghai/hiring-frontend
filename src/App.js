@@ -42,6 +42,8 @@ import { RecruiterLayout } from "Views/Recruiter/Recruiter_utils/layout";
 import PersonalDetailsForm from "Views/Recruiter/Docs/PersonalDetailsform";
 import Configure_bg_packages from "Views/Hiring_manager/Docs/Configure_bg_packages";
 import InitiateBG from "Views/Recruiter/Docs/InitiateBGDashboard";
+import { VendorLayout } from "Views/Vendor/Recruiter_utils/layout";
+import { VendorDashboard } from "Views/Vendor/Docs/VendorDashboard";
 
 function App() {
   return (
@@ -139,6 +141,12 @@ function App() {
             <Route element={<InterviwerLayout />}>
               <Route path="dashboard" element={<InterviewerDashboard />} />
               <Route path="launch_interview" element={<LaunchInterview />} />
+            </Route>
+          </Route>
+
+          <Route path="/vendor">
+            <Route element={<VendorLayout />}>
+              <Route path="dashboard" element={<VendorDashboard />} />
             </Route>
           </Route>
 
