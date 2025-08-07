@@ -14,17 +14,144 @@ import { BsPencilSquare, BsTrash } from "react-icons/bs";
 import { toast, ToastContainer } from "react-toastify";
 
 const Configure_bg_packages = () => {
-  const [showViewModal, setShowViewModal] = useState(false);
+  const [showPackageModal, setShowPackageModal] = useState(false);
   const [showVendorModal, setShowVedorModal] = useState(false);
-  const [showVendorEditModal,setshowVendorEditModal] = useState(false)
-  const [selectedRow, setSelectedRow] = useState([]);
+  const [showCheckModal, setShowCheckModal] = useState(false);
+  const [selectedChecks, setSelectedChecks] = useState([]);
 
+  const [packageRows, setPackageRows] = useState([
+    { package_name: "", package_rate: "" ,package_description:""},
+  ]);
+  const [showVendorEditModal, setshowVendorEditModal] = useState(false);
+
+  const [formRows, setFormRows] = useState([
+    { add_on_check_title: "", add_on_check_desc: "", add_on_check_rate: "" },
+  ]);
+  const [showViewModal, setShowViewModal] = useState(false);
+
+  const [selectedRow, setSelectedRow] = useState([]);
   const [details, setDetails] = useState([]);
-  const [formstate, setFormState] = useState({
-    vendor_name: "",
-    vendor_address: "",
-    vendor_email: "",
-  });
+  const [formState, setFormState] = useState([
+    {
+      vendor_name: "",
+      vendor_email: "",
+      vendor_address: "",
+    },
+  ]);
+
+  const handlePackageRowChange = (index, field, value) => {
+    const updated = [...packageRows];
+    updated[index][field] = value;
+    setPackageRows(updated);
+  };
+
+  const addPackageRow = () => {
+    setPackageRows([...packageRows, { package_name: "", package_rate: "" }]);
+  };
+
+  const handleRowChange = (index, field, value) => {
+    const updated = [...formRows];
+    updated[index][field] = value;
+    setFormRows(updated);
+  };
+
+  const addRow = () => {
+    setFormRows([...formRows, { add_on_check_title: "", add_on_check_desc: "", add_on_check_rate: "" }]);
+  };
+
+  const handleMultiSelectChange = (e) => {
+    const selected = Array.from(e.target.selectedOptions).map(
+      (opt) => opt.value
+    );
+    setSelectedChecks(selected);
+  };
+
+  async function fetchData() {
+    try {
+      const response = await axios.get(
+        "https://api.pixeladvant.com/bg-package-setup/"
+      );
+      const { success, data } = response?.data;
+
+      if (success) {
+        setDetails(data);
+        console.log(data, "dasdas");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleFinalSubmit = async () => {
+    console.log("Submitted Rows:", formRows);
+    console.log("Selected for multi-select:", packageRows);
+    const { 0: _, ...cleanFormState } = formState;
+    const payload = {
+      ...cleanFormState,
+      packages: [...packageRows],
+      details: [...formRows],
+    };
+    console.log(payload, "cascas");
+
+    try {
+      const response = await axios.post(
+        "https://api.pixeladvant.com/bg-package-setup/",
+        payload
+      );
+
+      const { success, data, message } = response?.data;
+
+      if (success) {
+        setShowVedorModal(false);
+      }
+    } catch (error) {}
+  };
+
+  const handleViewDetails = (a) => {
+    setSelectedRow([a]);
+    setShowViewModal(true);
+  };
+
+  const handleDelete = async (vendor_id) => {
+    try {
+      const response = await axios.delete(
+        "https://api.pixeladvant.com/bg-package-setup/",
+        { data: { vendor_id } }
+      );
+
+      const { success, data, message } = response?.data;
+
+      if (success) {
+        toast.success(message);
+        fetchData();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleEdit = async (a) => {
+    try {
+      const response = await axios.post(
+        "https://api.pixeladvant.com/vendor-packages/",
+        {
+          vendor_id: a?.vendor_id,
+        }
+      );
+
+      const { success, data } = response?.data;
+      const { packages, details, ...datas } = data;
+
+      setFormState(datas);
+      setPackageRows(packages);
+      setFormRows(details);
+      setshowVendorEditModal(true);
+    } catch (error) {}
+  };
 
   const handleMainChange = (e) => {
     const { name, value } = e.target;
@@ -34,120 +161,11 @@ const Configure_bg_packages = () => {
     }));
   };
 
-  const [packageRows, setPackageRows] = useState([
-    {
-      package_name: "",
-      package_description: "",
-      package_rate: "",
-      details: [
-        {
-          add_on_check_title: "",
-          add_on_check_desc: "",
-          add_on_check_rate: "",
-        },
-      ],
-    },
-  ]);
-
-  const [formRows, setFormRows] = useState([
-    { title: "", description: "", rate: "" },
-  ]);
-
-  const handlePackageRowChange = (index, field, value) => {
-    const updated = [...packageRows];
-    updated[index][field] = value;
-    setPackageRows(updated);
-  };
-
-  const handleAddOnChange = (pkgIndex, addOnIndex, field, value) => {
-    const updated = [...packageRows];
-    updated[pkgIndex].details[addOnIndex][field] = value;
-    setPackageRows(updated);
-  };
-
-  const addPackageRow = () => {
-    setPackageRows([
-      ...packageRows,
-      {
-        package_name: "",
-        package_description: "",
-        package_rate: "",
-        details: [
-          {
-            add_on_check_title: "",
-            add_on_check_desc: "",
-            add_on_check_rate: "",
-          },
-        ],
-      },
-    ]);
-  };
-
-  const addAddOnRow = (pkgIndex) => {
-    const updated = [...packageRows];
-    updated[pkgIndex].details.push({
-      add_on_check_title: "",
-      add_on_check_desc: "",
-      add_on_check_rate: "",
-    });
-    setPackageRows(updated);
-  };
-
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(
-        "https://api.pixeladvant.com/bg-package-setup/"
-      );
-
-      const { data, success } = response?.data;
-
-      if (success) {
-        setDetails(data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const handleRowChange = (index, field, value) => {
-    const updated = [...formRows];
-    updated[index][field] = value;
-    setFormRows(updated);
-  };
-
-  const addRow = () => {
-    setFormRows([...formRows, { title: "", description: "", rate: "" }]);
-  };
-
-  const handleFinalSubmit = async () => {
+      const handleEditSubmit = async () => {
     const payload = {
-      ...formstate,
+      ...formState,
       packages: packageRows,
-    };
-    console.log(payload, "Cdscda");
-    try {
-      const response = await axios.post(
-        "https://api.pixeladvant.com/bg-package-setup/",
-        payload
-      );
-      const { data, success } = response?.data;
-      if (success) {
-        console.log(response, "fsdfasdz");
-        setShowVedorModal(false);
-        fetchData();
-      }
-    } catch (error) {
-      console.log(error, "Cdscds");
-    }
-  };
-
-    const handleEditSubmit = async () => {
-    const payload = {
-      ...formstate,
-      packages: packageRows,
+      details:formRows,
     };
     try {
       const response = await axios.put(
@@ -156,51 +174,30 @@ const Configure_bg_packages = () => {
       );
       const { data, success } = response?.data;
       if (success) {
-        console.log(response, "fsdfasdz");
         setshowVendorEditModal(false);
         fetchData();
+                    setFormRows([
+              {
+                add_on_check_title: "",
+                add_on_check_desc: "",
+                add_on_check_rate: "",
+              },
+            ]);
+            setPackageRows([
+              { package_name: "", package_rate: "", package_description: "" },
+            ]);
+            setFormState([
+              {
+                vendor_name: "",
+                vendor_email: "",
+                vendor_address: "",
+              },
+            ]);
       }
     } catch (error) {
       console.log(error, "Cdscds");
     }
   };
-  const handleViewDetails = (a) => {
-    setSelectedRow([a]);
-    setShowViewModal(true);
-  };
-
-  const handleEdit = async (a) => {
-
-    try {
-      const response = await axios.post("https://api.pixeladvant.com/vendor-packages/",{
-        vendor_id:a?.vendor_id
-      })
-
-      const {success,data} = response?.data;
-
-      setFormState(data);
-      setPackageRows(data?.packages);
-      setFormRows(data?.packages?.details);
-      setshowVendorEditModal(true);
-    } catch (error) {
-      
-    }
-  };
-
-  const handleDelete = async(vendor_id)=>{
-try {
-  const response = await axios.delete("https://api.pixeladvant.com/bg-package-setup/",{data:{vendor_id}})
-
-  const {success,data,message} = response?.data;
-
-  if(success){
-    toast.success(message)
-    fetchData()
-  }
-} catch (error) {
-  console.log(error)
-}
-  }
 
   return (
     <div>
@@ -239,9 +236,7 @@ try {
                 <tr>
                   <th>S.no</th>
                   <th>Vendor Name</th>
-                  <th>Vendor email</th>
-                  <th>Vendor address</th>
-                  <th>Package name</th>
+                  <th>Package Name</th>
                   <th>Package Rate</th>
                   <th>Details</th>
                   <th>Action</th>
@@ -250,10 +245,8 @@ try {
               <tbody>
                 {details.map((a, i) => (
                   <tr key={i}>
-                    <td>{i + 1}</td>
+                    <td>{i+1}</td>
                     <td>{a.vendor_name}</td>
-                    <td>{a.vendor_email}</td>
-                    <td>{a.vendor_address}</td>
                     <td>{a.package_name}</td>
                     <td>{a.package_rate}</td>
                     <td>
@@ -275,13 +268,13 @@ try {
                       >
                         <BsPencilSquare className="me-1" />
                       </Button>
-                                    <Button
-                                      variant="outline-danger"
-                                      size="sm"
-                                      onClick={() => handleDelete(a.vendor_id)}
-                                    >
-                                      <BsTrash className="me-1" />
-                                    </Button>
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => handleDelete(a.vendor_id)}
+                      >
+                        <BsTrash className="me-1" />
+                      </Button>
                     </td>
                   </tr>
                 ))}
@@ -289,6 +282,11 @@ try {
             </Table>
           </div>
         </Card>
+        {/* <hr /> */}
+
+        {/* <div>
+          <CandidateApprovalStatus />
+        </div>
 
         {/*vendor Modal */}
         <Modal
@@ -309,8 +307,8 @@ try {
                   <Form.Label>Vendor Name</Form.Label>
                   <Form.Control
                     name="vendor_name"
-                    value={formstate.vendor_name}
                     placeholder="Enter vendor name"
+                    value={formState?.vendor_name}
                     onChange={handleMainChange}
                   />
                 </Form.Group>
@@ -320,7 +318,7 @@ try {
                   <Form.Label>Email</Form.Label>
                   <Form.Control
                     name="vendor_email"
-                    value={formstate.vendor_email}
+                    value={formState?.vendor_email}
                     placeholder="Enter email"
                     onChange={handleMainChange}
                   />
@@ -331,7 +329,7 @@ try {
                   <Form.Label>Address</Form.Label>
                   <Form.Control
                     name="vendor_address"
-                    value={formstate.vendor_address}
+                    value={formState?.vendor_address}
                     placeholder="Enter address"
                     onChange={handleMainChange}
                   />
@@ -339,138 +337,130 @@ try {
               </Col>
             </Row>
 
-            {/* Dynamic Packages */}
-            {packageRows.map((pkg, pkgIndex) => (
-              <div key={pkgIndex} className="border p-3 mb-3 rounded bg-light">
-                <h5>Package {pkgIndex + 1}</h5>
-                <Row className="mb-3 d-flex gap-3">
-                  <Col md={4}>
-                    <Form.Group>
-                      <Form.Label>Package Name</Form.Label>
-                      <Form.Control
-                        name="package_name"
-                        value={pkg.package_name}
-                        placeholder="Enter package name"
-                        onChange={(e) =>
-                          handlePackageRowChange(
-                            pkgIndex,
-                            "package_name",
-                            e.target.value
-                          )
-                        }
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={4}>
-                    <Form.Group>
-                      <Form.Label>Package Description</Form.Label>
-                      <Form.Control
-                        name="package_description"
-                        value={pkg.package_description}
-                        placeholder="Enter package description"
-                        onChange={(e) =>
-                          handlePackageRowChange(
-                            pkgIndex,
-                            "package_description",
-                            e.target.value
-                          )
-                        }
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={3}>
-                    <Form.Group>
-                      <Form.Label>Package Rate</Form.Label>
-                      <Form.Control
-                        name="package_rate"
-                        value={pkg.package_rate}
-                        placeholder="Enter package rate"
-                        onChange={(e) =>
-                          handlePackageRowChange(
-                            pkgIndex,
-                            "package_rate",
-                            e.target.value
-                          )
-                        }
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
+            {/* Package Info */}
+            {packageRows.map((row, index) => (
+              <Row className="mb-3 d-flex gap-3" key={index}>
+                <Col md={5}>
+                  <Form.Group>
+                    <Form.Label>Package Name</Form.Label>
+                    <Form.Control
+                      name="package_name"
+                      value={row.package_name}
+                      placeholder="Enter package name"
+                      onChange={(e) =>
+                        handlePackageRowChange(
+                          index,
+                          "package_name",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </Form.Group>
+                </Col>
 
-                {/* Add-on rows per package */}
-                {pkg.details.map((addOn, addOnIndex) => (
-                  <Row key={addOnIndex} className="mb-2">
-                    <Col md={3}>
-                      <Form.Group>
-                        <Form.Label>Add-on Title</Form.Label>
-                        <Form.Control
-                          value={addOn.add_on_check_title}
-                          placeholder="Add-on Title"
-                          onChange={(e) =>
-                            handleAddOnChange(
-                              pkgIndex,
-                              addOnIndex,
-                              "add_on_check_title",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col md={4}>
-                      <Form.Group>
-                        <Form.Label>Add-on Description</Form.Label>
-                        <Form.Control
-                          value={addOn.add_on_check_desc}
-                          placeholder="Add-on Description"
-                          onChange={(e) =>
-                            handleAddOnChange(
-                              pkgIndex,
-                              addOnIndex,
-                              "add_on_check_desc",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col md={3}>
-                      <Form.Group>
-                        <Form.Label>Add-on Rate</Form.Label>
-                        <Form.Control
-                          value={addOn.add_on_check_rate}
-                          placeholder="Add-on Rate"
-                          onChange={(e) =>
-                            handleAddOnChange(
-                              pkgIndex,
-                              addOnIndex,
-                              "add_on_check_rate",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </Form.Group>
-                    </Col>
-                  </Row>
-                ))}
+                <Col md={5}>
+                  <Form.Group>
+                    <Form.Label>Package Rate</Form.Label>
+                    <Form.Control
+                      name="package_rate"
+                      value={row.package_rate}
+                      placeholder="Enter package rate"
+                      onChange={(e) =>
+                        handlePackageRowChange(
+                          index,
+                          "package_rate",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </Form.Group>
+                </Col>
 
-                <Button
-                  variant="secondary"
-                  className="mb-3"
-                  onClick={() => addAddOnRow(pkgIndex)}
-                >
-                  + Add Add-on
-                </Button>
-              </div>
+                <Col md={5}>
+                  <Form.Group>
+                    <Form.Label>Package Description</Form.Label>
+                    <Form.Control
+                      name="package_description"
+                      value={row.package_description}
+                      placeholder="package describe"
+                      onChange={(e) =>
+                        handlePackageRowChange(
+                          index,
+                          "package_description",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
             ))}
 
-            <Button variant="success" className="mb-4" onClick={addPackageRow}>
-              + Add Package
+            <Button variant="success" className="mb-3" onClick={addPackageRow}>
+              + Add Row
+            </Button>
+
+            {/* Dynamic Rows Section */}
+            {formRows.map((row, index) => (
+              <Row key={index} className="mb-3 d-flex gap-3">
+                <Col md={3}>
+                  <Form.Group>
+                    <Form.Label>Title</Form.Label>
+                    <Form.Control
+                      value={row.add_on_check_title}
+                      onChange={(e) =>
+                        handleRowChange(
+                          index,
+                          "add_on_check_title",
+                          e.target.value
+                        )
+                      }
+                      placeholder="Enter Title"
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={3}>
+                  <Form.Group>
+                    <Form.Label>Description</Form.Label>
+                    <Form.Control
+                      value={row.add_on_check_desc}
+                      onChange={(e) =>
+                        handleRowChange(
+                          index,
+                          "add_on_check_desc",
+                          e.target.value
+                        )
+                      }
+                      placeholder="Describe"
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={3}>
+                  <Form.Group>
+                    <Form.Label>Rate</Form.Label>
+                    <Form.Control
+                      value={row.add_on_check_rate}
+                      onChange={(e) =>
+                        handleRowChange(
+                          index,
+                          "add_on_check_rate",
+                          e.target.value
+                        )
+                      }
+                      placeholder="Enter rate"
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+            ))}
+
+            <Button variant="success" className="mb-3" onClick={addRow}>
+              + Add Row
             </Button>
 
             <Row className="d-flex justify-content-center">
               <Button
-                className="col-2"
+                className="col-2 "
                 variant="success"
                 onClick={handleFinalSubmit}
               >
@@ -479,223 +469,6 @@ try {
             </Row>
           </Modal.Body>
         </Modal>
-
-
-        {/* edeit vendor modal */}
-
-                {/*vendor Modal */}
-        <Modal
-          show={showVendorEditModal}
-          onHide={() => {
-            setFormState({
-    vendor_name: "",
-    vendor_address: "",
-    vendor_email: "",
-  })
-  setPackageRows([
-    {
-      package_name: "",
-      package_description: "",
-      package_rate: "",
-      details: [
-        {
-          add_on_check_title: "",
-          add_on_check_desc: "",
-          add_on_check_rate: "",
-        },
-      ],
-    },
-  ]);
-  setFormRows([
-    { title: "", description: "", rate: "" },
-  ])
-            setshowVendorEditModal(false)}}
-          centered
-          size="xl"
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>Add Vendor</Modal.Title>
-          </Modal.Header>
-
-          <Modal.Body>
-            {/* Static Vendor Fields */}
-            <Row className="mb-3 d-flex gap-3">
-              <Col md={3}>
-                <Form.Group>
-                  <Form.Label>Vendor Name</Form.Label>
-                  <Form.Control
-                    name="vendor_name"
-                    value={formstate.vendor_name}
-                    placeholder="Enter vendor name"
-                    onChange={handleMainChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={3}>
-                <Form.Group>
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control
-                    name="vendor_email"
-                    value={formstate.vendor_email}
-                    placeholder="Enter email"
-                    onChange={handleMainChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={3}>
-                <Form.Group>
-                  <Form.Label>Address</Form.Label>
-                  <Form.Control
-                    name="vendor_address"
-                    value={formstate.vendor_address}
-                    placeholder="Enter address"
-                    onChange={handleMainChange}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-
-            {/* Dynamic Packages */}
-            {packageRows.map((pkg, pkgIndex) => (
-              <div key={pkgIndex} className="border p-3 mb-3 rounded bg-light">
-                <h5>Package {pkgIndex + 1}</h5>
-                <Row className="mb-3 d-flex gap-3">
-                  <Col md={4}>
-                    <Form.Group>
-                      <Form.Label>Package Name</Form.Label>
-                      <Form.Control
-                        name="package_name"
-                        value={pkg.package_name}
-                        placeholder="Enter package name"
-                        onChange={(e) =>
-                          handlePackageRowChange(
-                            pkgIndex,
-                            "package_name",
-                            e.target.value
-                          )
-                        }
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={4}>
-                    <Form.Group>
-                      <Form.Label>Package Description</Form.Label>
-                      <Form.Control
-                        name="package_description"
-                        value={pkg.package_description}
-                        placeholder="Enter package description"
-                        onChange={(e) =>
-                          handlePackageRowChange(
-                            pkgIndex,
-                            "package_description",
-                            e.target.value
-                          )
-                        }
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={3}>
-                    <Form.Group>
-                      <Form.Label>Package Rate</Form.Label>
-                      <Form.Control
-                        name="package_rate"
-                        value={pkg.package_rate}
-                        placeholder="Enter package rate"
-                        onChange={(e) =>
-                          handlePackageRowChange(
-                            pkgIndex,
-                            "package_rate",
-                            e.target.value
-                          )
-                        }
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
-
-                {/* Add-on rows per package */}
-                {pkg.details.map((addOn, addOnIndex) => (
-                  <Row key={addOnIndex} className="mb-2">
-                    <Col md={3}>
-                      <Form.Group>
-                        <Form.Label>Add-on Title</Form.Label>
-                        <Form.Control
-                          value={addOn.add_on_check_title}
-                          placeholder="Add-on Title"
-                          onChange={(e) =>
-                            handleAddOnChange(
-                              pkgIndex,
-                              addOnIndex,
-                              "add_on_check_title",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col md={4}>
-                      <Form.Group>
-                        <Form.Label>Add-on Description</Form.Label>
-                        <Form.Control
-                          value={addOn.add_on_check_desc}
-                          placeholder="Add-on Description"
-                          onChange={(e) =>
-                            handleAddOnChange(
-                              pkgIndex,
-                              addOnIndex,
-                              "add_on_check_desc",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col md={3}>
-                      <Form.Group>
-                        <Form.Label>Add-on Rate</Form.Label>
-                        <Form.Control
-                          value={addOn.add_on_check_rate}
-                          placeholder="Add-on Rate"
-                          onChange={(e) =>
-                            handleAddOnChange(
-                              pkgIndex,
-                              addOnIndex,
-                              "add_on_check_rate",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </Form.Group>
-                    </Col>
-                  </Row>
-                ))}
-
-                <Button
-                  variant="secondary"
-                  className="mb-3"
-                  onClick={() => addAddOnRow(pkgIndex)}
-                >
-                  + Add Add-on
-                </Button>
-              </div>
-            ))}
-
-            <Button variant="success" className="mb-4" onClick={addPackageRow}>
-              + Add Package
-            </Button>
-
-            <Row className="d-flex justify-content-center">
-              <Button
-                className="col-2"
-                variant="success"
-                onClick={handleEditSubmit}
-              >
-                Update
-              </Button>
-            </Row>
-          </Modal.Body>
-        </Modal>
-
 
         {/* view modal */}
 
@@ -767,15 +540,13 @@ try {
                               </tr>
                             </thead>
                             <tbody>
-                              {(pkg.details?.[0]?.details || []).map(
-                                (detail, i) => (
-                                  <tr key={i}>
-                                    <td>{detail?.title || "-"}</td>
-                                    <td>{detail?.description || "-"}</td>
-                                    <td>{detail?.rate || "-"}</td>
-                                  </tr>
-                                )
-                              )}
+                              {(pkg.details || []).map((detail, i) => (
+                                <tr key={i}>
+                                  <td>{detail?.title || "-"}</td>
+                                  <td>{detail?.description || "-"}</td>
+                                  <td>{detail?.rate || "-"}</td>
+                                </tr>
+                              ))}
                             </tbody>
                           </Table>
                         </td>
@@ -795,6 +566,285 @@ try {
             </Button>
           </Modal.Footer>
         </Modal>
+
+        {/* edeit vendor modal */}
+
+        <Modal
+          show={showVendorEditModal}
+          onHide={() => {
+            setshowVendorEditModal(false);
+            setFormRows([
+              {
+                add_on_check_title: "",
+                add_on_check_desc: "",
+                add_on_check_rate: "",
+              },
+            ]);
+            setPackageRows([
+              { package_name: "", package_rate: "", package_description: "" },
+            ]);
+            setFormState([
+              {
+                vendor_name: "",
+                vendor_email: "",
+                vendor_address: "",
+              },
+            ]);
+          }}
+          centered
+          size="xl"
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Add Vendor</Modal.Title>
+          </Modal.Header>
+
+          <Modal.Body>
+            {/* Static Vendor Fields */}
+            <Row className="mb-3 d-flex gap-3">
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Vendor Name</Form.Label>
+                  <Form.Control
+                    name="vendor_name"
+                    placeholder="Enter vendor name"
+                    value={formState?.vendor_name}
+                    onChange={handleMainChange}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Email</Form.Label>
+                  <Form.Control
+                    name="vendor_email"
+                    value={formState?.vendor_email}
+                    placeholder="Enter email"
+                    onChange={handleMainChange}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Address</Form.Label>
+                  <Form.Control
+                    name="vendor_address"
+                    value={formState?.vendor_address}
+                    placeholder="Enter address"
+                    onChange={handleMainChange}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+
+            {/* Package Info */}
+            {packageRows.map((row, index) => (
+              <Row className="mb-3 d-flex gap-3" key={index}>
+                <Col md={5}>
+                  <Form.Group>
+                    <Form.Label>Package Name</Form.Label>
+                    <Form.Control
+                      name="package_name"
+                      value={row.package_name}
+                      placeholder="Enter package name"
+                      onChange={(e) =>
+                        handlePackageRowChange(
+                          index,
+                          "package_name",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </Form.Group>
+                </Col>
+
+                <Col md={5}>
+                  <Form.Group>
+                    <Form.Label>Package Rate</Form.Label>
+                    <Form.Control
+                      name="package_rate"
+                      value={row.package_rate}
+                      placeholder="Enter package rate"
+                      onChange={(e) =>
+                        handlePackageRowChange(
+                          index,
+                          "package_rate",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={5}>
+                  <Form.Group>
+                    <Form.Label>Package Decribtion</Form.Label>
+                    <Form.Control
+                      name="package_description"
+                      value={row.package_description}
+                      placeholder="package Decribe"
+                      onChange={(e) =>
+                        handlePackageRowChange(
+                          index,
+                          "package_description",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+            ))}
+
+            <Button variant="success" className="mb-3" onClick={addPackageRow}>
+              + Add Row
+            </Button>
+
+            {/* Dynamic Rows Section */}
+            {formRows.map((row, index) => (
+              <Row key={index} className="mb-3 d-flex gap-3">
+                <Col md={3}>
+                  <Form.Group>
+                    <Form.Label>Title</Form.Label>
+                    <Form.Control
+                      value={row.add_on_check_title}
+                      onChange={(e) =>
+                        handleRowChange(
+                          index,
+                          "add_on_check_title",
+                          e.target.value
+                        )
+                      }
+                      placeholder="Enter Title"
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={3}>
+                  <Form.Group>
+                    <Form.Label>Description</Form.Label>
+                    <Form.Control
+                      value={row.add_on_check_desc}
+                      onChange={(e) =>
+                        handleRowChange(
+                          index,
+                          "add_on_check_desc",
+                          e.target.value
+                        )
+                      }
+                      placeholder="Describe"
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={3}>
+                  <Form.Group>
+                    <Form.Label>Rate</Form.Label>
+                    <Form.Control
+                      value={row.add_on_check_rate}
+                      onChange={(e) =>
+                        handleRowChange(
+                          index,
+                          "add_on_check_rate",
+                          e.target.value
+                        )
+                      }
+                      placeholder="Enter rate"
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+            ))}
+
+            <Button variant="success" className="mb-3" onClick={addRow}>
+              + Add Row
+            </Button>
+
+            <Row className="d-flex justify-content-center">
+              <Button
+                className="col-2 "
+                variant="success"
+                onClick={handleEditSubmit}
+              >
+                Update
+              </Button>
+            </Row>
+          </Modal.Body>
+        </Modal>
+        {/* package modal*/}
+        {/* <Modal show={showPackageModal} onHide={setShowPackageModal} centered size="xl">
+  <Modal.Header closeButton>
+    <Modal.Title>Add Package</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <Row className="mb-3">
+      <Col md={6}>
+        <Form.Group>
+          <Form.Label>Package Name</Form.Label>
+          <Form.Control
+            name="package_rate"
+            placeholder="Enter package name"
+          />
+        </Form.Group>
+      </Col>
+
+      <Col md={6}>
+        <Form.Group>
+          <Form.Label>Package Rate</Form.Label>
+          <Form.Control
+            name="package_rate"
+            placeholder="Enter package rate"
+          />
+
+        </Form.Group>
+      </Col>
+    </Row>
+
+    <Button variant="success">
+      Add
+    </Button>
+  </Modal.Body>
+</Modal> */}
+
+        {/* check modal*/}
+        {/* <Modal show={showCheckModal} onHide={setShowCheckModal} centered size="xl">
+  <Modal.Header closeButton>
+    <Modal.Title>Add Package</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <Row className="mb-3 d-flex gap-3">
+              <Col md={3}>
+        <Form.Group>
+          <Form.Label>Title</Form.Label>
+          <Form.Control
+            name="package_rate"
+            placeholder="Enter Title"
+          />
+        </Form.Group>
+      </Col>
+      <Col md={3}>
+        <Form.Group>
+          <Form.Label>Description</Form.Label>
+          <Form.Control
+            name="package_rate"
+            placeholder="Describe"
+          />
+        </Form.Group>
+      </Col>
+
+      <Col md={3}>
+        <Form.Group>
+          <Form.Label>Rate</Form.Label>
+          <Form.Control
+            name="check_rate"
+            placeholder="Enter rate"
+          />
+
+        </Form.Group>
+      </Col>
+    </Row>
+
+    <Button variant="success">
+      Add
+    </Button>
+  </Modal.Body>
+</Modal> */}
 
         <ToastContainer position="top-right" autoClose={3000} />
       </Container>

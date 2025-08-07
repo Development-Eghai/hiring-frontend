@@ -104,9 +104,9 @@ fetchFormData()
     const handleMainChange = async(e) => {
     const { name, value } = e.target;
 
-    if(name === "selected_package"){
+    if(name === "vendor"){
       try {
-        const response = await axios.post("https://api.pixeladvant.com/bg/contextual/checks/",{package_id:value})
+        const response = await axios.post("https://api.pixeladvant.com/bg/contextual/checks/",{vendor_id:value})
 
         const {success,data} = response?.data;
 
