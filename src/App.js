@@ -44,6 +44,7 @@ import Configure_bg_packages from "Views/Hiring_manager/Docs/Configure_bg_packag
 import InitiateBG from "Views/Recruiter/Docs/InitiateBGDashboard";
 import { VendorLayout } from "Views/Vendor/Recruiter_utils/layout";
 import { VendorDashboard } from "Views/Vendor/Docs/VendorDashboard";
+import PreOnboardingForm from "Views/Recruiter/Docs/PreOnboardingForm";
 
 function App() {
   return (
@@ -126,6 +127,8 @@ function App() {
               <Route path="final_approval" element={<ApprovalScreen />} />
               <Route path="offer&bgv" element={<OfferBGV />} />
               <Route path="personal_details_form" element={<PersonalDetailsForm />} />
+              <Route path="pre_onboarding_form" element={<PreOnboardingForm />} />
+
 
             </Route>
           </Route>
