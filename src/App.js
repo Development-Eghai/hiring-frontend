@@ -45,6 +45,7 @@ import InitiateBG from "Views/Recruiter/Docs/InitiateBGDashboard";
 import { VendorLayout } from "Views/Vendor/Recruiter_utils/layout";
 import { VendorDashboard } from "Views/Vendor/Docs/VendorDashboard";
 import PreOnboardingForm from "Views/Recruiter/Docs/PreOnboardingForm";
+import PreOnboarding from "Views/Recruiter/Docs/PreOnboarding";
 
 function App() {
   return (
@@ -126,6 +127,9 @@ function App() {
               <Route path="recruiter_negotiation" element={<RecruiterNegotiation/>}/>
               <Route path="final_approval" element={<ApprovalScreen />} />
               <Route path="offer&bgv" element={<OfferBGV />} />
+              <Route path="onboarding" element={<PreOnboarding />} />
+
+              
               <Route path="personal_details_form" element={<PersonalDetailsForm />} />
               <Route path="pre_onboarding_form" element={<PreOnboardingForm />} />
 

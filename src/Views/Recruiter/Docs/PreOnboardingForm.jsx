@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button, Table, Alert, Card, Spinner } from 'react-bootstrap';
 import { FaUpload, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const api = axios.create({
   baseURL: 'https://api.pixeladvant.com',
@@ -11,7 +13,8 @@ const api = axios.create({
 });
 
 const PreOnboardingForm = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(
+    {
     candidateInfo: {
       id: 'C001',
 // candidateInfo[id]:1,
@@ -21,8 +24,8 @@ const PreOnboardingForm = () => {
     },
     personalDetails: {
       dob: '',
-      maritalStatus: 'Single',
-      gender: 'Male',
+      maritalStatus: '',
+      gender: '',
       bloodGroup: '',
       permanentAddress: '',
       presentAddress: '',
@@ -50,10 +53,10 @@ const PreOnboardingForm = () => {
       salarySlips: null
     },
     nomineeDetails: [
-      { firstName: 'A', lastName: '', share: 25 },
-      { firstName: '', lastName: '', share: 10 },
-      { firstName: '', lastName: '', share: 15 },
-      { firstName: '', lastName: '', share: 50 },
+      { firstName: '', lastName: '', share: '' },
+      { firstName: '', lastName: '', share: '' },
+      { firstName: '', lastName: '', share: '' },
+      { firstName: '', lastName: '', share: '' },
       { firstName: '', lastName: '', share: '' }
     ],
     insuranceDetails: [
@@ -137,49 +140,86 @@ const PreOnboardingForm = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitError('');
-    
+
     const backendFormData = new FormData();
-    
-    Object.entries(formData).forEach(([section, data]) => {
-      if (section === 'uploadedDocuments') {
-        Object.entries(data).forEach(([category, docs]) => {
-          Object.entries(docs).forEach(([docType, file]) => {
-            if (file) {
-              backendFormData.append(`${category}_${docType.replace(/\s+/g, '_')}`, file);
-            }
-          });
-        });
-      } else if (Array.isArray(data)) {
-        data.forEach((item, index) => {
-          Object.entries(item).forEach(([key, value]) => {
-            backendFormData.append(`${section}[${index}].${key}`, value);
-          });
-        });
-      } else {
-        Object.entries(data).forEach(([key, value]) => {
-          if (value !== null && value !== undefined) {
-            backendFormData.append(`${section}.${key}`, value);
-          }
-        });
+
+    // Candidate Info
+    Object.entries(formData.candidateInfo).forEach(([key, value]) => {
+      if (value !== null && value !== undefined)
+        backendFormData.append(`candidateInfo[${key}]`, value);
+    });
+
+    // Personal Details
+    Object.entries(formData.personalDetails).forEach(([key, value]) => {
+      if (value && value instanceof File) {
+        backendFormData.append(`personalDetails[${key}]`, value);
+      } else if (value !== null && value !== undefined && value !== '') {
+        backendFormData.append(`personalDetails[${key}]`, value);
       }
     });
-    
+
+    // Reference Check (array)
+    formData.referenceCheck.forEach((item, idx) => {
+      Object.entries(item).forEach(([key, value]) => {
+        backendFormData.append(`referenceCheck[${idx}][${key}]`, value);
+      });
+    });
+
+    // Banking Details
+    Object.entries(formData.bankingDetails).forEach(([key, value]) => {
+      if (value && value instanceof File) {
+        backendFormData.append(`bankingDetails[${key}]`, value);
+      } else if (value !== null && value !== undefined && value !== '') {
+        backendFormData.append(`bankingDetails[${key}]`, value);
+      }
+    });
+
+    // Financial Documents
+    Object.entries(formData.financialDocuments).forEach(([key, value]) => {
+      if (value && value instanceof File) {
+        backendFormData.append(`financialDocuments[${key}]`, value);
+      } else if (value !== null && value !== undefined && value !== '') {
+        backendFormData.append(`financialDocuments[${key}]`, value);
+      }
+    });
+
+    // Nominee Details (array)
+    formData.nomineeDetails.forEach((item, idx) => {
+      Object.entries(item).forEach(([key, value]) => {
+        backendFormData.append(`nomineeDetails[${idx}][${key}]`, value);
+      });
+    });
+
+    // Insurance Details (array)
+    formData.insuranceDetails.forEach((item, idx) => {
+      Object.entries(item).forEach(([key, value]) => {
+        backendFormData.append(`insuranceDetails[${idx}][${key}]`, value);
+      });
+    });
+
+    // Uploaded Documents (nested object)
+    Object.entries(formData.uploadedDocuments).forEach(([category, docs]) => {
+      Object.entries(docs).forEach(([docType, file]) => {
+        if (file) {
+          backendFormData.append(`uploadedDocuments[${category}][${docType}]`, file);
+        }
+      });
+    });
+
     try {
-      console.log('Submitted Form Data:', formData);
-      console.log('Backend FormData:', backendFormData);
-      
       const response = await api.post('/api/candidate/pre-onboarding-form/', backendFormData);
-      
-      console.log('API Response:', response.data);
       setIsSubmitted(true);
+      toast.success('Form submitted successfully!');
     } catch (error) {
-      console.error('Submission error:', error);
       if (error.response) {
         setSubmitError(`Error ${error.response.status}: ${error.response.data.message || 'Failed to submit form'}`);
+        toast.error(`Error ${error.response.status}: ${error.response.data.message || 'Failed to submit form'}`);
       } else if (error.request) {
         setSubmitError('No response from server. Please check your internet connection.');
+        toast.error('No response from server. Please check your internet connection.');
       } else {
         setSubmitError('Failed to submit form. Please try again.');
+        toast.error('Failed to submit form. Please try again.');
       }
     } finally {
       setIsSubmitting(false);
@@ -206,6 +246,7 @@ const PreOnboardingForm = () => {
 
   return (
     <Container fluid className="p-4 bg-light">
+      <toastContainer position="top-right" autoClose={5000} hideProgressBar closeOnClick pauseOnHover  pauseOnFocusLoss />
       <Card className="shadow-sm">
         <Card.Body>
           <Card.Title as="h3" className="mb-4 text-primary">Pre-Onboarding Form</Card.Title>
