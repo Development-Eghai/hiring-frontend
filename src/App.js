@@ -71,7 +71,7 @@ function App() {
                   path="interview_design_screen"
                   element={<InterviewDesignScreen />}
                 />
-                <Route path="bg_packages" element={<Configure_bg_packages/>}/>
+                <Route path="bg_packages" element={<Configure_bg_packages />} />
                 <Route
                   path="interview_design_dashboard"
                   element={<InterviewDesignDashboard />}
@@ -108,7 +108,7 @@ function App() {
               <Route path="dashboard" element={<RecruiterDashboard />} />
               <Route path="schedule_interview" element={<ScheduleInteview />} />
               <Route path="candidate" element={<CandidateScreen />} />
-              <Route path="initiate_bg" element={<InitiateBG/>}/>
+              <Route path="initiate_bg" element={<InitiateBG />} />
 
               <Route
                 path="recruiter_screening"
@@ -124,16 +124,15 @@ function App() {
               />
               <Route path="score_card" element={<ScoreCard />} />
               <Route path="interview_stages" element={<InterviewerStages />} />
-              <Route path="recruiter_negotiation" element={<RecruiterNegotiation/>}/>
+              <Route
+                path="recruiter_negotiation"
+                element={<RecruiterNegotiation />}
+              />
               <Route path="final_approval" element={<ApprovalScreen />} />
               <Route path="offer&bgv" element={<OfferBGV />} />
               <Route path="onboarding" element={<PreOnboarding />} />
 
               
-              <Route path="personal_details_form" element={<PersonalDetailsForm />} />
-              <Route path="pre_onboarding_form" element={<PreOnboardingForm />} />
-
-
             </Route>
           </Route>
 
@@ -156,6 +155,16 @@ function App() {
               <Route path="dashboard" element={<VendorDashboard />} />
             </Route>
           </Route>
+
+          <Route path="/candidate">
+            <Route path="pre_onboarding_form" element={<PreOnboardingForm />} />
+
+            <Route
+                path="personal_details_form"
+                element={<PersonalDetailsForm />}
+              />
+          </Route>
+
 
           <Route path="*" element={<Error />} />
         </Route>

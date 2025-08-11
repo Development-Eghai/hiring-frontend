@@ -1,109 +1,138 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Form, Button, Table, Alert, Card, Spinner } from 'react-bootstrap';
 import { FaUpload, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useLocation } from 'react-router-dom'; 
+ 
+
 
 const api = axios.create({
-  baseURL: 'https://api.pixeladvant.com',
+  baseURL: "https://api.pixeladvant.com",
   headers: {
-    'Content-Type': 'multipart/form-data'
-  }
+    "Content-Type": "multipart/form-data",
+  },
 });
 
 const PreOnboardingForm = () => {
-  const [formData, setFormData] = useState(
-    {
+  const location = useLocation(); 
+  const [token, setToken] = useState("");  
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const urlToken = queryParams.get("token");
+    if (urlToken) {
+      setToken(urlToken);
+    }
+  }, [location.search]);
+
+  const [formData, setFormData] = useState({
     candidateInfo: {
-      id: 'C001',
-// candidateInfo[id]:1,
-      firstName: 'Pankaj',
-      lastName: 'Pundir',
-      dateOfJoining: ''
+      id: "",
+      // candidateInfo[id]:1,
+      firstName: "",
+      lastName: "",
+      dateOfJoining: "",
     },
     personalDetails: {
-      dob: '',
-      maritalStatus: '',
-      gender: '',
-      bloodGroup: '',
-      permanentAddress: '',
-      presentAddress: '',
-      emergencyPOCName: '',
-      emergencyContactNumber: '',
-      photograph: null
+      dob: "",
+      maritalStatus: "",
+      gender: "",
+      bloodGroup: "",
+      permanentAddress: "",
+      presentAddress: "",
+      emergencyPOCName: "",
+      emergencyContactNumber: "",
+      photograph: null,
     },
     referenceCheck: [
-      { sNo: 1, firstName: '', lastName: '', designation: '', reportingManagerName: '', officialEmailId: '', phoneNumber: '' },
-      { sNo: 2, firstName: '', lastName: '', designation: '', reportingManagerName: '', officialEmailId: '', phoneNumber: '' }
+      {
+        sNo: 1,
+        firstName: "",
+        lastName: "",
+        designation: "",
+        reportingManagerName: "",
+        officialEmailId: "",
+        phoneNumber: "",
+      },
+      {
+        sNo: 2,
+        firstName: "",
+        lastName: "",
+        designation: "",
+        reportingManagerName: "",
+        officialEmailId: "",
+        phoneNumber: "",
+      },
     ],
     bankingDetails: {
-      bankName: '',
-      accountNumber: '',
-      ifscCode: '',
-      branchAddress: '',
+      bankName: "",
+      accountNumber: "",
+      ifscCode: "",
+      branchAddress: "",
       bankStatement: null,
-      cancelCheque: null
+      cancelCheque: null,
     },
     financialDocuments: {
-      pfNumber: '',
-      uanNumber: '',
-      pranNumber: '',
+      pfNumber: "",
+      uanNumber: "",
+      pranNumber: "",
       form16: null,
-      salarySlips: null
+      salarySlips: null,
     },
     nomineeDetails: [
-      { firstName: '', lastName: '', share: '' },
-      { firstName: '', lastName: '', share: '' },
-      { firstName: '', lastName: '', share: '' },
-      { firstName: '', lastName: '', share: '' },
-      { firstName: '', lastName: '', share: '' }
+      { firstName: "", lastName: "", share: "" },
+      { firstName: "", lastName: "", share: "" },
+      { firstName: "", lastName: "", share: "" },
+      { firstName: "", lastName: "", share: "" },
+      { firstName: "", lastName: "", share: "" },
     ],
     insuranceDetails: [
-      { firstName: '', lastName: '', dob: '' },
-      { firstName: '', lastName: '', dob: '' },
-      { firstName: '', lastName: '', dob: '' },
-      { firstName: '', lastName: '', dob: '' },
-      { firstName: '', lastName: '', dob: '' }
+      { firstName: "", lastName: "", dob: "" },
+      { firstName: "", lastName: "", dob: "" },
+      { firstName: "", lastName: "", dob: "" },
+      { firstName: "", lastName: "", dob: "" },
+      { firstName: "", lastName: "", dob: "" },
     ],
     uploadedDocuments: {
       education: {
-        '10th': null,
-        '12th': null,
-        'Diploma': null,
-        'Graduate': null,
-        'Post Graduate': null,
-        'Certificates': null
+        "10th": null,
+        "12th": null,
+        Diploma: null,
+        Graduate: null,
+        "Post Graduate": null,
+        Certificates: null,
       },
       employment: {
-        'Offer Letter': null,
-        'Relieving Letter': null,
-        'Service Letter': null
+        "Offer Letter": null,
+        "Relieving Letter": null,
+        "Service Letter": null,
       },
       other: {
-        'Passport': null,
-        'PanCard': null,
-        'Background Verification': null
-      }
-    }
+        Passport: null,
+        PanCard: null,
+        "Background Verification": null,
+      },
+    },
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [submitError, setSubmitError] = useState('');
+  const [submitError, setSubmitError] = useState("");
 
   const handleChange = (section, field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [section]: {
         ...prev[section],
-        [field]: value
-      }
+        [field]: value,
+      },
     }));
   };
 
   const handleArrayChange = (section, index, field, value) => {
-    setFormData(prev => {
+    setFormData((prev) => {
       const newArray = [...prev[section]];
       newArray[index] = { ...newArray[index], [field]: value };
       return { ...prev, [section]: newArray };
@@ -111,38 +140,47 @@ const PreOnboardingForm = () => {
   };
 
   const handleFileUpload = (category, type, file) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       uploadedDocuments: {
         ...prev.uploadedDocuments,
         [category]: {
           ...prev.uploadedDocuments[category],
-          [type]: file
-        }
-      }
+          [type]: file,
+        },
+      },
     }));
   };
 
   const handleFileDelete = (category, type) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       uploadedDocuments: {
         ...prev.uploadedDocuments,
         [category]: {
           ...prev.uploadedDocuments[category],
-          [type]: null
-        }
-      }
+          [type]: null,
+        },
+      },
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setSubmitError('');
+    setSubmitError("");
+
+       if (!token) {
+      setSubmitError('Token is missing. Please access this form with a valid token.');
+      toast.error('Token is missing. Please access this form with a valid token.');
+      setIsSubmitting(false);
+      return;
+    }
 
     const backendFormData = new FormData();
-
+ // Add token to the form data
+    backendFormData.append('token', token);
+    
     // Candidate Info
     Object.entries(formData.candidateInfo).forEach(([key, value]) => {
       if (value !== null && value !== undefined)
@@ -153,7 +191,7 @@ const PreOnboardingForm = () => {
     Object.entries(formData.personalDetails).forEach(([key, value]) => {
       if (value && value instanceof File) {
         backendFormData.append(`personalDetails[${key}]`, value);
-      } else if (value !== null && value !== undefined && value !== '') {
+      } else if (value !== null && value !== undefined && value !== "") {
         backendFormData.append(`personalDetails[${key}]`, value);
       }
     });
@@ -169,7 +207,7 @@ const PreOnboardingForm = () => {
     Object.entries(formData.bankingDetails).forEach(([key, value]) => {
       if (value && value instanceof File) {
         backendFormData.append(`bankingDetails[${key}]`, value);
-      } else if (value !== null && value !== undefined && value !== '') {
+      } else if (value !== null && value !== undefined && value !== "") {
         backendFormData.append(`bankingDetails[${key}]`, value);
       }
     });
@@ -178,7 +216,7 @@ const PreOnboardingForm = () => {
     Object.entries(formData.financialDocuments).forEach(([key, value]) => {
       if (value && value instanceof File) {
         backendFormData.append(`financialDocuments[${key}]`, value);
-      } else if (value !== null && value !== undefined && value !== '') {
+      } else if (value !== null && value !== undefined && value !== "") {
         backendFormData.append(`financialDocuments[${key}]`, value);
       }
     });
@@ -201,12 +239,15 @@ const PreOnboardingForm = () => {
     Object.entries(formData.uploadedDocuments).forEach(([category, docs]) => {
       Object.entries(docs).forEach(([docType, file]) => {
         if (file) {
-          backendFormData.append(`uploadedDocuments[${category}][${docType}]`, file);
+          backendFormData.append(
+            `uploadedDocuments[${category}][${docType}]`,
+            file
+          );
         }
       });
     });
 
-    try {
+     try {
       const response = await api.post('/api/candidate/pre-onboarding-form/', backendFormData);
       setIsSubmitted(true);
       toast.success('Form submitted successfully!');
@@ -228,101 +269,148 @@ const PreOnboardingForm = () => {
 
   const documentCategories = [
     {
-      name: 'Education Documents',
-      key: 'education',
-      documents: ['10th', '12th', 'Diploma', 'Graduate', 'Post Graduate', 'Certificates']
+      name: "Education Documents",
+      key: "education",
+      documents: [
+        "10th",
+        "12th",
+        "Diploma",
+        "Graduate",
+        "Post Graduate",
+        "Certificates",
+      ],
     },
     {
-      name: 'Previous Employment',
-      key: 'employment',
-      documents: ['Offer Letter', 'Relieving Letter', 'Service Letter']
+      name: "Previous Employment",
+      key: "employment",
+      documents: ["Offer Letter", "Relieving Letter", "Service Letter"],
     },
     {
-      name: 'Other Documents',
-      key: 'other',
-      documents: ['Passport', 'PanCard', 'Background Verification']
-    }
+      name: "Other Documents",
+      key: "other",
+      documents: ["Passport", "PanCard", "Background Verification"],
+    },
   ];
 
   return (
     <Container fluid className="p-4 bg-light">
-      <toastContainer position="top-right" autoClose={5000} hideProgressBar closeOnClick pauseOnHover  pauseOnFocusLoss />
+      <toastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar
+        closeOnClick
+        pauseOnHover
+        pauseOnFocusLoss
+      />
       <Card className="shadow-sm">
         <Card.Body>
-          <Card.Title as="h3" className="mb-4 text-primary">Pre-Onboarding Form</Card.Title>
-          
+          <Card.Title as="h3" className="mb-4 text-primary">
+            Pre-Onboarding Form
+          </Card.Title>
+
           {isSubmitted && (
             <Alert variant="success" className="mb-4">
               <FaCheck className="me-2" /> Form submitted successfully!
             </Alert>
           )}
-          
+
           {submitError && (
             <Alert variant="danger" className="mb-4">
               <FaTimes className="me-2" /> {submitError}
             </Alert>
           )}
-          
+
           <Form onSubmit={handleSubmit}>
             {/* Candidate Info */}
             <Card className="mb-4">
-              <Card.Header as="h5" className="bg-primary text-white">Candidate Information</Card.Header>
+              <Card.Header as="h5" className="bg-primary text-white">
+                Candidate Information
+              </Card.Header>
               <Card.Body>
                 <Row className="mb-3">
-                  <Col md={4}>
+                  {/* <Col md={4}>
                     <Form.Label>Candidate ID</Form.Label>
-                    <Form.Control 
-                      readOnly 
-                      value={formData.candidateInfo.id} 
-                      onChange={(e) => handleChange('candidateInfo', 'id', e.target.value)} 
+                    <Form.Control
+                      readOnly
+                      value={formData.candidateInfo.id}
+                      onChange={(e) =>
+                        handleChange("candidateInfo", "id", e.target.value)
+                      }
                     />
-                  </Col>
+                  </Col> */}
                   <Col md={4}>
                     <Form.Label>First Name</Form.Label>
-                    <Form.Control 
-                      value={formData.candidateInfo.firstName} 
-                      onChange={(e) => handleChange('candidateInfo', 'firstName', e.target.value)} 
+                    <Form.Control
+                      value={formData.candidateInfo.firstName}
+                      onChange={(e) =>
+                        handleChange(
+                          "candidateInfo",
+                          "firstName",
+                          e.target.value
+                        )
+                      }
                     />
                   </Col>
                   <Col md={4}>
                     <Form.Label>Last Name</Form.Label>
-                    <Form.Control 
-                      value={formData.candidateInfo.lastName} 
-                      onChange={(e) => handleChange('candidateInfo', 'lastName', e.target.value)} 
+                    <Form.Control
+                      value={formData.candidateInfo.lastName}
+                      onChange={(e) =>
+                        handleChange(
+                          "candidateInfo",
+                          "lastName",
+                          e.target.value
+                        )
+                      }
                     />
                   </Col>
-                </Row>
-                <Row className="mb-3">
                   <Col md={4}>
                     <Form.Label>Date of Joining</Form.Label>
-                    <Form.Control 
-                      type="date" 
-                      value={formData.candidateInfo.dateOfJoining} 
-                      onChange={(e) => handleChange('candidateInfo', 'dateOfJoining', e.target.value)} 
+                    <Form.Control
+                      type="date"
+                      value={formData.candidateInfo.dateOfJoining}
+                      onChange={(e) =>
+                        handleChange(
+                          "candidateInfo",
+                          "dateOfJoining",
+                          e.target.value
+                        )
+                      }
                     />
                   </Col>
                 </Row>
+               
               </Card.Body>
             </Card>
 
             {/* Personal Details */}
             <Card className="mb-4">
-              <Card.Header as="h5" className="bg-primary text-white">Personal Details</Card.Header>
+              <Card.Header as="h5" className="bg-primary text-white">
+                Personal Details
+              </Card.Header>
               <Card.Body>
                 <Row className="mb-3">
                   <Col md={3}>
                     <Form.Label>Date of Birth</Form.Label>
-                    <Form.Control 
-                      type="date" 
-                      value={formData.personalDetails.dob} 
-                      onChange={(e) => handleChange('personalDetails', 'dob', e.target.value)} 
+                    <Form.Control
+                      type="date"
+                      value={formData.personalDetails.dob}
+                      onChange={(e) =>
+                        handleChange("personalDetails", "dob", e.target.value)
+                      }
                     />
                   </Col>
                   <Col md={3}>
                     <Form.Label>Marital Status</Form.Label>
-                    <Form.Select 
-                      value={formData.personalDetails.maritalStatus} 
-                      onChange={(e) => handleChange('personalDetails', 'maritalStatus', e.target.value)}
+                    <Form.Select
+                      value={formData.personalDetails.maritalStatus}
+                      onChange={(e) =>
+                        handleChange(
+                          "personalDetails",
+                          "maritalStatus",
+                          e.target.value
+                        )
+                      }
                     >
                       <option>Single</option>
                       <option>Married</option>
@@ -330,9 +418,15 @@ const PreOnboardingForm = () => {
                   </Col>
                   <Col md={3}>
                     <Form.Label>Gender</Form.Label>
-                    <Form.Select 
-                      value={formData.personalDetails.gender} 
-                      onChange={(e) => handleChange('personalDetails', 'gender', e.target.value)}
+                    <Form.Select
+                      value={formData.personalDetails.gender}
+                      onChange={(e) =>
+                        handleChange(
+                          "personalDetails",
+                          "gender",
+                          e.target.value
+                        )
+                      }
                     >
                       <option>Male</option>
                       <option>Female</option>
@@ -341,45 +435,75 @@ const PreOnboardingForm = () => {
                   </Col>
                   <Col md={3}>
                     <Form.Label>Blood Group</Form.Label>
-                    <Form.Control 
-                      value={formData.personalDetails.bloodGroup} 
-                      onChange={(e) => handleChange('personalDetails', 'bloodGroup', e.target.value)} 
+                    <Form.Control
+                      value={formData.personalDetails.bloodGroup}
+                      onChange={(e) =>
+                        handleChange(
+                          "personalDetails",
+                          "bloodGroup",
+                          e.target.value
+                        )
+                      }
                     />
                   </Col>
                 </Row>
                 <Row className="mb-3">
                   <Col md={6}>
                     <Form.Label>Permanent Address</Form.Label>
-                    <Form.Control 
-                      as="textarea" 
+                    <Form.Control
+                      as="textarea"
                       rows={3}
-                      value={formData.personalDetails.permanentAddress} 
-                      onChange={(e) => handleChange('personalDetails', 'permanentAddress', e.target.value)} 
+                      value={formData.personalDetails.permanentAddress}
+                      onChange={(e) =>
+                        handleChange(
+                          "personalDetails",
+                          "permanentAddress",
+                          e.target.value
+                        )
+                      }
                     />
                   </Col>
                   <Col md={6}>
                     <Form.Label>Present Address</Form.Label>
-                    <Form.Control 
-                      as="textarea" 
+                    <Form.Control
+                      as="textarea"
                       rows={3}
-                      value={formData.personalDetails.presentAddress} 
-                      onChange={(e) => handleChange('personalDetails', 'presentAddress', e.target.value)} 
+                      value={formData.personalDetails.presentAddress}
+                      onChange={(e) =>
+                        handleChange(
+                          "personalDetails",
+                          "presentAddress",
+                          e.target.value
+                        )
+                      }
                     />
                   </Col>
                 </Row>
                 <Row className="mb-3">
                   <Col md={6}>
                     <Form.Label>Emergency Contact Name</Form.Label>
-                    <Form.Control 
-                      value={formData.personalDetails.emergencyPOCName} 
-                      onChange={(e) => handleChange('personalDetails', 'emergencyPOCName', e.target.value)} 
+                    <Form.Control
+                      value={formData.personalDetails.emergencyPOCName}
+                      onChange={(e) =>
+                        handleChange(
+                          "personalDetails",
+                          "emergencyPOCName",
+                          e.target.value
+                        )
+                      }
                     />
                   </Col>
                   <Col md={6}>
                     <Form.Label>Emergency Contact Number</Form.Label>
-                    <Form.Control 
-                      value={formData.personalDetails.emergencyContactNumber} 
-                      onChange={(e) => handleChange('personalDetails', 'emergencyContactNumber', e.target.value)} 
+                    <Form.Control
+                      value={formData.personalDetails.emergencyContactNumber}
+                      onChange={(e) =>
+                        handleChange(
+                          "personalDetails",
+                          "emergencyContactNumber",
+                          e.target.value
+                        )
+                      }
                     />
                   </Col>
                 </Row>
@@ -388,19 +512,29 @@ const PreOnboardingForm = () => {
                     <Form.Label>Photograph</Form.Label>
                     {formData.personalDetails.photograph ? (
                       <div className="d-flex align-items-center">
-                        <span className="me-2">{formData.personalDetails.photograph.name}</span>
-                        <Button 
-                          variant="outline-danger" 
+                        <span className="me-2">
+                          {formData.personalDetails.photograph.name}
+                        </span>
+                        <Button
+                          variant="outline-danger"
                           size="sm"
-                          onClick={() => handleChange('personalDetails', 'photograph', null)}
+                          onClick={() =>
+                            handleChange("personalDetails", "photograph", null)
+                          }
                         >
                           <FaTrash />
                         </Button>
                       </div>
                     ) : (
-                      <Form.Control 
-                        type="file" 
-                        onChange={(e) => handleChange('personalDetails', 'photograph', e.target.files[0])} 
+                      <Form.Control
+                        type="file"
+                        onChange={(e) =>
+                          handleChange(
+                            "personalDetails",
+                            "photograph",
+                            e.target.files[0]
+                          )
+                        }
                       />
                     )}
                   </Col>
@@ -410,7 +544,9 @@ const PreOnboardingForm = () => {
 
             {/* Reference Check */}
             <Card className="mb-4">
-              <Card.Header as="h5" className="bg-primary text-white">Reference Check Details</Card.Header>
+              <Card.Header as="h5" className="bg-primary text-white">
+                Reference Check Details
+              </Card.Header>
               <Card.Body>
                 <Table bordered responsive>
                   <thead>
@@ -429,40 +565,82 @@ const PreOnboardingForm = () => {
                       <tr key={index}>
                         <td>{ref.sNo}</td>
                         <td>
-                          <Form.Control 
-                            value={ref.firstName} 
-                            onChange={(e) => handleArrayChange('referenceCheck', index, 'firstName', e.target.value)} 
+                          <Form.Control
+                            value={ref.firstName}
+                            onChange={(e) =>
+                              handleArrayChange(
+                                "referenceCheck",
+                                index,
+                                "firstName",
+                                e.target.value
+                              )
+                            }
                           />
                         </td>
                         <td>
-                          <Form.Control 
-                            value={ref.lastName} 
-                            onChange={(e) => handleArrayChange('referenceCheck', index, 'lastName', e.target.value)} 
+                          <Form.Control
+                            value={ref.lastName}
+                            onChange={(e) =>
+                              handleArrayChange(
+                                "referenceCheck",
+                                index,
+                                "lastName",
+                                e.target.value
+                              )
+                            }
                           />
                         </td>
                         <td>
-                          <Form.Control 
-                            value={ref.designation} 
-                            onChange={(e) => handleArrayChange('referenceCheck', index, 'designation', e.target.value)} 
+                          <Form.Control
+                            value={ref.designation}
+                            onChange={(e) =>
+                              handleArrayChange(
+                                "referenceCheck",
+                                index,
+                                "designation",
+                                e.target.value
+                              )
+                            }
                           />
                         </td>
                         <td>
-                          <Form.Control 
-                            value={ref.reportingManagerName} 
-                            onChange={(e) => handleArrayChange('referenceCheck', index, 'reportingManagerName', e.target.value)} 
+                          <Form.Control
+                            value={ref.reportingManagerName}
+                            onChange={(e) =>
+                              handleArrayChange(
+                                "referenceCheck",
+                                index,
+                                "reportingManagerName",
+                                e.target.value
+                              )
+                            }
                           />
                         </td>
                         <td>
-                          <Form.Control 
+                          <Form.Control
                             type="email"
-                            value={ref.officialEmailId} 
-                            onChange={(e) => handleArrayChange('referenceCheck', index, 'officialEmailId', e.target.value)} 
+                            value={ref.officialEmailId}
+                            onChange={(e) =>
+                              handleArrayChange(
+                                "referenceCheck",
+                                index,
+                                "officialEmailId",
+                                e.target.value
+                              )
+                            }
                           />
                         </td>
                         <td>
-                          <Form.Control 
-                            value={ref.phoneNumber} 
-                            onChange={(e) => handleArrayChange('referenceCheck', index, 'phoneNumber', e.target.value)} 
+                          <Form.Control
+                            value={ref.phoneNumber}
+                            onChange={(e) =>
+                              handleArrayChange(
+                                "referenceCheck",
+                                index,
+                                "phoneNumber",
+                                e.target.value
+                              )
+                            }
                           />
                         </td>
                       </tr>
@@ -474,35 +652,61 @@ const PreOnboardingForm = () => {
 
             {/* Banking Details */}
             <Card className="mb-4">
-              <Card.Header as="h5" className="bg-primary text-white">Banking Details</Card.Header>
+              <Card.Header as="h5" className="bg-primary text-white">
+                Banking Details
+              </Card.Header>
               <Card.Body>
                 <Row className="mb-3">
                   <Col md={3}>
                     <Form.Label>Bank Name</Form.Label>
-                    <Form.Control 
-                      value={formData.bankingDetails.bankName} 
-                      onChange={(e) => handleChange('bankingDetails', 'bankName', e.target.value)} 
+                    <Form.Control
+                      value={formData.bankingDetails.bankName}
+                      onChange={(e) =>
+                        handleChange(
+                          "bankingDetails",
+                          "bankName",
+                          e.target.value
+                        )
+                      }
                     />
                   </Col>
                   <Col md={3}>
                     <Form.Label>Account Number</Form.Label>
-                    <Form.Control 
-                      value={formData.bankingDetails.accountNumber} 
-                      onChange={(e) => handleChange('bankingDetails', 'accountNumber', e.target.value)} 
+                    <Form.Control
+                      value={formData.bankingDetails.accountNumber}
+                      onChange={(e) =>
+                        handleChange(
+                          "bankingDetails",
+                          "accountNumber",
+                          e.target.value
+                        )
+                      }
                     />
                   </Col>
                   <Col md={3}>
                     <Form.Label>IFSC Code</Form.Label>
-                    <Form.Control 
-                      value={formData.bankingDetails.ifscCode} 
-                      onChange={(e) => handleChange('bankingDetails', 'ifscCode', e.target.value)} 
+                    <Form.Control
+                      value={formData.bankingDetails.ifscCode}
+                      onChange={(e) =>
+                        handleChange(
+                          "bankingDetails",
+                          "ifscCode",
+                          e.target.value
+                        )
+                      }
                     />
                   </Col>
                   <Col md={3}>
                     <Form.Label>Branch Address</Form.Label>
-                    <Form.Control 
-                      value={formData.bankingDetails.branchAddress} 
-                      onChange={(e) => handleChange('bankingDetails', 'branchAddress', e.target.value)} 
+                    <Form.Control
+                      value={formData.bankingDetails.branchAddress}
+                      onChange={(e) =>
+                        handleChange(
+                          "bankingDetails",
+                          "branchAddress",
+                          e.target.value
+                        )
+                      }
                     />
                   </Col>
                 </Row>
@@ -511,19 +715,33 @@ const PreOnboardingForm = () => {
                     <Form.Label>Bank Statement</Form.Label>
                     {formData.bankingDetails.bankStatement ? (
                       <div className="d-flex align-items-center">
-                        <span className="me-2">{formData.bankingDetails.bankStatement.name}</span>
-                        <Button 
-                          variant="outline-danger" 
+                        <span className="me-2">
+                          {formData.bankingDetails.bankStatement.name}
+                        </span>
+                        <Button
+                          variant="outline-danger"
                           size="sm"
-                          onClick={() => handleChange('bankingDetails', 'bankStatement', null)}
+                          onClick={() =>
+                            handleChange(
+                              "bankingDetails",
+                              "bankStatement",
+                              null
+                            )
+                          }
                         >
                           <FaTrash />
                         </Button>
                       </div>
                     ) : (
-                      <Form.Control 
-                        type="file" 
-                        onChange={(e) => handleChange('bankingDetails', 'bankStatement', e.target.files[0])} 
+                      <Form.Control
+                        type="file"
+                        onChange={(e) =>
+                          handleChange(
+                            "bankingDetails",
+                            "bankStatement",
+                            e.target.files[0]
+                          )
+                        }
                       />
                     )}
                   </Col>
@@ -531,19 +749,29 @@ const PreOnboardingForm = () => {
                     <Form.Label>Cancel Cheque</Form.Label>
                     {formData.bankingDetails.cancelCheque ? (
                       <div className="d-flex align-items-center">
-                        <span className="me-2">{formData.bankingDetails.cancelCheque.name}</span>
-                        <Button 
-                          variant="outline-danger" 
+                        <span className="me-2">
+                          {formData.bankingDetails.cancelCheque.name}
+                        </span>
+                        <Button
+                          variant="outline-danger"
                           size="sm"
-                          onClick={() => handleChange('bankingDetails', 'cancelCheque', null)}
+                          onClick={() =>
+                            handleChange("bankingDetails", "cancelCheque", null)
+                          }
                         >
                           <FaTrash />
                         </Button>
                       </div>
                     ) : (
-                      <Form.Control 
-                        type="file" 
-                        onChange={(e) => handleChange('bankingDetails', 'cancelCheque', e.target.files[0])} 
+                      <Form.Control
+                        type="file"
+                        onChange={(e) =>
+                          handleChange(
+                            "bankingDetails",
+                            "cancelCheque",
+                            e.target.files[0]
+                          )
+                        }
                       />
                     )}
                   </Col>
@@ -553,47 +781,77 @@ const PreOnboardingForm = () => {
 
             {/* Financial Documents */}
             <Card className="mb-4">
-              <Card.Header as="h5" className="bg-primary text-white">Financial Documents</Card.Header>
+              <Card.Header as="h5" className="bg-primary text-white">
+                Financial Documents
+              </Card.Header>
               <Card.Body>
                 <Row className="mb-3">
                   <Col md={3}>
                     <Form.Label>PF Number</Form.Label>
-                    <Form.Control 
-                      value={formData.financialDocuments.pfNumber} 
-                      onChange={(e) => handleChange('financialDocuments', 'pfNumber', e.target.value)} 
+                    <Form.Control
+                      value={formData.financialDocuments.pfNumber}
+                      onChange={(e) =>
+                        handleChange(
+                          "financialDocuments",
+                          "pfNumber",
+                          e.target.value
+                        )
+                      }
                     />
                   </Col>
                   <Col md={3}>
                     <Form.Label>UAN Number</Form.Label>
-                    <Form.Control 
-                      value={formData.financialDocuments.uanNumber} 
-                      onChange={(e) => handleChange('financialDocuments', 'uanNumber', e.target.value)} 
+                    <Form.Control
+                      value={formData.financialDocuments.uanNumber}
+                      onChange={(e) =>
+                        handleChange(
+                          "financialDocuments",
+                          "uanNumber",
+                          e.target.value
+                        )
+                      }
                     />
                   </Col>
                   <Col md={3}>
                     <Form.Label>PRAN Number</Form.Label>
-                    <Form.Control 
-                      value={formData.financialDocuments.pranNumber} 
-                      onChange={(e) => handleChange('financialDocuments', 'pranNumber', e.target.value)} 
+                    <Form.Control
+                      value={formData.financialDocuments.pranNumber}
+                      onChange={(e) =>
+                        handleChange(
+                          "financialDocuments",
+                          "pranNumber",
+                          e.target.value
+                        )
+                      }
                     />
                   </Col>
                   <Col md={3}>
                     <Form.Label>Form-16</Form.Label>
                     {formData.financialDocuments.form16 ? (
                       <div className="d-flex align-items-center">
-                        <span className="me-2">{formData.financialDocuments.form16.name}</span>
-                        <Button 
-                          variant="outline-danger" 
+                        <span className="me-2">
+                          {formData.financialDocuments.form16.name}
+                        </span>
+                        <Button
+                          variant="outline-danger"
                           size="sm"
-                          onClick={() => handleChange('financialDocuments', 'form16', null)}
+                          onClick={() =>
+                            handleChange("financialDocuments", "form16", null)
+                          }
                         >
                           <FaTrash />
                         </Button>
                       </div>
                     ) : (
-                      <Form.Control 
-                        type="file" 
-                        onChange={(e) => handleChange('financialDocuments', 'form16', e.target.files[0])} 
+                      <Form.Control
+                        type="file"
+                        onChange={(e) =>
+                          handleChange(
+                            "financialDocuments",
+                            "form16",
+                            e.target.files[0]
+                          )
+                        }
                       />
                     )}
                   </Col>
@@ -601,19 +859,33 @@ const PreOnboardingForm = () => {
                     <Form.Label>Salary Slips</Form.Label>
                     {formData.financialDocuments.salarySlips ? (
                       <div className="d-flex align-items-center">
-                        <span className="me-2">{formData.financialDocuments.salarySlips.name}</span>
-                        <Button 
-                          variant="outline-danger" 
+                        <span className="me-2">
+                          {formData.financialDocuments.salarySlips.name}
+                        </span>
+                        <Button
+                          variant="outline-danger"
                           size="sm"
-                          onClick={() => handleChange('financialDocuments', 'salarySlips', null)}
+                          onClick={() =>
+                            handleChange(
+                              "financialDocuments",
+                              "salarySlips",
+                              null
+                            )
+                          }
                         >
                           <FaTrash />
                         </Button>
                       </div>
                     ) : (
-                      <Form.Control 
-                        type="file" 
-                        onChange={(e) => handleChange('financialDocuments', 'salarySlips', e.target.files[0])} 
+                      <Form.Control
+                        type="file"
+                        onChange={(e) =>
+                          handleChange(
+                            "financialDocuments",
+                            "salarySlips",
+                            e.target.files[0]
+                          )
+                        }
                       />
                     )}
                   </Col>
@@ -623,7 +895,9 @@ const PreOnboardingForm = () => {
 
             {/* Nominee Details */}
             <Card className="mb-4">
-              <Card.Header as="h5" className="bg-primary text-white">Nominee Details</Card.Header>
+              <Card.Header as="h5" className="bg-primary text-white">
+                Nominee Details
+              </Card.Header>
               <Card.Body>
                 <Table bordered responsive>
                   <thead>
@@ -637,22 +911,43 @@ const PreOnboardingForm = () => {
                     {formData.nomineeDetails.map((nominee, index) => (
                       <tr key={index}>
                         <td>
-                          <Form.Control 
-                            value={nominee.firstName} 
-                            onChange={(e) => handleArrayChange('nomineeDetails', index, 'firstName', e.target.value)} 
+                          <Form.Control
+                            value={nominee.firstName}
+                            onChange={(e) =>
+                              handleArrayChange(
+                                "nomineeDetails",
+                                index,
+                                "firstName",
+                                e.target.value
+                              )
+                            }
                           />
                         </td>
                         <td>
-                          <Form.Control 
-                            value={nominee.lastName} 
-                            onChange={(e) => handleArrayChange('nomineeDetails', index, 'lastName', e.target.value)} 
+                          <Form.Control
+                            value={nominee.lastName}
+                            onChange={(e) =>
+                              handleArrayChange(
+                                "nomineeDetails",
+                                index,
+                                "lastName",
+                                e.target.value
+                              )
+                            }
                           />
                         </td>
                         <td>
-                          <Form.Control 
+                          <Form.Control
                             type="number"
-                            value={nominee.share} 
-                            onChange={(e) => handleArrayChange('nomineeDetails', index, 'share', e.target.value)} 
+                            value={nominee.share}
+                            onChange={(e) =>
+                              handleArrayChange(
+                                "nomineeDetails",
+                                index,
+                                "share",
+                                e.target.value
+                              )
+                            }
                           />
                         </td>
                       </tr>
@@ -664,7 +959,9 @@ const PreOnboardingForm = () => {
 
             {/* Insurance Details */}
             <Card className="mb-4">
-              <Card.Header as="h5" className="bg-primary text-white">Insurance Details</Card.Header>
+              <Card.Header as="h5" className="bg-primary text-white">
+                Insurance Details
+              </Card.Header>
               <Card.Body>
                 <Table bordered responsive>
                   <thead>
@@ -678,22 +975,43 @@ const PreOnboardingForm = () => {
                     {formData.insuranceDetails.map((insurance, index) => (
                       <tr key={index}>
                         <td>
-                          <Form.Control 
-                            value={insurance.firstName} 
-                            onChange={(e) => handleArrayChange('insuranceDetails', index, 'firstName', e.target.value)} 
+                          <Form.Control
+                            value={insurance.firstName}
+                            onChange={(e) =>
+                              handleArrayChange(
+                                "insuranceDetails",
+                                index,
+                                "firstName",
+                                e.target.value
+                              )
+                            }
                           />
                         </td>
                         <td>
-                          <Form.Control 
-                            value={insurance.lastName} 
-                            onChange={(e) => handleArrayChange('insuranceDetails', index, 'lastName', e.target.value)} 
+                          <Form.Control
+                            value={insurance.lastName}
+                            onChange={(e) =>
+                              handleArrayChange(
+                                "insuranceDetails",
+                                index,
+                                "lastName",
+                                e.target.value
+                              )
+                            }
                           />
                         </td>
                         <td>
-                          <Form.Control 
+                          <Form.Control
                             type="date"
-                            value={insurance.dob} 
-                            onChange={(e) => handleArrayChange('insuranceDetails', index, 'dob', e.target.value)} 
+                            value={insurance.dob}
+                            onChange={(e) =>
+                              handleArrayChange(
+                                "insuranceDetails",
+                                index,
+                                "dob",
+                                e.target.value
+                              )
+                            }
                           />
                         </td>
                       </tr>
@@ -705,7 +1023,9 @@ const PreOnboardingForm = () => {
 
             {/* Upload Documents */}
             <Card className="mb-4">
-              <Card.Header as="h5" className="bg-primary text-white">Upload Documents</Card.Header>
+              <Card.Header as="h5" className="bg-primary text-white">
+                Upload Documents
+              </Card.Header>
               <Card.Body>
                 {documentCategories.map((category) => (
                   <div key={category.key} className="mb-4">
@@ -716,21 +1036,34 @@ const PreOnboardingForm = () => {
                           <Form.Label>{doc}</Form.Label>
                           {formData.uploadedDocuments[category.key][doc] ? (
                             <div className="d-flex align-items-center border rounded p-2 bg-light">
-                              <span className="me-2 flex-grow-1">{formData.uploadedDocuments[category.key][doc].name}</span>
-                              <Button 
-                                variant="outline-danger" 
+                              <span className="me-2 flex-grow-1">
+                                {
+                                  formData.uploadedDocuments[category.key][doc]
+                                    .name
+                                }
+                              </span>
+                              <Button
+                                variant="outline-danger"
                                 size="sm"
-                                onClick={() => handleFileDelete(category.key, doc)}
+                                onClick={() =>
+                                  handleFileDelete(category.key, doc)
+                                }
                               >
                                 <FaTrash />
                               </Button>
                             </div>
                           ) : (
                             <div className="d-flex">
-                              <Form.Control 
-                                type="file" 
+                              <Form.Control
+                                type="file"
                                 className="me-2"
-                                onChange={(e) => handleFileUpload(category.key, doc, e.target.files[0])} 
+                                onChange={(e) =>
+                                  handleFileUpload(
+                                    category.key,
+                                    doc,
+                                    e.target.files[0]
+                                  )
+                                }
                               />
                               <Button variant="outline-primary">
                                 <FaUpload />
@@ -746,19 +1079,24 @@ const PreOnboardingForm = () => {
             </Card>
 
             <div className="d-flex justify-content-end">
-              <Button 
-                variant="primary" 
-                type="submit" 
-                size="lg" 
+              <Button
+                variant="primary"
+                type="submit"
+                size="lg"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
                   <>
-                    <Spinner as="span" animation="border" size="sm" className="me-2" />
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      className="me-2"
+                    />
                     Submitting...
                   </>
                 ) : (
-                  'Submit Form'
+                  "Submit Form"
                 )}
               </Button>
             </div>
