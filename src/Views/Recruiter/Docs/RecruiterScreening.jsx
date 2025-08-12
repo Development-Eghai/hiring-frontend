@@ -15,6 +15,50 @@ const RecruiterScreening = () => {
     posistion_applied: "",
     date_of_screening: "",
   });
+    const [newRow, setNewRow] = useState({
+      score_card: "",
+      guideline: "",
+      min_questions: "",
+      weightage: "",
+      feedback: "",
+      rating: 0,
+    });
+
+      const handleNewRatingChange = (rating) => {
+    setNewRow((prev) => ({ ...prev, rating }));
+  };
+
+  const handleAddNewRow = () => {
+    if (
+      !newRow.score_card ||
+      !newRow.guideline ||
+      !newRow.min_questions ||
+      !newRow.weightage
+    ) {
+      alert("Fill all required fields");
+      return;
+    }
+    setRows((prev) => [...prev, newRow]);
+    setRatings((prev) => [...prev, newRow.rating]);
+    setFeedbacks((prev) => [...prev, newRow.feedback]);
+    setNewRow({
+      score_card: "",
+      guideline: "",
+      min_questions: "",
+      weightage: "",
+      feedback: "",
+      rating: 0,
+    });
+    setIsAdding(false);
+  };
+
+      const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    if ((name === "min_questions" || name === "weightage") && value < 1) return;
+
+    setNewRow((prev) => ({ ...prev, [name]: value }));
+  };
 
   const [ratings, setRatings] = useState([0, 0, 0]);
   const [feedbacks, setFeedbacks] = useState(["", "", ""]);
@@ -23,6 +67,8 @@ const RecruiterScreening = () => {
   const [finalFeedback, setFinalFeedback] = useState("");
   const [reqId, setReqId] = useState("");
   const [candidate, setCandidate] = useState("");
+  const [isAdding, setIsAdding] = useState(false);
+
 
   const currentDate = new Date();
   const day = String(currentDate.getDate()).padStart(2, "0");
@@ -32,6 +78,7 @@ const RecruiterScreening = () => {
   const formattedDate = `${day}/${month}/${year}`;
 
   const [rows, setRows] = useState([]);
+  console.log(rows,"csasc")
 
   const location = useLocation();
   const routeState = location?.state
@@ -180,6 +227,13 @@ const RecruiterScreening = () => {
               <th style={{ width: "10%" }}>Weightage</th>
               <th style={{ width: "20%" }}>Actual Rating</th>
               <th style={{ width: "20%" }}>Feedback</th>
+              <th>
+                {!isAdding && (
+                  <Button size="sm" onClick={() => setIsAdding(true)}>
+                    Add
+                  </Button>
+                 )}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -217,6 +271,91 @@ const RecruiterScreening = () => {
                 </td>
               </tr>
             ))}
+                      {isAdding && (
+                        <tr>
+                          <td>{rows.length + 1}</td>
+                          <td>
+                            <Form.Control
+                              name="score_card"
+                              value={newRow.score_card}
+                              onChange={handleInputChange}
+                              placeholder="Parameter"
+                            />
+                          </td>
+                          <td>
+                            <Form.Control
+                              name="guideline"
+                              value={newRow.guideline}
+                              onChange={handleInputChange}
+                              placeholder="Guideline"
+                            />
+                          </td>
+                          <td>
+                            <Form.Control
+                              type="number"
+                              name="min_questions"
+                              min="1"
+                              value={newRow.min_questions}
+                              onChange={handleInputChange}
+                              placeholder="Min Questions"
+                            />
+                          </td>
+                          <td>
+                            <Form.Control
+                              type="number"
+                              name="weightage"
+                              min="1"
+                              value={newRow.weightage}
+                              onChange={handleInputChange}
+                              placeholder="Weightage"
+                            />
+                          </td>
+                          <td>
+                            <div
+                              className="form-control d-flex align-items-center"
+                              style={{ height: "38px" }}
+                            >
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <span
+                                  key={star}
+                                  onClick={() => handleNewRatingChange(star)}
+                                  style={{
+                                    cursor: "pointer",
+                                    color: newRow.rating >= star ? "#ffc107" : "#ccc",
+                                    fontSize: "1.2rem",
+                                    marginRight: "4px",
+                                  }}
+                                >
+                                  ★
+                                </span>
+                              ))}
+                              <span className="ms-2">{newRow.rating}.0</span>
+                            </div>
+                          </td>
+                          <td>
+                            <Form.Control
+                              name="feedback"
+                              value={newRow.feedback}
+                              onChange={handleInputChange}
+                              placeholder="Feedback"
+                            />
+                          </td>
+                          <td>
+                            <div className="d-flex gap-2">
+                              <Button size="sm" variant="success" onClick={handleAddNewRow}>
+                                Save
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="secondary"
+                                onClick={() => setIsAdding(false)}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
           </tbody>
         </Table>
 

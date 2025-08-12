@@ -50,7 +50,6 @@ export const RecruiterDashboard = () => {
         "https://api.pixeladvant.com/api/candidates/interview-details/",
         { req_id: reqId }
       );
-      console.log(response,"uygiu")
 
       if (response.data.success && Array.isArray(response.data.data)) {
         const formatted = response.data.data.map((item) => ({
@@ -87,8 +86,6 @@ export const RecruiterDashboard = () => {
           "https://api.pixeladvant.com/api/jobrequisition/list-requisitions/",
           { user_role: 2 }
         );
-
-        console.log(response?.data?.data, "caa");
 
         if (response?.data?.success && Array.isArray(response.data.data)) {
           const formatted = response.data.data.map((item, index) => ({
@@ -310,7 +307,9 @@ export const RecruiterDashboard = () => {
           </Modal.Footer>
         </Modal>
 
-        <div className="card rounded-3 border-0 shadow-sm p-2 mt-5">
+       {
+        candidateData?.length > 0 && (
+           <div className="card rounded-3 border-0 shadow-sm p-2 mt-5">
           <div className="card-body p-0 card overflow-auto">
             <h5 className="p-3">Candidate List</h5>
 
@@ -348,6 +347,8 @@ export const RecruiterDashboard = () => {
             </table>
           </div>
         </div>
+        )
+       }
       </div>
 
       {/* <div className="row">
