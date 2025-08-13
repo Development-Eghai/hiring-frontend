@@ -72,7 +72,6 @@ const PlanninggForm = (handleNext) => {
         );
         if (response?.data?.success) {
           const data = response?.data?.data
-          // Map to CreatableSelect format
   const langOptions = response?.data?.data?.communication_language.map((item) => ({
   label: item.language,
   value: item.language,
@@ -80,7 +79,6 @@ const PlanninggForm = (handleNext) => {
   
   setSelectedLanguages(langOptions);
   
-  // Set proficiency map
   const profMap = {};
   response?.data?.data?.communication_language.forEach((item) => {
   profMap[item.language] = {
@@ -173,6 +171,7 @@ const PlanninggForm = (handleNext) => {
     watch,
     formState: { errors },
     reset,
+    getValues,
   } = useForm({
     defaultValues: {
       social_media: [{ media_type: "", media_link: "" }],
@@ -245,6 +244,7 @@ const PlanninggForm = (handleNext) => {
 
     if (response && response.data.success) {
       alert(response?.data?.message);
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
       navigate("/hiring_manager/planning");
     }
     }
@@ -258,6 +258,7 @@ const PlanninggForm = (handleNext) => {
 
     if (response && response.data.success) {
       alert(response?.data?.message);
+      localStorage.removeItem(LOCAL_STORAGE_KEY); 
       navigate("/hiring_manager/planning");
     }
     }
@@ -267,12 +268,10 @@ const PlanninggForm = (handleNext) => {
   const formatCompensationInput = (input) => {
     input = input.trim();
 
-    // Valid range like "1-2", "10-15"
     if (/^\d+\s*-\s*\d+$/.test(input)) {
       return input.replace(/\s+/g, "");
     }
 
-    // Single number like "2", "5"
     if (/^\d+$/.test(input)) {
       return `0-${input}`;
     }
@@ -297,6 +296,68 @@ const PlanninggForm = (handleNext) => {
       fontSize: "0.9rem",
     }),
   };
+
+  const LOCAL_STORAGE_KEY = "planning_form_autosave";
+
+useEffect(() => {
+  if (performance.getEntriesByType("navigation")[0]?.type === "reload") {
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+    reset({
+      social_media: [{ media_type: "", media_link: "" }],
+    });
+    setJobDesc("");
+    setSelectedLanguages([]);
+    setLanguageProficiency({});
+  }
+}, []);
+
+useEffect(() => {
+  if (!edit_id) {
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        reset(parsed);
+        if (parsed.jd_details) setJobDesc(parsed.jd_details);
+        if (parsed.communication_language) setSelectedLanguages(parsed.communication_language);
+        if (parsed.languageProficiency) setLanguageProficiency(parsed.languageProficiency);
+      } catch {}
+    }
+  }
+}, [reset, edit_id]);
+
+//  Auto-save form data 
+useEffect(() => {
+  if (!edit_id) {
+    const subscription = watch((value) => {
+      localStorage.setItem(
+        LOCAL_STORAGE_KEY,
+        JSON.stringify({
+          ...value,
+          jd_details: jobdesc,
+          communication_language: selectedLanguages,
+          languageProficiency,
+        })
+      );
+    });
+    return () => subscription.unsubscribe();
+  }
+}, [watch, jobdesc, selectedLanguages, languageProficiency, edit_id]);
+
+useEffect(() => {
+  if (!edit_id) {
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = ""; 
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }
+}, [edit_id]);
 
   return (
     <div style={{ maxHeight: "500px", overflowY: "auto" }}>
