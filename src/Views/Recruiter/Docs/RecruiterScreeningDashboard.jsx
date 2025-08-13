@@ -245,12 +245,6 @@ const RecruiterScreeningDashboard = () => {
           </div>
         </div>    
 
-
-
-
-
-
-
           {/* Screening deailst */}
           {Screeningdetails?.length > 0 && <div className="card rounded-3 border-0 shadow-sm p-2">
             <div className="card-body p-0">

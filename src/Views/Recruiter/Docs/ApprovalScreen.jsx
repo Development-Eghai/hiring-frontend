@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import axiosInstance from "Services/axiosInstance";
 import RecruiterHeader from "../Recruiter_utils/Navbar";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Modal } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
@@ -14,6 +14,9 @@ const ApprovalScreen = () => {
   const [selectedRadioRow, setSelectedRadioRow] = useState(null);
   const navigate = useNavigate();
   console.log(selectedRadioRow, "CxcweW");
+    const [viewApproversData, setViewApproversData] = useState([]);
+    console.log(viewApproversData,"adasdas")
+    const [showViewModal, setShowViewModal] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -88,7 +91,7 @@ const ApprovalScreen = () => {
       },
       {
         name: "Candidate id",
-        selector: (row) => row.client_id,
+        selector: (row) => row.candidate_id,
         wrap: true,
       },
       {
@@ -96,36 +99,29 @@ const ApprovalScreen = () => {
         selector: (row) => row.candidate_first_name,
         wrap: true,
       },
-      {
-        name: "Role",
-        selector: (row) => row.role,
-        wrap: true,
-      },
-      {
-        name: "Name",
-        selector: (row) => row.name,
-        wrap: true,
-      },
-      {
-        name: "Email",
-        selector: (row) => row.email,
-        wrap: true,
-      },
-      {
-        name: "Job Title",
-        selector: (row) => row.job_title,
-        wrap: true,
-      },
-      {
-        name: "status",
-        selector: (row) => row.status,
-        wrap: true,
-      },
-      {
-        name: "Decision",
-        selector: (row) => row.decision,
-        wrap: true,
-      },
+       {
+            name: "Approvers",
+            cell: (row) => (
+              <Button
+                variant="primary"
+                onClick={() => {
+       setViewApproversData(row.approvers || []);
+        setShowViewModal(true);
+                }}
+              >
+                View
+              </Button>
+            ),
+            width: "120px",
+            ignoreRowClick: true,
+            allowOverflow: true,
+            button: true,
+          },
+            {
+              name: "overall_status",
+              selector: (row) => row.overall_status,
+              wrap: true,
+            },
     ];
 
     setColumns(staticColumns);
@@ -228,6 +224,60 @@ const ApprovalScreen = () => {
             }}
           />
         </div>
+                      <Modal
+          show={showViewModal}
+          onHide={() => setShowViewModal(false)}
+          size="xl"
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Approver Details</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <DataTable
+              columns={[
+                { name: "Role", selector: (row) => row.role, sortable: true },
+                { name: "Job Title", selector: (row) => row.job_title },
+                { name: "Name", selector: (row) => row.name },
+                // { name: "Last Name", selector: (row) => row.last_name },
+                { name: "Email", selector: (row) => row.email },
+                { name: "Contact", selector: (row) => row.contact_number },
+                { name: "status", selector: (row) => row.status },
+                { name: "Decision", selector: (row) => row.decision },
+                { name: "Comment", selector: (row) => row.comment },
+
+                 
+
+    //             {
+    //   name: "Action",
+    //   cell: (row) => (
+    //                   <Button
+    //                     variant="outline-danger"
+    //                     size="sm"
+    //                     onClick={() => handleDelete(row)}
+    //                   >
+    //                     <BsTrash className="me-1" />
+    //                   </Button>
+    //   ),
+    //   ignoreRowClick: true,
+    //   allowOverflow: true,
+    //   button: true,
+    // },
+  ]}
+
+              data={viewApproversData}
+              // pagination
+              // highlightOnHover
+              // striped
+              responsive
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowViewModal(false)}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     </>
   );

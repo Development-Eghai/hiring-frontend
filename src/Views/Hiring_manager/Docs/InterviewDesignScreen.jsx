@@ -27,7 +27,7 @@ const InterviewForm = () => {
   const [positionRoles, setPositionRoles] = useState([]);
   const [planIds, setPlanIds] = useState();
   const [planIdsList, setPlanIdsList] = useState([]);
-  const [screeningTypes, setScreeningTypes] = useState([]);
+  // const [screeningTypes, setScreeningTypes] = useState([]);
   const [scoreCards, setScoreCards] = useState([]);
   const [clientid, setClientId] = useState("");
   const [clientname, setClientName] = useState("");
@@ -64,7 +64,7 @@ const InterviewForm = () => {
           setReqId(data.req_id);
           setRole(data.position_role);
           setTechStacks(data.tech_stacks);
-          setScreeningType(data.screening_type);
+          // setScreeningType(data.screening_type);
           setNoOfRounds(data.no_of_interview_round);
           setRating(data.final_rating || 0);
           setStatus(data.status || "");
@@ -124,7 +124,7 @@ const InterviewForm = () => {
           setPositionRoles(position_role || []);
           setPlanIdsList(plan_id || []);
           setReqIdsList(requisition_id || []);
-          setScreeningTypes(screening_type || []);
+          // setScreeningTypes(screening_type || []);
         }
 
         if (scoreCardRes.data?.success) {
@@ -271,7 +271,7 @@ const InterviewForm = () => {
           setReqId("");
           setRole("");
           setTechStacks("");
-          setScreeningType("");
+          // setScreeningType("");
           setNoOfRounds("");
           setFeedbackText("");
           setParameters([]);
@@ -435,7 +435,7 @@ const InterviewForm = () => {
                 />
               </Form.Group>
             </Col>
-            <Col md={3} className="mb-3">
+            {/* <Col md={3} className="mb-3">
               <Form.Group>
                 <Form.Label>Screening Type</Form.Label>
                 <Form.Select
@@ -450,7 +450,7 @@ const InterviewForm = () => {
                   ))}
                 </Form.Select>
               </Form.Group>
-            </Col>
+            </Col> */}
           </Row>
 
           <Row className="mb-4">
@@ -477,7 +477,7 @@ const InterviewForm = () => {
                 <span>Min Qs</span>
                 <span>Screening Type</span>
                 <span>Duration</span>
-                <span>Weight</span>
+                <span>Weightage</span>
                 <span>Mode</span>
                 <span>Feedback</span>
               </div>

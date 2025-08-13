@@ -2,17 +2,21 @@ import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import axiosInstance from "Services/axiosInstance";
 import RecruiterHeader from "../Recruiter_utils/Navbar";
+import { Button, Modal } from "react-bootstrap";
 
 const HiringManagerApproval = () => {
   const [columns, setColumns] = useState([]);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRows, setSelectedRows] = useState([]);
+  const [viewApproversData, setViewApproversData] = useState([]);
+  console.log(viewApproversData,"adasdas")
+  const [showViewModal, setShowViewModal] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await axiosInstance.post(
+      const response = await axiosInstance.get(
         "https://api.pixeladvant.com/candidate-approver-status/"
       );
 
@@ -31,7 +35,7 @@ const HiringManagerApproval = () => {
           feedback: item.comment,
         }));
 
-        setData(formattedData);
+        setData(apiData);
       } else {
         console.warn("Unexpected response format:", response.data);
       }
@@ -52,47 +56,60 @@ const HiringManagerApproval = () => {
       },
       {
         name: "Req ID",
-        selector: (row) => row.reqId,
+        selector: (row) => row.req_id,
         wrap: true,
       },
       {
         name: "Client ID",
-        selector: (row) => row.clientId,
+        selector: (row) => row.client_id,
         wrap: true,
       },
       {
         name: "Client Name",
-        selector: (row) => row.clientName,
+        selector: (row) => row.client_name,
         wrap: true,
       },
       {
         name: "Candidate ID",
-        selector: (row) => row.candidateId,
+        selector: (row) => row.candidate_id,
         wrap: true,
       },
       {
         name: "Candidate Name",
-        selector: (row) => row.candidateFirstName,
+        selector: (row) => row.candidate_first_name,
         wrap: true,
       },
-      {
-        name: "Role/Position",
-        selector: (row) => row.role,
-        wrap: true,
-      },
+      // {
+      //   name: "Role/Position",
+      //   selector: (row) => row.role,
+      //   wrap: true,
+      // },
       {
         name: "Recuiter Screening",
-        selector: (row) => row.recruiterScreening1,
+        selector: (row) => row.screening_status,
         wrap: true,
       },
+          {
+      name: "Approvers",
+      cell: (row) => (
+        <Button
+          variant="primary"
+          onClick={() => {
+ setViewApproversData(row.approvers || []);
+  setShowViewModal(true);
+          }}
+        >
+          View
+        </Button>
+      ),
+      width: "120px",
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+    },
       {
-        name: "Manager Approval",
-        selector: (row) => row.hiring_manager_approval,
-        wrap: true,
-      },
-      {
-        name: "Feedback",
-        selector: (row) => row.feedback,
+        name: "overall_status",
+        selector: (row) => row.overall_status,
         wrap: true,
       },
     ];
@@ -181,6 +198,60 @@ const HiringManagerApproval = () => {
           }}
         />
       </div>
+              <Modal
+          show={showViewModal}
+          onHide={() => setShowViewModal(false)}
+          size="xl"
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Approver Details</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <DataTable
+              columns={[
+                { name: "Role", selector: (row) => row.role, sortable: true },
+                { name: "Job Title", selector: (row) => row.job_title },
+                { name: "Name", selector: (row) => row.name },
+                // { name: "Last Name", selector: (row) => row.last_name },
+                { name: "Email", selector: (row) => row.email },
+                { name: "Contact", selector: (row) => row.contact_number },
+                { name: "status", selector: (row) => row.status },
+                { name: "Decision", selector: (row) => row.decision },
+                { name: "Comment", selector: (row) => row.comment },
+
+                 
+
+    //             {
+    //   name: "Action",
+    //   cell: (row) => (
+    //                   <Button
+    //                     variant="outline-danger"
+    //                     size="sm"
+    //                     onClick={() => handleDelete(row)}
+    //                   >
+    //                     <BsTrash className="me-1" />
+    //                   </Button>
+    //   ),
+    //   ignoreRowClick: true,
+    //   allowOverflow: true,
+    //   button: true,
+    // },
+  ]}
+
+              data={viewApproversData}
+              // pagination
+              // highlightOnHover
+              // striped
+              responsive
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowViewModal(false)}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
     </div>
     </>
   );
