@@ -56,7 +56,7 @@ const CandidateScreen = () => {
     };
 
     fetchData();
-  }, [candidateDeleted]);
+  }, [candidateDeleted,showModal]);
 
   //functions
 

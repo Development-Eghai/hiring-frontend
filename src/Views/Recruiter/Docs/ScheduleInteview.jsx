@@ -37,7 +37,7 @@ const ScheduleInterview = () => {
   //Get api calll
   useEffect(() => {
     fetchScheduleData();
-  }, []);
+  }, [showFormModal,showConfirm,]);
 
   const [data, setData] = useState([]);
 

@@ -7,7 +7,7 @@ import RecruiterHeader from "../Recruiter_utils/Navbar";
 export const RecruiterDashboard = () => {
   const [tableData, setTableData] = useState([]);
   const [candidateData, setCandidateData] = useState([]);
-
+  const [showModal, setShowModal] = useState(false);
   console.log(candidateData,"hv")
   console.log(tableData, "uyi");
   const RecuiterTableHeadings = [
@@ -109,9 +109,9 @@ export const RecruiterDashboard = () => {
     };
 
     fetchData();
-  }, []);
+  }, [showModal]);
 
-  const [showModal, setShowModal] = useState(false);
+ 
   const [selectedRow, setSelectedRow] = useState(null);
   const [modalSourceinput, setModalSourceinput] = useState("");
   const [cvFiles, setCvFiles] = useState([]);

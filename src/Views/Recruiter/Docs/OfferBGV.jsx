@@ -101,7 +101,7 @@ const OfferBGV = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [showgenerateModal]);
 
   //functions
 

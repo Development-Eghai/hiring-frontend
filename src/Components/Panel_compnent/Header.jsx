@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 const Header = ({ offcanvasOn, offcanvasOnButton }) => {
   const { commonState } = useCommonState();
+
   const dispatch = useDispatch();
   const userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};
   const { Name,username, role } = userInfo;
@@ -41,7 +42,7 @@ const Header = ({ offcanvasOn, offcanvasOnButton }) => {
     return (
       <>
         <div className="col-12 d-flex flex-wrap align-items-center justify-content-between ">
-          <div className="col">{formattedPathName}</div>
+          <div className="col">{commonState?.app_data?.user_role && commonState?.app_data?.user_role}{" "}{formattedPathName}</div>
 
           <div className="col">{commonState?.currentMenuName}</div>
 

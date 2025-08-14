@@ -49,7 +49,7 @@ const RecruiterNegotiation = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [showModal]);
 
   const handleEdit = (row) => {
     setSelectedRow({

@@ -115,7 +115,7 @@ function App() {
                 element={<RecruiterScreening />}
               />
               <Route
-                path="recruiter_screening_dashboard"
+                path="screening_dashboard"
                 element={<RecruiterScreeningDashboard />}
               />
               <Route

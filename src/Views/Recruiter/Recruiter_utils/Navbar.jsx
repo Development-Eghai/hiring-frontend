@@ -26,7 +26,7 @@ const RecruiterHeader = () => {
                 <ButtonComponent
                  buttonName="2. Screening" 
                  className="btn-primary" 
-                  clickFunction={() => navigate("/recruiter/recruiter_screening_dashboard")}
+                  clickFunction={() => navigate("/recruiter/screening_dashboard")}
                  />
                 <ButtonComponent
                   buttonName="3. Hiring Manager Approval"
