@@ -119,7 +119,7 @@ const InterviewForm = () => {
         );
 
         if (designRes.data?.success) {
-          const { position_role, plan_id, screening_type, requisition_id } =
+          const { position_role, plan_id, requisition_id } =
             designRes.data.data;
           setPositionRoles(position_role || []);
           setPlanIdsList(plan_id || []);
@@ -227,7 +227,7 @@ const InterviewForm = () => {
       plan_id: planIds,
       req_id: reqId,
       tech_stacks: techStacks,
-      screening_type: screeningType,
+      // screening_type: screeningType,
       no_of_interview_round: noOfRounds,
       final_rating: rating,
       status: status,
@@ -298,7 +298,6 @@ const InterviewForm = () => {
     if (
       reqId &&
       techStacks &&
-      screeningType &&
       noOfRounds &&
       parameters.length > 0 &&
       parameters.every(
