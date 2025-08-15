@@ -401,7 +401,7 @@ const RecruiterNegotiation = () => {
             <h4 className="mb-0">Recruiter Negotiation</h4>
           </div>
           <div className="col-md-8 text-end d-flex justify-content-end gap-3">
-            <Button
+            {/* <Button
               variant="primary"
               onClick={() => {
                 if (selectedRadioRow) {
@@ -419,7 +419,7 @@ const RecruiterNegotiation = () => {
               }}
             >
               Initiate BGV
-            </Button>
+            </Button> */}
 
             <Button variant="success" onClick={() => setShowModal(true)}>
               Schedule Meeting

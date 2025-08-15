@@ -5,6 +5,7 @@ import axiosInstance from "Services/axiosInstance";
 import { Button, Form, Modal, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import ScheduleMeetModal from "./ScheduleMeetModal";
 
 const ScoreCard = () => {
   const [data, setData] = useState([]);
@@ -12,6 +13,7 @@ const ScoreCard = () => {
   const [interviewDetailsMap, setInterviewDetailsMap] = useState({});
   const [selectedCandidateName, setSelectedCandidateName] = useState("");
   const [selectedRadioRow, setSelectedRadioRow] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   // Modal state
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -205,7 +207,14 @@ const ScoreCard = () => {
               <h5 className="fw-bold mb-0">Screening Round</h5>
             </div>
             <div className="col-2">
-              <Button
+                          <Button variant="success" onClick={() => setShowModal(true)}>
+                            Schedule Meeting
+                          </Button>
+                          <ScheduleMeetModal
+              show={showModal}
+              handleClose={() => setShowModal(false)}
+            />
+              {/* <Button
                 variant="primary"
                 onClick={() => {
                   if (selectedRadioRow) {
@@ -223,7 +232,7 @@ const ScoreCard = () => {
                 }}
               >
                 Initiate BGV
-              </Button>
+              </Button> */}
             </div>
           </div>
 

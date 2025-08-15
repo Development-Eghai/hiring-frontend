@@ -246,7 +246,7 @@ export const InterviewerStages = () => {
           </div> */}
           <div className="col-4"></div>
           <div className="col-2 text-end">
-            <Button
+            {/* <Button
               variant="primary"
               onClick={() => {
                 if (selectedRadioRow) {
@@ -264,7 +264,7 @@ export const InterviewerStages = () => {
               }}
             >
               Initiate BGV
-            </Button>
+            </Button> */}
           </div>
 
           <div className="col-3 d-flex justify-content-end">

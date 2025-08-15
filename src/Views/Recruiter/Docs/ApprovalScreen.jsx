@@ -162,7 +162,7 @@ const ApprovalScreen = () => {
             <div className="col-md-2">
               <h5 className="fw-bold mb-0">Approval</h5>
             </div>
-            <div className="col-9 text-end">
+            {/* <div className="col-9 text-end">
               <Button
                 variant="primary"
                 onClick={() => {
@@ -182,7 +182,7 @@ const ApprovalScreen = () => {
               >
                 Initiate BGV
               </Button>
-            </div>
+            </div> */}
           </div>
 
           <DataTable
