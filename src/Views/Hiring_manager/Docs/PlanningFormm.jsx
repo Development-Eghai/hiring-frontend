@@ -35,6 +35,8 @@ const PlanninggForm = (handleNext) => {
   const { commonState } = useCommonState();
   const [openSection, setOpenSection] = useState(null);
   const [completedSections, setCompletedSections] = useState([]);
+  const [hasCitizenRequirement, setHasCitizenRequirement] = useState("");
+  const [citizenCountries, setCitizenCountries] = useState([""]);
 
   const [jobdesc, setJobDesc] = useState("");
   console.log(jobdesc,"dfsdsa")
@@ -185,12 +187,38 @@ const PlanninggForm = (handleNext) => {
    const socialMediaLinkValue = watch("social_media_link");
    const hasHealthRecruirment = watch("health_requirmnebt")
    const hasCitizenRequirment = watch("citizen_requirement")
+   const [rows, setRows] = useState([]);
 
      const { fields, append, remove } = useFieldArray({
     control,
     name: "social_media",
   });
 
+
+const handleAddCitizenCountry = () => {
+  setCitizenCountries([...citizenCountries, ""]);
+};
+
+
+const handleRemoveCitizenCountry = (index) => {
+  const updated = citizenCountries.filter((_, i) => i !== index);
+  setCitizenCountries(updated);
+};
+  const handleAddCommunicationRow = () => {
+    setRows([...rows, { language: null, proficiency: null }]);
+  };
+
+  const handleCommunicationChange = (index, field, value) => {
+    const updatedRows = [...rows];
+    updatedRows[index][field] = value;
+    setRows(updatedRows);
+  };
+  const selectedCommunicationLanguages = rows.map((row) => row.language?.value);
+
+  const handleRemoveCommunicationRow = (index) => {
+    const updatedRows = rows.filter((_, i) => i !== index);
+    setRows(updatedRows);
+  };
   const onError = (errors) => {
     if (Object.keys(errors).length > 0) {
       toast.error("Please fill all required fields");
@@ -441,22 +469,8 @@ useEffect(() => {
                 </div>
               )}
             </div>
-
-                        <div className="mb-4">
-                          <label className="form-label fw-semibold">
-                           Job Description<span className="text-danger">*</span>:
-                          </label>
-                          <ReactQuill
-                            value={jobdesc}
-                            onChange={setJobDesc}
-                            theme="snow"
-                            placeholder="Enter your text here"
-                            className="quill-editor"
-                          />
-                        </div>
-
-            {/* Tech Stacks*/}
-            <div className="col-md-3">
+                        {/* Tech Stacks*/}
+                        <div className="col-md-3">
               <label className="form-label">Tech Stack</label>
               <Controller
                 className={`form-select ${
@@ -480,6 +494,20 @@ useEffect(() => {
                 </div>
               )}
             </div>
+
+                        <div className="mb-4">
+                          <label className="form-label fw-semibold">
+                           Job Description<span className="text-danger">*</span>:
+                          </label>
+                          <ReactQuill
+                            value={jobdesc}
+                            onChange={setJobDesc}
+                            theme="snow"
+                            placeholder="Enter your text here"
+                            className="quill-editor"
+                          />
+                        </div>
+
           </div>
 
           <div className="row d-flex gap-3">
@@ -616,6 +644,26 @@ useEffect(() => {
               )}
             </div>
 
+                        {/* currency type*/}
+                        <div className="col-md-3">
+              <label className="form-label">Currency Type</label>
+              <select
+                {...register("currency_type")}
+                className={`form-select ${
+                  errors.currency_type ? "is-invalid" : ""
+                }`}
+              >
+                <option value="">Select currency_type</option>
+                <option value={"INR"}>INR</option>
+                <option value={"USA"}>USA</option>
+              </select>
+              {errors.currency_type && (
+                <div className="invalid-feedback">
+                  {errors.currency_type.message}
+                </div>
+              )}  
+            </div>
+
             {/* Location */}
             <div className="col-md-3">
               <label className="form-label">Location</label>
@@ -639,35 +687,10 @@ useEffect(() => {
                 </div>
               )}
             </div>
-
-            {/* Working Model  */}
-            <div className="col-md-3">
-              <label className="form-label">Working Model </label>
-              <Controller
-                className={`form-select ${
-                  errors.working_modal ? "is-invalid" : ""
-                }`}
-                name="working_modal"
-                control={control}
-                render={({ field }) => (
-                  <CreatableSelect
-                    {...field}
-                    isMulti
-                    options={dropdownOptions?.working_model}
-                    classNamePrefix="react-select"
-                    placeholder="Select working modal"
-                  />
-                )}
-              />
-              {errors.working_modal && (
-                <div className="invalid-feedback">
-                  {errors.working_modal.message}
-                </div>
-              )}
-            </div>
           </div>
 
           <div className="row d-flex gap-3">
+            
             {/* Job Type */}
             <div className="col-md-3">
               <label className="form-label">Job Type </label>
@@ -740,7 +763,9 @@ useEffect(() => {
             </div>
           </div>
 
-          {hasRelocation === "Yes" && (
+         <div className="row d-flex gap-3">
+         {hasRelocation === "Yes" && (
+            <>
             <div className="col-md-3">
               <label className="form-label">
                 Relocation Amount <span className="text-danger">*</span>
@@ -760,12 +785,34 @@ useEffect(() => {
                 </div>
               )}
             </div>
+                        {/*Relocation currency type*/}
+                        <div className="col-md-3">
+              <label className="form-label">Relocation Currency Type</label>
+              <select
+                {...register("relocation_currency_type")}
+                className={`form-select ${
+                  errors.relocation_currency_type ? "is-invalid" : ""
+                }`}
+              >
+                <option value="">Select currency_type</option>
+                <option value={"INR"}>INR</option>
+                <option value={"USA"}>USA</option>
+              </select>
+              {errors.relocation_currency_type && (
+                <div className="invalid-feedback">
+                  {errors.relocation_currency_type.message}
+                </div>
+              )}  
+            </div>
+            </>
+            
           )}
+         </div>
 
           <div className="row d-flex gap-3">
             {/* has Domain*/}
             <div className="col-md-3">
-              <label className="form-label">Has Domain</label>
+              <label className="form-label">Domain</label>
               <select
                 {...register("has_domain")}
                 className={`form-select ${
@@ -784,6 +831,7 @@ useEffect(() => {
               )}
             </div>
             {hasDomain === "Yes" && (
+              <>
               <div className="col-md-3">
                 <label className="form-label">
                   Domain Name <span className="text-danger">*</span>
@@ -803,6 +851,26 @@ useEffect(() => {
                   </div>
                 )}
               </div>
+              <div className="col-md-3">
+                <label className="form-label">
+                 Sub Domain Name <span className="text-danger">*</span>
+                </label>
+                <input
+                  {...register("sub_domain_name", {
+                    required: "Sub Domain name is required",
+                  })}
+                  className={`form-control ${
+                    errors.domain_name ? "is-invalid" : ""
+                  }`}
+                  placeholder="Enter Sub domain name"
+                />
+                {errors.sub_domain_name && (
+                  <div className="invalid-feedback">
+                    {errors.sub_domain_name.message}
+                  </div>
+                )}
+              </div>
+              </>
             )}
 
             {/* shift timing */}
@@ -827,6 +895,31 @@ useEffect(() => {
               {errors.shift_timings && (
                 <div className="invalid-feedback">
                   {errors.shift_timings.message}
+                </div>
+              )}
+            </div>
+                        {/* Working Model  */}
+                        <div className="col-md-3">
+              <label className="form-label">Working Model </label>
+              <Controller
+                className={`form-select ${
+                  errors.working_modal ? "is-invalid" : ""
+                }`}
+                name="working_modal"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    isMulti
+                    options={dropdownOptions?.working_model}
+                    classNamePrefix="react-select"
+                    placeholder="Select working modal"
+                  />
+                )}
+              />
+              {errors.working_modal && (
+                <div className="invalid-feedback">
+                  {errors.working_modal.message}
                 </div>
               )}
             </div>
@@ -888,7 +981,7 @@ useEffect(() => {
                 className={`form-control ${
                   errors.travel_opportunities ? "is-invalid" : ""
                 }`}
-                placeholder="Enter No of openings"
+                placeholder="Enter travel opportunities"
                 onInput={(e) => {
                   let value = e.target.value;
                   if (value < 0) e.target.value = 0;
@@ -901,11 +994,8 @@ useEffect(() => {
                 </div>
               )}
             </div>
-          </div>
-
-          <div className="row d-flex gap-3">
-            {/* Visa Required */}
-            <div className="col-md-3">
+                        {/* Visa Required */}
+                        <div className="col-md-3">
               <label className="form-label">Visa Required</label>
               <select
                 {...register("visa_required")}
@@ -924,6 +1014,10 @@ useEffect(() => {
                 </div>
               )}
             </div>
+          </div>
+
+          <div className="row d-flex gap-3">
+
 
             {hasVisa === "Yes" && (
               <>
@@ -1021,7 +1115,7 @@ useEffect(() => {
 
           <div className="row d-flex gap-3">
             {/* Communication Language  */}
-            <div className="col-md-3 mb-3">
+            {/* <div className="col-md-3 mb-3">
               <label className="form-label">Communication Language</label>
               <Controller
                 name="communication_language"
@@ -1039,10 +1133,10 @@ useEffect(() => {
                   />
                 )}
               />
-            </div>
+            </div> */}
 
             {/* Proficiency Fields Based on Language Selection */}
-            {selectedLanguages.map((lang) => (
+            {/* {selectedLanguages.map((lang) => (
               <div className="col-md-3 mb-3" key={lang.value}>
                 <label className="form-label">{`${lang.label} Communication Proficiency`}</label>
                 <Select
@@ -1057,45 +1151,152 @@ useEffect(() => {
                   }
                 />
               </div>
-            ))}
+            ))} */}
+
+{/* <div className="card p-3"> */}
+  <h6 className=" mt-3">Communication Languages</h6>
+
+  {rows.map((row, index) => {
+    // get all selected languages
+    const selectedLanguages = rows
+      .map((r) => r.language?.value)
+      .filter(Boolean); 
+
+    return (
+      <div className="row align-items-center gap-3 mb-2" key={index}>
+        {/* Language Dropdown */}
+        <div className="col-md-3">
+          <Select
+            styles={{
+              control: (base) => ({
+                ...base,
+                minHeight: "32px",
+                height: "32px",
+                fontSize: "0.85rem",
+              }),
+            }}
+            options={dropdownOptions.communication_language.filter(
+              (opt) =>
+                // allow if not selected OR it's already the current row's value
+                !selectedLanguages.includes(opt.value) ||
+                row.language?.value === opt.value
+            )}
+            value={row.language}
+            onChange={(selected) =>
+              handleCommunicationChange(index, "language", selected)
+            }
+            placeholder="Language"
+          />
+        </div>
+
+        {/* Proficiency Dropdown */}
+        <div className="col-md-3">
+          <Select
+            styles={{
+              control: (base) => ({
+                ...base,
+                minHeight: "32px",
+                height: "32px",
+                fontSize: "0.85rem",
+              }),
+            }}
+            options={proficiencyOptions}
+            value={row.proficiency}
+            onChange={(selected) =>
+              handleCommunicationChange(index, "proficiency", selected)
+            }
+            placeholder="Proficiency"
+          />
+        </div>
+
+        {/* Remove Button */}
+        <div className="col-md-2">
+          <button
+            type="button"
+            className="btn btn-danger btn-sm"
+            onClick={() => handleRemoveCommunicationRow(index)}
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+    );
+  })}
+
+  {/* Add Button */}
+  <div className="mt-2">
+    <button
+      type="button"
+      className="btn btn-primary btn-sm"
+      onClick={handleAddCommunicationRow}
+    >
+      + Add Language
+    </button>
+  </div>
+{/* </div>   */}
+
 
             {/* Citizen Requirement*/}
             <div className="col-md-3">
-              <label className="form-label">Citizen Requirement</label>
-              <select
-                {...register("citizen_requirement")}
-                className={`form-select ${
-                  errors.citizen_requirement ? "is-invalid" : ""
-                }`}
-              >
-                <option value="">Select requirement</option>
-                <option value={"Yes"}>Yes</option>
-                <option value={"No"}>No</option>
-                <option value={"Decide Later"}>Decide Later</option>
-              </select>
-              {errors.citizen_requirement && (
-                <div className="invalid-feedback">
-                  {errors.citizen_requirement.message}
-                </div>
-              )}
-            </div>
+  <label className="form-label">Citizen Requirement</label>
+  <select
+    {...register("citizen_requirement")}
+    className={`form-select ${
+      errors.citizen_requirement ? "is-invalid" : ""
+    }`}
+    onChange={(e) => setHasCitizenRequirement(e.target.value)}
+  >
+    <option value="">Select requirement</option>
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+    <option value="Decide Later">Decide Later</option>
+  </select>
+  {errors.citizen_requirement && (
+    <div className="invalid-feedback">
+      {errors.citizen_requirement.message}
+    </div>
+  )}
+</div>
 
-            {hasCitizenRequirment === "Yes" && (
-              <>
-                {/* citizen describe */}
-                <div className="col-md-3">
-                  <label className="form-label">Describe Citizen</label>
-                  <input
-                    {...register("citizen_describe")}
-                    className="form-control"
-                    placeholder="Describe Citizen"
-                  />
-                </div>
-              </>
-            )}
+{/* Dynamic Citizen Country fields */}
+{hasCitizenRequirement === "Yes" && (
+  <div className="col-12 mt-2">
+    <label className="form-label">Citizen Country Name</label>
+    {citizenCountries.map((country, index) => (
+      <div className="row mb-2 align-items-center gap-3" key={index}>
+        <div className="col-md-3">
+          <input
+            {...register(`citizen_countries.${index}`)}
+            className="form-control"
+            placeholder="Enter Citizen Country name"
+            defaultValue={country}
+          />
+        </div>
+        <div className="col-md-2">
+          <button
+            type="button"
+            className="btn btn-danger btn-sm"
+            onClick={() => handleRemoveCitizenCountry(index)}
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+    ))}
+
+    <button
+      type="button"
+      className="btn btn-primary btn-sm"
+      onClick={handleAddCitizenCountry}
+    >
+      + Add Country
+    </button>
+  </div>
+)}
+
 
             {/*Job Health Requirement */}
-            <div className="col-md-3">
+            {/* <div className="col-md-3">
               <label className="form-label">Job Health Requirement </label>
               <select
                 {...register("health_requirmnebt")}
@@ -1113,12 +1314,11 @@ useEffect(() => {
                   {errors.health_requirmnebt.message}
                 </div>
               )}
-            </div>
+            </div> */}
 
-            
+{/*             
             {hasHealthRecruirment === "Yes" && (
               <>
-                {/* health reason */}
                 <div className="col-md-3">
                   <label className="form-label">Describe Health Reason</label>
                   <input
@@ -1128,7 +1328,7 @@ useEffect(() => {
                   />
                 </div>
               </>
-            )}
+            )} */}
 
             {/* Career Gap */}
             <div className="col-md-3">
@@ -1188,7 +1388,7 @@ useEffect(() => {
                       placeholder="e.g., LinkedIn"
                     />
                   </div>
-                  <div className="col-md-5">
+                  {/* <div className="col-md-5">
                     <label className="form-label">Media Link</label>
                     <input
                       {...register(`social_media.${index}.media_link`, {
@@ -1197,7 +1397,7 @@ useEffect(() => {
                       className="form-control"
                       placeholder="e.g., https://linkedin.com/in/..."
                     />
-                  </div>
+                  </div> */}
                   <div className="col-md-2 d-flex align-items-end">
                     {index > 0 && (
                       <button
