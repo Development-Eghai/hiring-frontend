@@ -677,18 +677,19 @@ const jobTitle = [
 ];
 
 
-  const locations = [
-    "New York",
-    "San Francisco",
-    "London",
-    "Berlin",
-    "Tokyo",
-    "Toronto",
-    "Bangalore",
-    "Sydney",
-    "Dubai",
-    "Singapore",
-  ];
+const locations = [
+  { label: "New York", value: "New York" },
+  { label: "San Francisco", value: "San Francisco" },
+  { label: "London", value: "London" },
+  { label: "Berlin", value: "Berlin" },
+  { label: "Tokyo", value: "Tokyo" },
+  { label: "Toronto", value: "Toronto" },
+  { label: "Bangalore", value: "Bangalore" },
+  { label: "Sydney", value: "Sydney" },
+  { label: "Dubai", value: "Dubai" },
+  { label: "Singapore", value: "Singapore" }
+]
+
 
   const geoZones = [
     "NAM",
@@ -979,7 +980,7 @@ const jobTitle = [
             </div>
 
             {/* Location */}
-            <div className="col-md-3">
+            {/* <div className="col-md-3">
               <label className="form-label">
                 Location<span className="text-danger">*</span>
               </label>
@@ -992,6 +993,28 @@ const jobTitle = [
                   <option value={loc}>{loc}</option>
                 ))}
               </select>
+              {errors.location && (
+                <div className="invalid-feedback">
+                  {errors.location.message}
+                </div>
+              )}
+            </div> */}
+            <div className="col-md-3">
+              <label className="form-label">Location</label>
+              <Controller
+                className={`form-select ${errors.location ? "is-invalid" : ""}`}
+                name="location"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    isMulti
+                    options={locations}
+                    classNamePrefix="react-select"
+                    placeholder="Select location"
+                  />
+                )}
+              />
               {errors.location && (
                 <div className="invalid-feedback">
                   {errors.location.message}
