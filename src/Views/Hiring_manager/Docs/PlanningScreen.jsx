@@ -280,10 +280,10 @@ const columns = [
   <Modal.Header closeButton>
     <Modal.Title>Job Description</Modal.Title>
   </Modal.Header>
-  <Modal.Body>
-    <div style={{ whiteSpace: "pre-wrap" }}>
-      {jdContent || "No JD available"}
-    </div>
+  <Modal.Body className="d-flex flex-wrap">
+  <div style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+  {jdContent || "No JD available"}
+</div>
   </Modal.Body>
   <Modal.Footer>
     <Button variant="secondary" onClick={() => setJdViewModal(false)}>

@@ -39,7 +39,7 @@ const PlanninggForm = (handleNext) => {
   const [citizenCountries, setCitizenCountries] = useState([""]);
 
   const [jobdesc, setJobDesc] = useState("");
-  console.log(jobdesc,"dfsdsa")
+  console.log(citizenCountries,"dfsdsa")
 
   const [inputOptions, setInputOptions] = useState([]);
   const [dropdownOptions, setDropdownOptions] = useState([]);
@@ -83,12 +83,14 @@ const PlanninggForm = (handleNext) => {
   
   const profMap = {};
   response?.data?.data?.communication_language.forEach((item) => {
-  profMap[item.language] = {
-    label: item.proficiency,
-    value: item.proficiency,
-  };
+    profMap[item.language] = {
+      label: item.proficiency,
+      value: item.proficiency,
+    };
   });
-  setLanguageProficiency(profMap);
+  setCitizenCountries(data?.citizen_countries)
+  // setLanguageProficiency(profMap);
+  setRows(data?.communication_language)
   setJobDesc(data?.jd_details)
           reset({
             job_role: data?.job_role,
@@ -99,10 +101,13 @@ const PlanninggForm = (handleNext) => {
             target_companies: data?.target_companies,
             compensation_range: data?.compensation,
             location: data?.location,
+            currency_type:data?.currency_type,
             working_modal: data?.working_modal,
             job_type: data?.job_type,
+            sub_domain_name:data?.sub_domain_name,
             role_type: data?.role_type,
             relocation: data?.relocation,
+            relocation_currency_type:data?.relocation_currency_type,
             relocation_amount: data?.relocation_amount,
             has_domain: data?.has_domain,
             domain_name: data?.domain_name,
@@ -189,6 +194,8 @@ const PlanninggForm = (handleNext) => {
    const hasCitizenRequirment = watch("citizen_requirement")
    const [rows, setRows] = useState([]);
 
+   console.log(rows,"sdsdsadsa")
+
      const { fields, append, remove } = useFieldArray({
     control,
     name: "social_media",
@@ -226,16 +233,18 @@ const handleRemoveCitizenCountry = (index) => {
   };
 
   const onSubmit = async (data) => {
-     const finalData = selectedLanguages.map((lang) => ({
-      language: lang.value,
-      proficiency: languageProficiency[lang.value]?.value || "",
-    }));
+    //  const finalData = selectedLanguages.map((lang) => ({
+    //   language: lang.value,
+    //   proficiency: languageProficiency[lang.value]?.value || "",
+    // }));
+    console.log(data,"dsasdasas")
     const formdata = {
         job_role:data?.job_role,
         no_of_openings:data?.no_of_openings,
         tech_stacks:data?.tech_stack,
         experience_range:data?.experience_range,
         designation:data?.designation,
+        currency_type:data?.currency_type,
         target_companies:data?.target_companies,
         compensation_range:data?.compensation,
         location:data?.location,
@@ -244,6 +253,7 @@ const handleRemoveCitizenCountry = (index) => {
         role_type:data?.role_type,
         relocation:data?.relocation,
         relocation_amount:data?.relocation_amount,
+        relocation_currency_type:data?.relocation_currency_type,
         has_domain:data?.has_domain,
         domain_name:data?.domain_name,
         shift_timings:data?.shift_timings,
@@ -254,14 +264,15 @@ const handleRemoveCitizenCountry = (index) => {
         visa_type:data?.visa_type,
         background_verfication:data?.background_verfication,
         bg_verification_type:data?.bg_verification_type,
-        communication_language:finalData,
+        communication_language:rows,
         citizen_requirement:data?.citizen_requirement,
-        job_health_requirement:data?.health_requirmnebt,
+        sub_domain_name:data?.sub_domain_name,
+        // job_health_requirement:data?.health_requirmnebt,
       career_gap:data?.career_gap,
       social_media_link:data?.social_media_link,
       social_media_data:data?.social_media,
       jd_details:jobdesc,
-      citizen_describe:data?.citizen_describe,
+      citizen_countries:data?.citizen_countries,
       health_describe:data?.health_describe,
     };
     if(!edit_id){
@@ -1269,7 +1280,7 @@ useEffect(() => {
             {...register(`citizen_countries.${index}`)}
             className="form-control"
             placeholder="Enter Citizen Country name"
-            defaultValue={country}
+            defaultValue={country.value}
           />
         </div>
         <div className="col-md-2">
