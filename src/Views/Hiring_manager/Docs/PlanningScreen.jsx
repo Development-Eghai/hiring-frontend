@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, Form, InputGroup, Button } from "react-bootstrap";
+import { Card, Form, InputGroup, Button, Modal } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import Icons from "Utils/Icons";
 import FilterComponentPlanning from "./FilterComponentplanning";
@@ -118,6 +118,8 @@ export const PlanningScreen = () => {
   const { planningScreenState } = useCommonState();
   const dispatch = useDispatch();
   const navigate = useCustomNavigate();
+  const [showJdViewModal, setJdViewModal] = useState(false);
+const [jdContent, setJdContent] = useState("");
 
   const handleFieldChange = (fields) => setSelectedFields(fields);
   const handleReset = () => setSelectedFields(defaultFields);
@@ -155,44 +157,61 @@ useEffect(() => {
 
 
 
-  const columns = [
-    ...selectedFields.map((field) => ({
-      name: field.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
-      selector: (row) => row[field] ?? "-",
-      sortable: true,
-    })),
-    {
-      name: "Actions",
-      cell: (row) => (
-        <div className="d-flex gap-2">
+const columns = [
+  ...selectedFields.map((field) => ({
+    name: field.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
+    // Instead of always returning raw value, check if it's JD
+    cell: (row) => {
+      if (field === "JD" && row[field]) {
+        return (
           <Button
-            variant="outline-primary"
+            variant="outline-success"
             size="sm"
-            onClick={() =>
-              navigate(
-                `/hiring_manager/planning/hiring_planning_form?edit_id=${row.id}`
-              )
-            }
+            onClick={() => {
+              setJdContent(row[field]);
+              setJdViewModal(true);
+            }}
           >
-            <BsPencilSquare className="me-1" />
-            
+            View JD
           </Button>
-
-          <Button
-            variant="outline-danger"
-            size="sm"
-            onClick={() => handleDelete(row.id)}
-          >
-            <BsTrash className="me-1" />
-            
-          </Button>
-        </div>
-      ),
-      ignoreRowClick: true,
-      allowOverflow: true,
-      button: true,
+        );
+      }
+      return row[field] ?? "-";
     },
-  ];
+    sortable: true,
+  })),
+  {
+    name: "Actions",
+    cell: (row) => (
+      <div className="d-flex gap-2">
+        <Button
+          variant="outline-primary"
+          size="sm"
+          onClick={() =>
+            navigate(
+              `/hiring_manager/planning/hiring_planning_form?edit_id=${row.id}`
+            )
+          }
+        >
+          <BsPencilSquare className="me-1" />
+        </Button>
+
+        <Button
+          variant="outline-danger"
+          size="sm"
+          onClick={() => handleDelete(row.id)}
+        >
+          <BsTrash className="me-1" />
+        </Button>
+      </div>
+    ),
+    ignoreRowClick: true,
+    allowOverflow: true,
+    button: true,
+  },
+];
+
+
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this record?")) return;
@@ -256,6 +275,22 @@ useEffect(() => {
           className="custom-datatable"
         />
       </Card>
+
+      <Modal show={showJdViewModal} onHide={() => setJdViewModal(false)} size="lg" centered>
+  <Modal.Header closeButton>
+    <Modal.Title>Job Description</Modal.Title>
+  </Modal.Header>
+  <Modal.Body className="d-flex flex-wrap">
+  <div style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+  {jdContent || "No JD available"}
+</div>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={() => setJdViewModal(false)}>
+      Close
+    </Button>
+  </Modal.Footer>
+</Modal>
     </div>
   );
 };
