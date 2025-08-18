@@ -42,6 +42,7 @@ const RequisitionForm = (handleNext) => {
   const [planid, setPlanId] = useState([]);
   const [tempDetails, setTempDetails] = useState();
   const [reqtempid, setreqtempid] = useState("");
+  const [dropdownOptions, setDropdownOptions] = useState([]);
 
   const routelocation = useLocation();
 
@@ -649,7 +650,7 @@ const RequisitionForm = (handleNext) => {
 
   const Department = ["Finance", "SWE", "Products"];
 
-const jobTitle = [
+  const jobTitle = [
   "Software Engineer I",
   "Software Engineer II",
   "Software Engineer III",
@@ -764,6 +765,39 @@ const locations = [
     { value: "jenkins", label: "Jenkins" },
     { value: "kubernetes", label: "Kubernetes" },
   ];
+
+    //   useeffects
+    useEffect(() => {
+      const fetchConfigOptions = async () => {
+        try {
+          const response = await axiosInstance.get(
+            "https://api.pixeladvant.com/admin_configuration/mapped_admin_configurations/"
+          );
+          const configData = response.data?.data || {};
+  
+          const mappedOptions = {
+            job_position: configData["Position Role"] || [],
+            designation: configData["Designation"] || [],
+            tech_stacks: configData["Tech Stack"] || [],
+            target_companies: configData["Target Companies"] || [],
+            working_model: configData["Working Model"] || [],
+            role_type: configData["Role Type"] || [],
+            job_type: configData["Job Type"] || [],
+            shift_timings: configData["Shift Timings"] || [],
+            education_qualification: configData["Education Qualification"] || [],
+            communication_language: configData["Communication Language"] || [],
+            location: configData["Location"] || [],
+          };
+  
+          setDropdownOptions((prev) => ({ ...prev, ...mappedOptions }));
+        } catch (error) {
+          console.error("Failed to fetch config data", error);
+          toast.error("Failed to load dropdown options.");
+        }
+      };
+  
+      fetchConfigOptions();
+    }, []);
 
   return (
     <div style={{ maxHeight: "500px", overflowY: "auto" }}>
@@ -1009,7 +1043,7 @@ const locations = [
                   <CreatableSelect
                     {...field}
                     isMulti
-                    options={locations}
+                    options={dropdownOptions?.location}
                     classNamePrefix="react-select"
                     placeholder="Select location"
                   />
