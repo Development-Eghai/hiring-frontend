@@ -1186,7 +1186,7 @@ useEffect(() => {
                 fontSize: "0.85rem",
               }),
             }}
-            options={dropdownOptions.communication_language.filter(
+            options={(dropdownOptions?.communication_language ?? []).filter(
               (opt) =>
                 // allow if not selected OR it's already the current row's value
                 !selectedLanguages.includes(opt.value) ||
