@@ -538,7 +538,7 @@ const SetApproveScreen = () => {
                     onChange={(e) => handleApproverChange(index, e)}
                   />
                 </td>
-                <td>
+                {/* <td>
                   <Form.Select
                     name="set_as_approver"
                     value={approver.set_as_approver}
@@ -547,7 +547,7 @@ const SetApproveScreen = () => {
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
                   </Form.Select>
-                </td>
+                </td> */}
                 <td className="text-center">
                   {formState.approvers.length > 1 && (
                     <Button
