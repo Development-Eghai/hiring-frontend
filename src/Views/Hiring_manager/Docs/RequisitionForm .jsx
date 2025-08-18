@@ -326,7 +326,7 @@ const RequisitionForm = (handleNext) => {
           position_information,
           billing_details,
           posting_details,
-          asset_deatils,
+          asset_details,
           skills_required,
         } = templeteDetails;
 
@@ -415,7 +415,7 @@ const RequisitionForm = (handleNext) => {
           ...requisition_information,
           ...position_information,
           ...billing_details,
-          ...asset_deatils,
+          ...asset_details,
           // team_name: posting_details?.teams[0]?.team_name,
           // team_type_2: posting_details?.teams[1]?.team_type,
           // team_type_3: posting_details?.teams[2]?.team_type,
@@ -605,7 +605,7 @@ const RequisitionForm = (handleNext) => {
         //   { employee_id: interview_teammate_2 },
         // ],
       },
-      asset_deatils: {
+      asset_details: {
         laptop_type,
         laptop_needed,
         comments,
