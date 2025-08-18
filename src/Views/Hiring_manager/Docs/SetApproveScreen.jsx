@@ -477,7 +477,7 @@ const SetApproveScreen = () => {
               <th>Last Name</th>
               <th>Email</th>
               <th>Contact Number</th>
-              <th>Set as Approver</th>
+              {/* <th>Set as Approver</th> */}
               <th style={{ width: "150px" }}>Actions</th>
             </tr>
           </thead>
