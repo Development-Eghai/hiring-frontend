@@ -5,6 +5,8 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import axiosInstance from "Services/axiosInstance";
+import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
 
 const InterviewForm = () => {
   const [status, setStatus] = useState("");
@@ -41,8 +43,8 @@ const InterviewForm = () => {
     min_questions: "",
     screen_type: "",
     duration: "",
+    duration_metric: "", // Add duration_metric
     Weightage: "",
-    mode: "",
     feedback: "",
   };
 
@@ -87,7 +89,7 @@ const InterviewForm = () => {
   }, [interview_design_id]);
 
   useEffect(() => {
-    if (reqId ) {
+    if (reqId) {
       const getClientdetails = async () => {
         const getclientdetails = await axios.post(
           "https://api.pixeladvant.com/api/client-lookup/",
@@ -174,7 +176,7 @@ const InterviewForm = () => {
     if (!isNaN(value) && value > 0) {
       const repeatedParams = Array.from({ length: value }, () => ({
         ...defaultParam,
-        weightage: "", 
+        weightage: "",
       }));
       setParameters(repeatedParams);
     } else {
@@ -215,12 +217,42 @@ const InterviewForm = () => {
     setParameters(updated);
   };
 
-  const handleSubmit = async () => {
+  const handleFormSubmit = async (e) => {
+    if (e) e.preventDefault();
+    toast.dismiss();
+
+    if (!interview_design_id && !showConfirm) {
+      setShowConfirm(true);
+      return;
+    }
+
+    if (
+      !reqId ||
+      !techStacks ||
+      parameters.length === 0 ||
+      !parameters.every(
+        (param) =>
+          param.score_card_name &&
+          param.options &&
+          param.weightage &&
+          param.guideline &&
+          param.min_questions &&
+          param.screen_type &&
+          param.duration &&
+          param.duration_metric 
+      )
+    ) {
+      toast.error("Please fill in all required fields before submitting.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     const cleanedParameters = parameters.map((param) => ({
       ...param,
+      mode: "", 
       feedback: param.feedback || "",
+      duration_metric: param.duration_metric || "",
     }));
 
     const formData = {
@@ -228,7 +260,7 @@ const InterviewForm = () => {
       req_id: reqId,
       tech_stacks: techStacks,
       // screening_type: screeningType,
-      no_of_interview_round: noOfRounds,
+      no_of_interview_round: parameters.length,
       final_rating: rating,
       status: status,
       feedback: feedbackText,
@@ -256,6 +288,7 @@ const InterviewForm = () => {
       }
 
       if (res.status >= 200 && res.status < 300) {
+        toast.dismiss();
         toast.success(
           interview_design_id
             ? "Interview Design updated successfully!"
@@ -279,9 +312,11 @@ const InterviewForm = () => {
           setStatus("rejected");
         }
       } else {
+        toast.dismiss();
         toast.error("Server responded with an error.");
       }
     } catch (error) {
+      toast.dismiss();
       console.error("Error submitting form:", error);
       toast.error(
         error?.response?.data?.detail ||
@@ -294,7 +329,7 @@ const InterviewForm = () => {
 
   const handleShowConfirmation = (e) => {
     e.preventDefault();
-
+    toast.dismiss();
     if (
       reqId &&
       techStacks &&
@@ -308,8 +343,7 @@ const InterviewForm = () => {
           param.guideline &&
           param.min_questions &&
           param.screen_type &&
-          param.duration &&
-          param.mode
+          param.duration
       )
     ) {
       setShowConfirm(true);
@@ -360,20 +394,18 @@ const InterviewForm = () => {
 
       <div className="interview-container p-3 bg-light rounded">
         <ToastContainer position="top-right" />
-        <Form
-          onSubmit={handleShowConfirmation}
-          className="justify-content-center"
-        >
+        <Form onSubmit={handleFormSubmit} className="justify-content-center">
           <Row className="mb-4 d-flex gap-3">
             <Col md={3} className="mb-3">
               <Form.Group>
-                <Form.Label>
-                  Planning Id
-                </Form.Label>
+                <Form.Label>Planning Id</Form.Label>
                 <Form.Select
                   value={planIds}
-                  onChange={(e) => handlePlanIdChange(e.target.value)}
-                  disabled={!!interview_design_id} // disable if editing
+                  onChange={(e) => {
+                    toast.dismiss(); 
+                    handlePlanIdChange(e.target.value);
+                  }}
+                  disabled={!!interview_design_id}
                 >
                   <option value="">Select Planning Id</option>
                   {planIdsList.map((id, idx) => (
@@ -392,8 +424,11 @@ const InterviewForm = () => {
                 </Form.Label>
                 <Form.Select
                   value={reqId}
-                  onChange={(e) => setReqId(e.target.value)}
-                  disabled={!!interview_design_id} // disable if editing
+                  onChange={(e) => {
+                    toast.dismiss(); 
+                    setReqId(e.target.value);
+                  }}
+                  disabled={!!interview_design_id} 
                 >
                   <option value="">Select Req ID</option>
                   {reqIdsList.map((r, idx) => (
@@ -430,7 +465,10 @@ const InterviewForm = () => {
                   type="text"
                   placeholder="Enter tech stacks"
                   value={techStacks}
-                  onChange={(e) => setTechStacks(e.target.value)}
+                  onChange={(e) => {
+                    toast.dismiss(); 
+                    setTechStacks(e.target.value);
+                  }}
                 />
               </Form.Group>
             </Col>
@@ -452,7 +490,7 @@ const InterviewForm = () => {
             </Col> */}
           </Row>
 
-          <Row className="mb-4">
+          {/* <Row className="mb-4">
             <Col md={4} className="mb-3 d-flex gap-3">
               <Form.Group>
                 <Form.Label>No of Interview Rounds</Form.Label>
@@ -464,39 +502,72 @@ const InterviewForm = () => {
                 />
               </Form.Group>
             </Col>
-          </Row>
+          </Row> */}
+          <div>
+            <Row className="">
+              <Col className="d-flex justify-content-start">
+                <h5 className=" fw-bold px-2">Interview Parameters</h5>
+              </Col>
+              <Col className="d-flex justify-content-end gap-3">
+                <Button
+                  variant="primary"
+                  onClick={() =>
+                    setParameters([
+                      ...parameters,
+                      { ...defaultParam, weightage: "" },
+                    ])
+                  }
+                >
+                  Add Interview Parameter
+                </Button>
+              </Col>
+              
+            </Row>
+          </div>
 
           <div className="interview-parameters">
-            <h5 className="mb-3 px-2">Interview Parameters</h5>
             <div className="parameter-scroll-wrapper px-2">
               <div className="parameter-header fw-bold bg-secondary text-white p-2 rounded d-flex justify-content-between">
-                <span>Score Card</span>
+                <span style={{ minWidth: 150 }}>Score Card</span>
                 <span>Options</span>
                 <span>Guideline</span>
                 <span>Min Qs</span>
                 <span>Screening Type</span>
                 <span>Duration</span>
+                <span>Duration Metric</span> 
                 <span>Weightage</span>
-                <span>Mode</span>
                 <span>Feedback</span>
+                <span>Action</span>
               </div>
 
               {parameters.length > 0 ? (
                 parameters.map((param, index) => (
                   <div className="parameter-body d-flex gap-2 mt-2" key={index}>
-                    <Form.Select
-                      value={param.score_card_name || ""}
-                      onChange={(e) =>
-                        handleChange(index, "score_card_name", e.target.value)
+                   
+                    <CreatableSelect
+                      isClearable
+                      menuPortalTarget={document.body}
+                      menuPosition="fixed"
+                      options={scoreCards.map(card => ({
+                        label: card.score_card_name,
+                        value: card.score_card_name,
+                      }))}
+                      value={
+                        param.score_card_name
+                          ? { label: param.score_card_name, value: param.score_card_name }
+                          : null
                       }
-                    >
-                      <option value="">Select</option>
-                      {scoreCards.map((card) => (
-                        <option key={card.id} value={card.score_card_name}>
-                          {card.score_card_name}
-                        </option>
-                      ))}
-                    </Form.Select>
+                      onChange={option =>
+                        handleChange(index, "score_card_name", option ? option.value : "")
+                      }
+                      placeholder="Select or enter"
+                      className="flex-grow-1"
+                      styles={{
+                        container: base => ({ ...base, minWidth: 200 }),
+                        menuPortal: base => ({ ...base, zIndex: 99999 }),
+                        menu: base => ({ ...base, zIndex: 99999 }),
+                      }}
+                    />
                     <Form.Control
                       type="text"
                       value={param.options || ""}
@@ -537,6 +608,15 @@ const InterviewForm = () => {
                       }
                       placeholder="Duration"
                     />
+                    <Form.Select
+                      value={param.duration_metric || ""}
+                      onChange={e => handleChange(index, "duration_metric", e.target.value)}
+                    >
+                      <option value="">Select</option>
+                      <option value="days">Days</option>
+                      <option value="hours">Hours</option>
+                      <option value="mins">Mins</option>
+                    </Form.Select>
                     <Form.Control
                       type="number"
                       value={param.weightage || ""}
@@ -551,20 +631,25 @@ const InterviewForm = () => {
                     />
                     <Form.Control
                       type="text"
-                      value={param.mode || ""}
-                      onChange={(e) =>
-                        handleChange(index, "mode", e.target.value)
-                      }
-                      placeholder="Mode"
-                    />
-                    <Form.Control
-                      type="text"
                       value={param.feedback || ""}
-                      onChange={(e) =>
-                        handleChange(index, "feedback", e.target.value)
-                      }
+                      onChange={(e) => {
+                        toast.dismiss();
+                        handleChange(index, "feedback", e.target.value);
+                      }}
                       placeholder="Feedback"
                     />
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => {
+                        toast.dismiss();
+                        const updated = [...parameters];
+                        updated.splice(index, 1);
+                        setParameters(updated);
+                      }}
+                    >
+                      Delete
+                    </Button>
                   </div>
                 ))
               ) : (
@@ -576,13 +661,7 @@ const InterviewForm = () => {
           </div>
 
           <div className="text-end mt-4">
-            <Button
-              variant="primary"
-              onClick={
-                interview_design_id ? handleSubmit : handleShowConfirmation
-              }
-              disabled={isSubmitting}
-            >
+            <Button variant="primary" type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
                 <Spinner animation="border" size="sm" />
               ) : interview_design_id ? (
@@ -606,7 +685,13 @@ const InterviewForm = () => {
             <Button variant="secondary" onClick={() => setShowConfirm(false)}>
               Cancel
             </Button>
-            <Button variant="primary" onClick={handleSubmit}>
+            <Button
+              variant="primary"
+              onClick={() => {
+                setShowConfirm(false);
+                setTimeout(() => handleFormSubmit(), 0);
+              }}
+            >
               Yes, Submit
             </Button>
           </Modal.Footer>

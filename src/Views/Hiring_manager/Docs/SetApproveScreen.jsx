@@ -122,7 +122,7 @@ const SetApproveScreen = () => {
       }));
 
       setViewApproversData(formattedGroups);
-      setApprovers(formattedGroups); // or apply any filtering logic here
+      setApprovers(formattedGroups); 
     } else {
       setViewApproversData([]);
       console.warn("Approvers list is invalid:", requisitionGroups);
@@ -363,25 +363,8 @@ const SetApproveScreen = () => {
           <Modal.Body>
             {step === 1 && (
               <>
-                <Row className="mb-3">
-                  <Col md={6}>
-                    <Form.Group>
-                      <Form.Label>Req ID</Form.Label>
-                      <Form.Select
-                        name="req_id"
-                        value={formState.req_id}
-                        onChange={handleMainChange}
-                      >
-                        <option value="">-- Select Req ID --</option>
-                        {dropdownOptions.requisition_id.map((id, index) => (
-                          <option key={index} value={id}>
-                            {id}
-                          </option>
-                        ))}
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                  <Col md={6}>
+                <Row className="mb-3 gap-3">
+                  <Col >
                     <Form.Group>
                       <Form.Label>Planning ID</Form.Label>
                       <Form.Select
@@ -398,6 +381,24 @@ const SetApproveScreen = () => {
                       </Form.Select>
                     </Form.Group>
                   </Col>
+                  <Col >
+                    <Form.Group>
+                      <Form.Label>Req ID</Form.Label>
+                      <Form.Select
+                        name="req_id"
+                        value={formState.req_id}
+                        onChange={handleMainChange}
+                      >
+                        <option value="">-- Select Req ID --</option>
+                        {dropdownOptions.requisition_id.map((id, index) => (
+                          <option key={index} value={id}>
+                            {id}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
+                  
                 </Row>
                 <div className="text-end">
                   {loadingClient ? (
@@ -420,8 +421,8 @@ const SetApproveScreen = () => {
 
             {step === 2 && (
               <>
-                <Row className="mb-3">
-                  <Col md={6}>
+                <Row className="mb-3 gap-3">
+                  <Col >
                     <Form.Group>
                       <Form.Label>Client Name</Form.Label>
                       <Form.Control
@@ -433,7 +434,7 @@ const SetApproveScreen = () => {
                       />
                     </Form.Group>
                   </Col>
-                  <Col md={6}>
+                  <Col >
                     <Form.Group>
                       <Form.Label>Client ID</Form.Label>
                       <Form.Control
