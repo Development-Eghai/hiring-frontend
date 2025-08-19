@@ -800,7 +800,7 @@ const locations = [
     }, []);
 
   return (
-    <div style={{ maxHeight: "500px", overflowY: "auto" }}>
+    <div style={{ maxHeight: "1000px", overflowY: "auto" }}>
       <ToastContainer />
       <form
         className="py-1 mt-2"

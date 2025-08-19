@@ -212,7 +212,7 @@ useEffect(()=>{
 
   return (
     <>
-      <Button variant="primary" onClick={() => setShow(true)}>
+      <Button  className="btn-brand-color" onClick={() => setShow(true)}>
         {Icons?.CreateNew || "+"} Create New
       </Button>
 

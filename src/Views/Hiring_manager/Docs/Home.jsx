@@ -18,6 +18,7 @@ import axiosInstance from "Services/axiosInstance";
 import { decryptData } from "Security/Crypto/Crypto";
 import Cookies from "js-cookie";
 import Creatmodel from "./Creatmodel";
+import { BsPencilSquare, BsTrash } from "react-icons/bs";
 
 const DEFAULT_FIELDS = [
   "id",
@@ -80,16 +81,68 @@ const ALL_FIELDS = [
   "Language Proficiency",
 ].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
 
-const tableStyles = {
+ const tableStyles = {
+  header: {
+    style: {
+      fontSize: '18px',
+      fontWeight: '600',
+      padding: '16px',
+    },
+  },
+  headRow: {
+    style: {
+      backgroundColor: "linear-gradient(135deg, #0F172A 0%, #374151 100%)", // dark slate header
+      borderBottomWidth: '2px',
+      borderBottomColor: '#CBD5E1',
+      borderBottomStyle: 'solid',
+    },
+  },
   headCells: {
     style: {
-      backgroundColor: "#DEE5FF",
-      color: "#000",
-      fontWeight: "bold",
-      fontSize: "14px",
+      fontSize: '15px',
+      fontWeight: '700',
+      color: '#F9FAFB', // light text
+      padding: '14px 12px',
+      letterSpacing: '0.3px',
+      whiteSpace: 'normal',   // 👈 prevents cutting off
+      wordBreak: 'break-word' // 👈 wraps long text
+    },
+  },
+  rows: {
+    style: {
+      minHeight: '52px',
+      fontSize: '14px',
+      fontWeight: '500',
+      '&:nth-of-type(odd)': {
+        backgroundColor: '#F9FAFB', // zebra striping
+      },
+      '&:hover': {
+        backgroundColor: '#E0F2FE  ', // light hover
+        cursor: 'pointer',
+      },
+    },
+  },
+  cells: {
+    style: {
+      padding: '12px',
+      whiteSpace: 'normal',
+      wordBreak: 'break-word',
     },
   },
 };
+
+
+const conditionalRowStyles = [
+  {
+    when: row => true, // applies to all rows
+    style: {
+      '&:hover': {
+        backgroundColor: '#E0F2FE ',
+        cursor: 'pointer',
+      },
+    },
+  },
+];
 
 export const Home = () => {
   const { hiringManagerState, commonState } = useCommonState();
@@ -132,19 +185,22 @@ export const Home = () => {
     dynamicColumns.push({
       name: "Action",
       cell: (row) => (
-        <Dropdown>
-          <Dropdown.Toggle
-            variant="link"
-            className="text-dark p-0 m-0"
-            style={{ fontSize: "1.5rem" }}
-          ></Dropdown.Toggle>
-          <Dropdown.Menu>
-            <Dropdown.Item onClick={() => handleEdit(row)}>Edit</Dropdown.Item>
-            <Dropdown.Item onClick={() => confirmDelete(row)}>
-              Delete
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+        <td className="d-flex p-2 gap-2 justify-content-center">
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            onClick={() => handleEdit(row)}
+          >
+            <BsPencilSquare className="me-1" />
+          </Button>
+          <Button
+            variant="outline-danger"
+            size="sm"
+            onClick={() => confirmDelete(row)}
+          >
+            <BsTrash className="me-1" />
+          </Button>
+        </td>
       ),
       ignoreRowClick: true,
       allowOverflow: true,
@@ -228,15 +284,15 @@ export const Home = () => {
       ))}
 
       <Card className="p-4 home_data_table">
-        <div className="row align-items-center mb-3">
+        <div className="row align-items-center mb-4">
           <div className="col-3">
             <h4 className="fw-bold mb-0">Job Roles</h4>
           </div>
           <div className="col-9 d-flex justify-content-end">
-            <div className="d-flex align-items-center gap-2 flex-wrap justify-content-end w-100">
+            <div className="d-flex align-items-center gap-4 flex-wrap justify-content-end w-100">
               <Button
                 variant="outline-secondary"
-                className="d-flex align-items-center"
+                className="d-flex align-items-center btn-brand-outline"
                 onClick={() => setShowModal(true)}
               >
                 <span>{Icons.Filter} Display Option</span>
@@ -257,14 +313,17 @@ export const Home = () => {
         </div>
 
         <DataTable
+          fixedHeader
           columns={columns}
           data={filteredData}
           customStyles={tableStyles}
-          fixedHeader
+
           striped
           highlightOnHover
           pagination
           progressPending={hiringManagerState?.isLoading}
+           className="rounded-xl shadow-md"
+           conditionalRowStyles={conditionalRowStyles}
         />
       </Card>
 

@@ -12,6 +12,7 @@ import {
 } from "react-bootstrap";
 import { BsPencilSquare, BsTrash } from "react-icons/bs";
 import { toast, ToastContainer } from "react-toastify";
+import Select from "react-select";
 
 const Configure_bg_packages = () => {
   const [showPackageModal, setShowPackageModal] = useState(false);
@@ -255,7 +256,7 @@ const Configure_bg_packages = () => {
               <tbody>
                 {details.map((a, i) => (
                   <tr key={i}>
-                    <td>{i+1}</td>
+                    <td>{i + 1}</td>
                     <td>{a.vendor_name}</td>
                     <td>{a.package_name}</td>
                     <td>{a.package_rate}</td>
@@ -299,213 +300,269 @@ const Configure_bg_packages = () => {
         </div>
 
         {/*vendor Modal */}
-<Modal
-  show={showVendorModal}
-  onHide={() => setShowVedorModal(false)}
-  centered
-  size="xl"
->
-  <Modal.Header closeButton>
-    <Modal.Title>Add Vendor</Modal.Title>
-  </Modal.Header>
+        <Modal
+          show={showVendorModal}
+          onHide={() => setShowVedorModal(false)}
+          centered
+          size="xl"
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Add Vendor</Modal.Title>
+          </Modal.Header>
 
-  <Modal.Body>
-    {/* Vendor Details */}
-    <h5 className="mb-3">Vendor Details</h5>
-    <Row className="mb-4 d-flex gap-4">
-      <Col md={3}>
-        <Form.Group>
-          <Form.Label>Vendor Name</Form.Label>
-          <Form.Control
-            name="vendor_name"
-            placeholder="Enter vendor name"
-            value={formState?.vendor_name}
-            onChange={handleMainChange}
-          />
-        </Form.Group>
-      </Col>
-      <Col md={3}>
-        <Form.Group>
-          <Form.Label>Email</Form.Label>
-          <Form.Control
-            name="vendor_email"
-            value={formState?.vendor_email}
-            placeholder="Enter email"
-            onChange={handleMainChange}
-          />
-        </Form.Group>
-      </Col>
-      <Col md={3}>
-        <Form.Group>
-          <Form.Label>Address</Form.Label>
-          <Form.Control
-            name="vendor_address"
-            value={formState?.vendor_address}
-            placeholder="Enter address"
-            onChange={handleMainChange}
-          />
-        </Form.Group>
-      </Col>
-    </Row>
+          <Modal.Body>
+            {/* Vendor Details */}
+            <h5 className="mb-3">Vendor Details</h5>
+            <Row className="mb-4 d-flex ">
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Vendor Name</Form.Label>
+                  <Form.Control
+                    name="vendor_name"
+                    placeholder="Enter vendor name"
+                    value={formState?.vendor_name}
+                    onChange={handleMainChange}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Email</Form.Label>
+                  <Form.Control
+                    name="vendor_email"
+                    value={formState?.vendor_email}
+                    placeholder="Enter email"
+                    onChange={handleMainChange}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Address</Form.Label>
+                  <Form.Control
+                    name="vendor_address"
+                    value={formState?.vendor_address}
+                    placeholder="Enter address"
+                    onChange={handleMainChange}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Mobile Number</Form.Label>
+                  <Form.Control
+                    name="mobile_no"
+                    value={formState?.mobile_no}
+                    placeholder="Enter mobile number"
+                    onChange={handleMainChange}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
 
-    {/* Package Details */}
-    <h5 className="mb-3">Package Details</h5>
-    <Table bordered hover responsive>
-      <thead className="table-light">
-        <tr>
-          <th>Package Name</th>
-          <th>Rate</th>
-          <th>Description</th>
-          <th style={{ width: "150px" }}>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {packageRows.map((row, index) => (
-          <tr key={index}>
-            <td>
-              <Form.Control
-                value={row.package_name}
-                placeholder="Enter package name"
-                onChange={(e) =>
-                  handlePackageRowChange(index, "package_name", e.target.value)
-                }
-              />
-            </td>
-            <td>
-              <Form.Control
-                value={row.package_rate}
-                placeholder="Enter package rate"
-                onChange={(e) =>
-                  handlePackageRowChange(index, "package_rate", e.target.value)
-                }
-              />
-            </td>
-            <td>
-              <Form.Control
-                value={row.package_description}
-                placeholder="Enter description"
-                onChange={(e) =>
-                  handlePackageRowChange(
-                    index,
-                    "package_description",
-                    e.target.value
-                  )
-                }
-              />
-            </td>
-            <td className="text-center">
-  {/* Remove button (only show if more than 1 row) */}
-  {packageRows.length > 1 && (
-    <Button
-      variant="outline-danger"
-      size="sm"
-      className="me-2"
-      onClick={() => removePackageRow(index)}
-    >
-      Remove
-    </Button>
-  )}
+            {/* Package Details */}
+            <h5 className="mb-3">Package Details</h5>
+            <Table bordered hover responsive>
+              <thead className="table-light">
+                <tr>
+                  <th>Package Name</th>
+                  <th>Description</th>
+                  <th>Verification</th> {/* Multi-select */}
+                  <th>Rate</th>
+                  <th style={{ width: "150px" }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {packageRows.map((row, index) => (
+                  <tr key={index}>
+                    <td>
+                      <Form.Control
+                        value={row.package_name}
+                        placeholder="Enter package name"
+                        onChange={(e) =>
+                          handlePackageRowChange(
+                            index,
+                            "package_name",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </td>
+                    <td>
+                      <Form.Control
+                        value={row.package_description}
+                        placeholder="Enter description"
+                        onChange={(e) =>
+                          handlePackageRowChange(
+                            index,
+                            "package_description",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </td>
+                    <td>
+                      <Select
+                        isMulti
+                        options={[
+                          { value: "Email", label: "Email" },
+                          { value: "Phone", label: "Phone" },
+                          { value: "ID Proof", label: "ID Proof" },
+                          { value: "Address Proof", label: "Address Proof" },
+                        ]}
+                        value={
+                          row.package_verification &&
+                          row.package_verification.map((v) => ({
+                            value: v,
+                            label: v,
+                          }))
+                        }
+                        onChange={(selectedOptions) => {
+                          const values = selectedOptions.map(
+                            (opt) => opt.value
+                          );
+                          handlePackageRowChange(
+                            index,
+                            "package_verification",
+                            values
+                          );
+                        }}
+                      />
+                    </td>
 
-  {/* Add button only for last row */}
-  {index === packageRows.length - 1 && (
-    <Button
-      variant="outline-success"
-      size="sm"
-      onClick={addPackageRow}
-    >
-      Add
-    </Button>
-  )}
-</td>
+                    <td>
+                      <Form.Control
+                        value={row.package_rate}
+                        placeholder="Enter package rate"
+                        onChange={(e) =>
+                          handlePackageRowChange(
+                            index,
+                            "package_rate",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </td>
+                    <td className="text-center">
+                      {packageRows.length > 1 && (
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          className="me-2"
+                          onClick={() => removePackageRow(index)}
+                        >
+                          Remove
+                        </Button>
+                      )}
+                      {index === packageRows.length - 1 && (
+                        <Button
+                          variant="outline-success"
+                          size="sm"
+                          onClick={addPackageRow}
+                        >
+                          Add
+                        </Button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
 
-          </tr>
-        ))}
-      </tbody>
-    </Table>
+            {/* Add-on Details */}
+            <h5 className="mb-3">Add-on Details</h5>
+            <Table bordered hover responsive>
+              <thead className="table-light">
+                <tr>
+                  <th>Title</th>
+                  <th>Description</th>
+                  <th>Rate</th>
+                  <th style={{ width: "150px" }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {formRows.map((row, index) => (
+                  <tr key={index}>
+                    <td>
+                      <Form.Control
+                        value={row.add_on_check_title}
+                        placeholder="Enter title"
+                        onChange={(e) =>
+                          handleRowChange(
+                            index,
+                            "add_on_check_title",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </td>
+                    <td>
+                      <Form.Control
+                        value={row.add_on_check_desc}
+                        placeholder="Enter description"
+                        onChange={(e) =>
+                          handleRowChange(
+                            index,
+                            "add_on_check_desc",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </td>
+                    <td>
+                      <Form.Control
+                        value={row.add_on_check_rate}
+                        placeholder="Enter rate"
+                        onChange={(e) =>
+                          handleRowChange(
+                            index,
+                            "add_on_check_rate",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </td>
+                    <td className="text-center">
+                      {/* Remove button (only show if more than 1 row) */}
+                      {formRows.length > 1 && (
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          className="me-2"
+                          onClick={() => removeRow(index)}
+                        >
+                          Remove
+                        </Button>
+                      )}
 
-    {/* Add-on Details */}
-    <h5 className="mb-3">Add-on Details</h5>
-    <Table bordered hover responsive>
-      <thead className="table-light">
-        <tr>
-          <th>Title</th>
-          <th>Description</th>
-          <th>Rate</th>
-          <th style={{ width: "150px" }}>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {formRows.map((row, index) => (
-          <tr key={index}>
-            <td>
-              <Form.Control
-                value={row.add_on_check_title}
-                placeholder="Enter title"
-                onChange={(e) =>
-                  handleRowChange(index, "add_on_check_title", e.target.value)
-                }
-              />
-            </td>
-            <td>
-              <Form.Control
-                value={row.add_on_check_desc}
-                placeholder="Enter description"
-                onChange={(e) =>
-                  handleRowChange(index, "add_on_check_desc", e.target.value)
-                }
-              />
-            </td>
-            <td>
-              <Form.Control
-                value={row.add_on_check_rate}
-                placeholder="Enter rate"
-                onChange={(e) =>
-                  handleRowChange(index, "add_on_check_rate", e.target.value)
-                }
-              />
-            </td>
-            <td className="text-center">
-  {/* Remove button (only show if more than 1 row) */}
-  {formRows.length > 1 && (
-    <Button
-      variant="outline-danger"
-      size="sm"
-      className="me-2"
-      onClick={() => removeRow(index)}
-    >
-      Remove
-    </Button>
-  )}
+                      {/* Add button only for last row */}
+                      {index === formRows.length - 1 && (
+                        <Button
+                          variant="outline-success"
+                          size="sm"
+                          onClick={addRow}
+                        >
+                          Add
+                        </Button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
 
-  {/* Add button only for last row */}
-  {index === formRows.length - 1 && (
-    <Button
-      variant="outline-success"
-      size="sm"
-      onClick={addRow}
-    >
-      Add
-    </Button>
-  )}
-</td>
-
-          </tr>
-        ))}
-      </tbody>
-    </Table>
-
-    {/* Submit */}
-    <Row className="d-flex justify-content-center">
-      <Button className="col-2" variant="success" onClick={handleFinalSubmit}>
-        Submit
-      </Button>
-    </Row>
-  </Modal.Body>
-</Modal>
-
-
-
-
+            {/* Submit */}
+            <Row className="d-flex justify-content-center">
+              <Button
+                className="col-2"
+                variant="success"
+                onClick={handleFinalSubmit}
+              >
+                Submit
+              </Button>
+            </Row>
+          </Modal.Body>
+        </Modal>
 
         {/* view modal */}
 
@@ -608,6 +665,289 @@ const Configure_bg_packages = () => {
 
         <Modal
           show={showVendorEditModal}
+         onHide={() => {
+            setshowVendorEditModal(false);
+            setFormRows([
+              {
+                add_on_check_title: "",
+                add_on_check_desc: "",
+                add_on_check_rate: "",
+              },
+            ]);
+            setPackageRows([
+              { package_name: "", package_rate: "", package_description: "" },
+            ]);
+            setFormState([
+              {
+                vendor_name: "",
+                vendor_email: "",
+                vendor_address: "",
+              },
+            ]);
+          }}
+          centered
+          size="xl"
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Add Vendor</Modal.Title>
+          </Modal.Header>
+
+          <Modal.Body>
+            {/* Vendor Details */}
+            <h5 className="mb-3">Vendor Details</h5>
+            <Row className="mb-4 d-flex ">
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Vendor Name</Form.Label>
+                  <Form.Control
+                    name="vendor_name"
+                    placeholder="Enter vendor name"
+                    value={formState?.vendor_name}
+                    onChange={handleMainChange}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Email</Form.Label>
+                  <Form.Control
+                    name="vendor_email"
+                    value={formState?.vendor_email}
+                    placeholder="Enter email"
+                    onChange={handleMainChange}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Address</Form.Label>
+                  <Form.Control
+                    name="vendor_address"
+                    value={formState?.vendor_address}
+                    placeholder="Enter address"
+                    onChange={handleMainChange}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Mobile Number</Form.Label>
+                  <Form.Control
+                    name="mobile_no"
+                    value={formState?.mobile_no}
+                    placeholder="Enter mobile number"
+                    onChange={handleMainChange}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+
+            {/* Package Details */}
+            <h5 className="mb-3">Package Details</h5>
+            <Table bordered hover responsive>
+              <thead className="table-light">
+                <tr>
+                  <th>Package Name</th>
+                  <th>Description</th>
+                  <th>Verification</th> {/* Multi-select */}
+                  <th>Rate</th>
+                  <th style={{ width: "150px" }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {packageRows.map((row, index) => (
+                  <tr key={index}>
+                    <td>
+                      <Form.Control
+                        value={row.package_name}
+                        placeholder="Enter package name"
+                        onChange={(e) =>
+                          handlePackageRowChange(
+                            index,
+                            "package_name",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </td>
+                    <td>
+                      <Form.Control
+                        value={row.package_description}
+                        placeholder="Enter description"
+                        onChange={(e) =>
+                          handlePackageRowChange(
+                            index,
+                            "package_description",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </td>
+                    <td>
+                      <Select
+                        isMulti
+                        options={[
+                          { value: "Email", label: "Email" },
+                          { value: "Phone", label: "Phone" },
+                          { value: "ID Proof", label: "ID Proof" },
+                          { value: "Address Proof", label: "Address Proof" },
+                        ]}
+                        value={
+                          row.package_verification &&
+                          row.package_verification.map((v) => ({
+                            value: v,
+                            label: v,
+                          }))
+                        }
+                        onChange={(selectedOptions) => {
+                          const values = selectedOptions.map(
+                            (opt) => opt.value
+                          );
+                          handlePackageRowChange(
+                            index,
+                            "package_verification",
+                            values
+                          );
+                        }}
+                      />
+                    </td>
+
+                    <td>
+                      <Form.Control
+                        value={row.package_rate}
+                        placeholder="Enter package rate"
+                        onChange={(e) =>
+                          handlePackageRowChange(
+                            index,
+                            "package_rate",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </td>
+                    <td className="text-center">
+                      {packageRows.length > 1 && (
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          className="me-2"
+                          onClick={() => removePackageRow(index)}
+                        >
+                          Remove
+                        </Button>
+                      )}
+                      {index === packageRows.length - 1 && (
+                        <Button
+                          variant="outline-success"
+                          size="sm"
+                          onClick={addPackageRow}
+                        >
+                          Add
+                        </Button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+
+            {/* Add-on Details */}
+            <h5 className="mb-3">Add-on Details</h5>
+            <Table bordered hover responsive>
+              <thead className="table-light">
+                <tr>
+                  <th>Title</th>
+                  <th>Description</th>
+                  <th>Rate</th>
+                  <th style={{ width: "150px" }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {formRows.map((row, index) => (
+                  <tr key={index}>
+                    <td>
+                      <Form.Control
+                        value={row.add_on_check_title}
+                        placeholder="Enter title"
+                        onChange={(e) =>
+                          handleRowChange(
+                            index,
+                            "add_on_check_title",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </td>
+                    <td>
+                      <Form.Control
+                        value={row.add_on_check_desc}
+                        placeholder="Enter description"
+                        onChange={(e) =>
+                          handleRowChange(
+                            index,
+                            "add_on_check_desc",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </td>
+                    <td>
+                      <Form.Control
+                        value={row.add_on_check_rate}
+                        placeholder="Enter rate"
+                        onChange={(e) =>
+                          handleRowChange(
+                            index,
+                            "add_on_check_rate",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </td>
+                    <td className="text-center">
+                      {/* Remove button (only show if more than 1 row) */}
+                      {formRows.length > 1 && (
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          className="me-2"
+                          onClick={() => removeRow(index)}
+                        >
+                          Remove
+                        </Button>
+                      )}
+
+                      {/* Add button only for last row */}
+                      {index === formRows.length - 1 && (
+                        <Button
+                          variant="outline-success"
+                          size="sm"
+                          onClick={addRow}
+                        >
+                          Add
+                        </Button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+
+            {/* Submit */}
+            <Row className="d-flex justify-content-center">
+              <Button
+                className="col-2 "
+                variant="success"
+                onClick={handleEditSubmit}
+              >
+                Update
+              </Button>
+            </Row>
+          </Modal.Body>
+        </Modal>
+
+        {/* <Modal
+          show={showVendorEditModal}
           onHide={() => {
             setshowVendorEditModal(false);
             setFormRows([
@@ -636,7 +976,6 @@ const Configure_bg_packages = () => {
           </Modal.Header>
 
           <Modal.Body>
-            {/* Static Vendor Fields */}
             <Row className="mb-3 d-flex gap-3">
               <Col md={3}>
                 <Form.Group>
@@ -673,7 +1012,6 @@ const Configure_bg_packages = () => {
               </Col>
             </Row>
 
-            {/* Package Info */}
             {packageRows.map((row, index) => (
               <Row className="mb-3 d-flex gap-3" key={index}>
                 <Col md={5}>
@@ -735,7 +1073,6 @@ const Configure_bg_packages = () => {
               + Add Row
             </Button>
 
-            {/* Dynamic Rows Section */}
             {formRows.map((row, index) => (
               <Row key={index} className="mb-3 d-flex gap-3">
                 <Col md={3}>
@@ -803,7 +1140,7 @@ const Configure_bg_packages = () => {
               </Button>
             </Row>
           </Modal.Body>
-        </Modal>
+        </Modal> */}
         {/* package modal*/}
         {/* <Modal show={showPackageModal} onHide={setShowPackageModal} centered size="xl">
   <Modal.Header closeButton>
