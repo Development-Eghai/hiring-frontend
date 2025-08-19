@@ -14,6 +14,7 @@ import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import { ToastContainer, toast } from "react-toastify";
 import { BsArrowLeft } from "react-icons/bs";
+import axios from "axios";
 
 const AccordionItem = ({ title, children, isOpen, onClick }) => (
   <div className="mb-2">
@@ -45,7 +46,7 @@ const PlanninggForm = (handleNext) => {
   const [dropdownOptions, setDropdownOptions] = useState([]);
     const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [languageProficiency, setLanguageProficiency] = useState({});
-
+  const [bgdropDown,setBGdropdown] = useState([]);
   console.log(dropdownOptions, "dsfds");
   const experienceOptions = [
     { value: "0-5", label: "0-5" },
@@ -127,6 +128,7 @@ const PlanninggForm = (handleNext) => {
             social_media: data?.social_media_data,
             citizen_describe:data?.citizen_describe,
             health_describe:data?.health_describe,
+
           });
         }
       } catch (error) {
@@ -194,7 +196,6 @@ const PlanninggForm = (handleNext) => {
    const hasCitizenRequirment = watch("citizen_requirement")
    const [rows, setRows] = useState([]);
 
-   console.log(rows,"sdsdsadsa")
 
      const { fields, append, remove } = useFieldArray({
     control,
@@ -301,7 +302,6 @@ const handleRemoveCitizenCountry = (index) => {
       navigate("/hiring_manager/planning");
     }
     }
-    console.log(formdata,"efadaw")
   };
 
   const formatCompensationInput = (input) => {
@@ -365,6 +365,20 @@ useEffect(() => {
   }
 }, [reset, edit_id]);
 
+const fetchBGDropDown = async()=>{
+  const response = await axios.get("https://api.pixeladvant.com/bg-packages/dropdown/");
+  const {data,success,message} = response?.data
+  if(success){
+    setBGdropdown(data)
+  }
+  if(!success){
+    toast.error(message)
+  }
+}
+
+useEffect(()=>{
+  fetchBGDropDown()
+},[])
 //  Auto-save form data 
 useEffect(() => {
   if (!edit_id) {
@@ -1104,7 +1118,7 @@ useEffect(() => {
                     <CreatableSelect
                       {...field}
                       isMulti
-                      options={dropdownOptions?.bg_verification_type}
+                      options={bgdropDown}
                       classNamePrefix="react-select"
                       placeholder="SelectBG Verification Type"
                       onChange={(val) => field.onChange(val)}
@@ -1270,14 +1284,14 @@ useEffect(() => {
 </div>
 
 {/* Dynamic Citizen Country fields */}
-{hasCitizenRequirement === "Yes" && (
+{hasCitizenRequirment === "Yes" && (
   <div className="col-12 mt-2">
     <label className="form-label">Citizen Country Name</label>
     {citizenCountries.map((country, index) => (
       <div className="row mb-2 align-items-center gap-3" key={index}>
         <div className="col-md-3">
           <input
-            {...register(`citizen_countries.${index}`)}
+            {...register(`citizen_countries`)}
             className="form-control"
             placeholder="Enter Citizen Country name"
             defaultValue={country.value}

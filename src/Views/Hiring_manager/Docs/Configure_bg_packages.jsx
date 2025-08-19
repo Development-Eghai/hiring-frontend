@@ -107,6 +107,7 @@ const Configure_bg_packages = () => {
 
       if (success) {
         setShowVedorModal(false);
+        fetchData()
       }
     } catch (error) {}
   };
@@ -115,6 +116,15 @@ const Configure_bg_packages = () => {
     setSelectedRow([a]);
     setShowViewModal(true);
   };
+
+  const removePackageRow = (index) => {
+    setPackageRows((prev) => prev.filter((_, i) => i !== index));
+  };
+  
+  const removeRow = (index) => {
+    setFormRows((prev) => prev.filter((_, i) => i !== index));
+  };
+  
 
   const handleDelete = async (vendor_id) => {
     try {
@@ -289,186 +299,213 @@ const Configure_bg_packages = () => {
         </div>
 
         {/*vendor Modal */}
-        <Modal
-          show={showVendorModal}
-          onHide={() => setShowVedorModal(false)}
-          centered
-          size="xl"
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>Add Vendor</Modal.Title>
-          </Modal.Header>
+<Modal
+  show={showVendorModal}
+  onHide={() => setShowVedorModal(false)}
+  centered
+  size="xl"
+>
+  <Modal.Header closeButton>
+    <Modal.Title>Add Vendor</Modal.Title>
+  </Modal.Header>
 
-          <Modal.Body>
-            {/* Static Vendor Fields */}
-            <Row className="mb-3 d-flex gap-3">
-              <Col md={3}>
-                <Form.Group>
-                  <Form.Label>Vendor Name</Form.Label>
-                  <Form.Control
-                    name="vendor_name"
-                    placeholder="Enter vendor name"
-                    value={formState?.vendor_name}
-                    onChange={handleMainChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={3}>
-                <Form.Group>
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control
-                    name="vendor_email"
-                    value={formState?.vendor_email}
-                    placeholder="Enter email"
-                    onChange={handleMainChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={3}>
-                <Form.Group>
-                  <Form.Label>Address</Form.Label>
-                  <Form.Control
-                    name="vendor_address"
-                    value={formState?.vendor_address}
-                    placeholder="Enter address"
-                    onChange={handleMainChange}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
+  <Modal.Body>
+    {/* Vendor Details */}
+    <h5 className="mb-3">Vendor Details</h5>
+    <Row className="mb-4 d-flex gap-4">
+      <Col md={3}>
+        <Form.Group>
+          <Form.Label>Vendor Name</Form.Label>
+          <Form.Control
+            name="vendor_name"
+            placeholder="Enter vendor name"
+            value={formState?.vendor_name}
+            onChange={handleMainChange}
+          />
+        </Form.Group>
+      </Col>
+      <Col md={3}>
+        <Form.Group>
+          <Form.Label>Email</Form.Label>
+          <Form.Control
+            name="vendor_email"
+            value={formState?.vendor_email}
+            placeholder="Enter email"
+            onChange={handleMainChange}
+          />
+        </Form.Group>
+      </Col>
+      <Col md={3}>
+        <Form.Group>
+          <Form.Label>Address</Form.Label>
+          <Form.Control
+            name="vendor_address"
+            value={formState?.vendor_address}
+            placeholder="Enter address"
+            onChange={handleMainChange}
+          />
+        </Form.Group>
+      </Col>
+    </Row>
 
-            {/* Package Info */}
-            {packageRows.map((row, index) => (
-              <Row className="mb-3 d-flex gap-3" key={index}>
-                <Col md={5}>
-                  <Form.Group>
-                    <Form.Label>Package Name</Form.Label>
-                    <Form.Control
-                      name="package_name"
-                      value={row.package_name}
-                      placeholder="Enter package name"
-                      onChange={(e) =>
-                        handlePackageRowChange(
-                          index,
-                          "package_name",
-                          e.target.value
-                        )
-                      }
-                    />
-                  </Form.Group>
-                </Col>
+    {/* Package Details */}
+    <h5 className="mb-3">Package Details</h5>
+    <Table bordered hover responsive>
+      <thead className="table-light">
+        <tr>
+          <th>Package Name</th>
+          <th>Rate</th>
+          <th>Description</th>
+          <th style={{ width: "150px" }}>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {packageRows.map((row, index) => (
+          <tr key={index}>
+            <td>
+              <Form.Control
+                value={row.package_name}
+                placeholder="Enter package name"
+                onChange={(e) =>
+                  handlePackageRowChange(index, "package_name", e.target.value)
+                }
+              />
+            </td>
+            <td>
+              <Form.Control
+                value={row.package_rate}
+                placeholder="Enter package rate"
+                onChange={(e) =>
+                  handlePackageRowChange(index, "package_rate", e.target.value)
+                }
+              />
+            </td>
+            <td>
+              <Form.Control
+                value={row.package_description}
+                placeholder="Enter description"
+                onChange={(e) =>
+                  handlePackageRowChange(
+                    index,
+                    "package_description",
+                    e.target.value
+                  )
+                }
+              />
+            </td>
+            <td className="text-center">
+  {/* Remove button (only show if more than 1 row) */}
+  {packageRows.length > 1 && (
+    <Button
+      variant="outline-danger"
+      size="sm"
+      className="me-2"
+      onClick={() => removePackageRow(index)}
+    >
+      Remove
+    </Button>
+  )}
 
-                <Col md={5}>
-                  <Form.Group>
-                    <Form.Label>Package Rate</Form.Label>
-                    <Form.Control
-                      name="package_rate"
-                      value={row.package_rate}
-                      placeholder="Enter package rate"
-                      onChange={(e) =>
-                        handlePackageRowChange(
-                          index,
-                          "package_rate",
-                          e.target.value
-                        )
-                      }
-                    />
-                  </Form.Group>
-                </Col>
+  {/* Add button only for last row */}
+  {index === packageRows.length - 1 && (
+    <Button
+      variant="outline-success"
+      size="sm"
+      onClick={addPackageRow}
+    >
+      Add
+    </Button>
+  )}
+</td>
 
-                <Col md={5}>
-                  <Form.Group>
-                    <Form.Label>Package Description</Form.Label>
-                    <Form.Control
-                      name="package_description"
-                      value={row.package_description}
-                      placeholder="package describe"
-                      onChange={(e) =>
-                        handlePackageRowChange(
-                          index,
-                          "package_description",
-                          e.target.value
-                        )
-                      }
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-            ))}
+          </tr>
+        ))}
+      </tbody>
+    </Table>
 
-            <Button variant="success" className="mb-3" onClick={addPackageRow}>
-              + Add Row
-            </Button>
+    {/* Add-on Details */}
+    <h5 className="mb-3">Add-on Details</h5>
+    <Table bordered hover responsive>
+      <thead className="table-light">
+        <tr>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Rate</th>
+          <th style={{ width: "150px" }}>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {formRows.map((row, index) => (
+          <tr key={index}>
+            <td>
+              <Form.Control
+                value={row.add_on_check_title}
+                placeholder="Enter title"
+                onChange={(e) =>
+                  handleRowChange(index, "add_on_check_title", e.target.value)
+                }
+              />
+            </td>
+            <td>
+              <Form.Control
+                value={row.add_on_check_desc}
+                placeholder="Enter description"
+                onChange={(e) =>
+                  handleRowChange(index, "add_on_check_desc", e.target.value)
+                }
+              />
+            </td>
+            <td>
+              <Form.Control
+                value={row.add_on_check_rate}
+                placeholder="Enter rate"
+                onChange={(e) =>
+                  handleRowChange(index, "add_on_check_rate", e.target.value)
+                }
+              />
+            </td>
+            <td className="text-center">
+  {/* Remove button (only show if more than 1 row) */}
+  {formRows.length > 1 && (
+    <Button
+      variant="outline-danger"
+      size="sm"
+      className="me-2"
+      onClick={() => removeRow(index)}
+    >
+      Remove
+    </Button>
+  )}
 
-            {/* Dynamic Rows Section */}
-            {formRows.map((row, index) => (
-              <Row key={index} className="mb-3 d-flex gap-3">
-                <Col md={3}>
-                  <Form.Group>
-                    <Form.Label>Title</Form.Label>
-                    <Form.Control
-                      value={row.add_on_check_title}
-                      onChange={(e) =>
-                        handleRowChange(
-                          index,
-                          "add_on_check_title",
-                          e.target.value
-                        )
-                      }
-                      placeholder="Enter Title"
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={3}>
-                  <Form.Group>
-                    <Form.Label>Description</Form.Label>
-                    <Form.Control
-                      value={row.add_on_check_desc}
-                      onChange={(e) =>
-                        handleRowChange(
-                          index,
-                          "add_on_check_desc",
-                          e.target.value
-                        )
-                      }
-                      placeholder="Describe"
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={3}>
-                  <Form.Group>
-                    <Form.Label>Rate</Form.Label>
-                    <Form.Control
-                      value={row.add_on_check_rate}
-                      onChange={(e) =>
-                        handleRowChange(
-                          index,
-                          "add_on_check_rate",
-                          e.target.value
-                        )
-                      }
-                      placeholder="Enter rate"
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-            ))}
+  {/* Add button only for last row */}
+  {index === formRows.length - 1 && (
+    <Button
+      variant="outline-success"
+      size="sm"
+      onClick={addRow}
+    >
+      Add
+    </Button>
+  )}
+</td>
 
-            <Button variant="success" className="mb-3" onClick={addRow}>
-              + Add Row
-            </Button>
+          </tr>
+        ))}
+      </tbody>
+    </Table>
 
-            <Row className="d-flex justify-content-center">
-              <Button
-                className="col-2 "
-                variant="success"
-                onClick={handleFinalSubmit}
-              >
-                Submit
-              </Button>
-            </Row>
-          </Modal.Body>
-        </Modal>
+    {/* Submit */}
+    <Row className="d-flex justify-content-center">
+      <Button className="col-2" variant="success" onClick={handleFinalSubmit}>
+        Submit
+      </Button>
+    </Row>
+  </Modal.Body>
+</Modal>
+
+
+
+
 
         {/* view modal */}
 

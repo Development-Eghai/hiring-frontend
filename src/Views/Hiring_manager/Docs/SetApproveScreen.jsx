@@ -210,6 +210,32 @@ const SetApproveScreen = () => {
     setStep(1);
   };
 
+  const addApproverRow = () => {
+    setFormState((prev) => ({
+      ...prev,
+      approvers: [
+        ...prev.approvers,
+        {
+          role: "",
+          job_title: "",
+          first_name: "",
+          last_name: "",
+          email: "",
+          contact_number: "",
+          set_as_approver: "Yes",
+        },
+      ],
+    }));
+  };
+  
+  const removeApproverRow = (index) => {
+    setFormState((prev) => ({
+      ...prev,
+      approvers: prev.approvers.filter((_, i) => i !== index),
+    }));
+  };
+  
+
   const handleFinalSubmit = async () => {
     try {
       const res = await axiosInstance.post("/api/set-approver/", formState);
@@ -363,25 +389,8 @@ const SetApproveScreen = () => {
           <Modal.Body>
             {step === 1 && (
               <>
-                <Row className="mb-3 gap-3">
-                  <Col >
-                    <Form.Group>
-                      <Form.Label>Planning ID</Form.Label>
-                      <Form.Select
-                        name="planning_id"
-                        value={formState.planning_id}
-                        onChange={handleMainChange}
-                      >
-                        <option value="">-- Select Planning ID --</option>
-                        {dropdownOptions.plan_id.map((id, index) => (
-                          <option key={index} value={id}>
-                            {id}
-                          </option>
-                        ))}
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                  <Col >
+                <Row className="mb-3">
+                  <Col md={6}>
                     <Form.Group>
                       <Form.Label>Req ID</Form.Label>
                       <Form.Select
@@ -398,7 +407,23 @@ const SetApproveScreen = () => {
                       </Form.Select>
                     </Form.Group>
                   </Col>
-                  
+                  <Col md={6}>
+                    <Form.Group>
+                      <Form.Label>Planning ID</Form.Label>
+                      <Form.Select
+                        name="planning_id"
+                        value={formState.planning_id}
+                        onChange={handleMainChange}
+                      >
+                        <option value="">-- Select Planning ID --</option>
+                        {dropdownOptions.plan_id.map((id, index) => (
+                          <option key={index} value={id}>
+                            {id}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
                 </Row>
                 <div className="text-end">
                   {loadingClient ? (
@@ -421,8 +446,8 @@ const SetApproveScreen = () => {
 
             {step === 2 && (
               <>
-                <Row className="mb-3 gap-3">
-                  <Col >
+                <Row className="mb-3">
+                  <Col md={6}>
                     <Form.Group>
                       <Form.Label>Client Name</Form.Label>
                       <Form.Control
@@ -434,7 +459,7 @@ const SetApproveScreen = () => {
                       />
                     </Form.Group>
                   </Col>
-                  <Col >
+                  <Col md={6}>
                     <Form.Group>
                       <Form.Label>Client ID</Form.Label>
                       <Form.Control
@@ -448,124 +473,126 @@ const SetApproveScreen = () => {
                   </Col>
                 </Row>
 
-                <Form.Group className="mb-3">
-                  <Form.Label>Number of Approvers</Form.Label>
+        <Table bordered hover responsive>
+          <thead className="table-light">
+            <tr>
+              <th>Role</th>
+              <th>Job Title</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Email</th>
+              <th>Contact Number</th>
+              {/* <th>Set as Approver</th> */}
+              <th style={{ width: "150px" }}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {formState.approvers.map((approver, index) => (
+              <tr key={index}>
+                <td>
+                  <Form.Select
+                    name="role"
+                    value={approver.role}
+                    onChange={(e) => handleApproverChange(index, e)}
+                  >
+                    <option value="">-- Select Role --</option>
+                    <option value="Manager">Manager</option>
+                    <option value="HR">HR</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Reviewer">Reviewer</option>
+                  </Form.Select>
+                </td>
+                <td>
                   <Form.Control
-                    type="number"
-                    min="1"
-                    name="no_of_approvers"
-                    value={formState.no_of_approvers}
-                    onChange={handleNoOfApproversChange}
+                    name="job_title"
+                    placeholder="Enter job title"
+                    value={approver.job_title}
+                    onChange={(e) => handleApproverChange(index, e)}
                   />
-                </Form.Group>
+                </td>
+                <td>
+                  <Form.Control
+                    name="first_name"
+                    placeholder="Enter first name"
+                    value={approver.first_name}
+                    onChange={(e) => handleApproverChange(index, e)}
+                  />
+                </td>
+                <td>
+                  <Form.Control
+                    name="last_name"
+                    placeholder="Enter last name"
+                    value={approver.last_name}
+                    onChange={(e) => handleApproverChange(index, e)}
+                  />
+                </td>
+                <td>
+                  <Form.Control
+                    type="email"
+                    name="email"
+                    placeholder="Enter email"
+                    value={approver.email}
+                    onChange={(e) => handleApproverChange(index, e)}
+                  />
+                </td>
+                <td>
+                  <Form.Control
+                    name="contact_number"
+                    placeholder="Enter contact number"
+                    value={approver.contact_number}
+                    onChange={(e) => handleApproverChange(index, e)}
+                  />
+                </td>
+                {/* <td>
+                  <Form.Select
+                    name="set_as_approver"
+                    value={approver.set_as_approver}
+                    onChange={(e) => handleApproverChange(index, e)}
+                  >
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </Form.Select>
+                </td> */}
+                <td className="text-center">
+                  {formState.approvers.length > 1 && (
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
+                      className="me-2"
+                      onClick={() => removeApproverRow(index)}
+                    >
+                      Remove
+                    </Button>
+                  )}
+                  {index === formState.approvers.length - 1 && (
+                    <Button
+                      variant="outline-success"
+                      size="sm"
+                      onClick={addApproverRow}
+                    >
+                      Add
+                    </Button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </>
+    )}
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={handleCloseModal}>
+      Cancel
+    </Button>
+    {step === 2 && (
+      <Button variant="success" onClick={handleFinalSubmit}>
+        Submit
+      </Button>
+    )}
+  </Modal.Footer>
+</Modal>
 
-                {formState.approvers.map((approver, index) => (
-                  <div key={index} className="border rounded p-3 mb-4">
-                    <h6 className="fw-bold">Approver {index + 1}</h6>
-                    <Row className="mb-3">
-                      <Col md={6}>
-                        <Form.Group>
-                          <Form.Label>Role</Form.Label>
-                          <Form.Select
-                            name="role"
-                            value={approver.role}
-                            onChange={(e) => handleApproverChange(index, e)}
-                          >
-                            <option value="">-- Select Role --</option>
-                            <option value="Manager">Manager</option>
-                            <option value="HR">HR</option>
-                            <option value="Finance">Finance</option>
-                            <option value="Reviewer">Reviewer</option>
-                          </Form.Select>
-                        </Form.Group>
-                      </Col>
-                      <Col md={6}>
-                        <Form.Group>
-                          <Form.Label>Job Title</Form.Label>
-                          <Form.Control
-                            name="job_title"
-                            value={approver.job_title}
-                            onChange={(e) => handleApproverChange(index, e)}
-                            placeholder="Enter job title"
-                          />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-
-                    <Row className="mb-3">
-                      <Col md={6}>
-                        <Form.Group>
-                          <Form.Label>First Name</Form.Label>
-                          <Form.Control
-                            name="first_name"
-                            value={approver.first_name}
-                            onChange={(e) => handleApproverChange(index, e)}
-                          />
-                        </Form.Group>
-                      </Col>
-                      <Col md={6}>
-                        <Form.Group>
-                          <Form.Label>Last Name</Form.Label>
-                          <Form.Control
-                            name="last_name"
-                            value={approver.last_name}
-                            onChange={(e) => handleApproverChange(index, e)}
-                          />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-
-                    <Row className="mb-3">
-                      <Col md={6}>
-                        <Form.Group>
-                          <Form.Label>Email</Form.Label>
-                          <Form.Control
-                            type="email"
-                            name="email"
-                            value={approver.email}
-                            onChange={(e) => handleApproverChange(index, e)}
-                          />
-                        </Form.Group>
-                      </Col>
-                      <Col md={6}>
-                        <Form.Group>
-                          <Form.Label>Contact Number</Form.Label>
-                          <Form.Control
-                            name="contact_number"
-                            value={approver.contact_number}
-                            onChange={(e) => handleApproverChange(index, e)}
-                          />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-
-                    <Form.Group>
-                      <Form.Label>Set as Approver</Form.Label>
-                      <Form.Select
-                        name="set_as_approver"
-                        value={approver.set_as_approver}
-                        onChange={(e) => handleApproverChange(index, e)}
-                      >
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                      </Form.Select>
-                    </Form.Group>
-                  </div>
-                ))}
-              </>
-            )}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>
-              Cancel
-            </Button>
-            {step === 2 && (
-              <Button variant="success" onClick={handleFinalSubmit}>
-                Submit
-              </Button>
-            )}
-          </Modal.Footer>
-        </Modal>
 
         <Modal
           show={showViewModal}

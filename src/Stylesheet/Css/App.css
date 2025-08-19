@@ -146,6 +146,11 @@ body {
   width: 0px !important;
   height: 0px !important;
 }
+.custom-modal .modal-dialog {
+  max-width: 90% !important; /* wider */
+  width: 90% !important;
+}
+
 
 .navlink-sidebar {
   width: 100%;
