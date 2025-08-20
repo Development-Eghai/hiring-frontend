@@ -5,10 +5,10 @@ import { useCommonState, useDispatch } from "Components/CustomHooks";
 import HeaderCard from "Components/Card/HeaderCard";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-
+import { FaBars, FaTimes } from "react-icons/fa";
+import { update_app_data } from "Views/Common/Slices/Common_slice";
 const Header = ({ offcanvasOn, offcanvasOnButton }) => {
   const { commonState } = useCommonState();
-
   const dispatch = useDispatch();
   const userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};
   const { Name,username, role } = userInfo;
@@ -42,8 +42,24 @@ const Header = ({ offcanvasOn, offcanvasOnButton }) => {
     return (
       <>
         <div className="col-12 d-flex flex-wrap align-items-center justify-content-between ">
-          <div className="col">{commonState?.app_data?.user_role && commonState?.app_data?.user_role}{" "}{formattedPathName}</div>
-
+          <div
+            className="d-lg-none pe-4"
+            onClick={() =>
+              dispatch(
+                update_app_data({
+                  type: "canvas",
+                  data: !commonState?.app_data?.canvasShow,
+                })
+              )
+            }
+          >
+            <FaBars />
+          </div>
+          <div className="col">
+            {commonState?.app_data?.user_role &&
+              commonState?.app_data?.user_role}{" "}
+            {formattedPathName}
+          </div>
           <div className="col">{commonState?.currentMenuName}</div>
 
           <div className="col d-inline-flex flex-wrap justify-content-end align-items-center">

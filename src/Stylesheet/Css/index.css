@@ -14,6 +14,12 @@
   cursor: pointer;
   z-index: 1;
 }
+.offcanvas-header .btn-close {
+  filter: invert(1) !important;  /* turns it white */
+  opacity: 1 !important;
+  margin-bottom: 50px;
+}
+
 
 .home_data_table{
   height: calc(var(--root-height) - (var(--header-height) + 4rem));

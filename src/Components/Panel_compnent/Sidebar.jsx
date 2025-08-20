@@ -1,8 +1,10 @@
 import React, { useEffect } from "react";
 import OffCanvas from "Components/Offcanvas/OffCanvas";
-import { useCustomNavigate } from "Components/CustomHooks";
+import { useCommonState, useCustomNavigate } from "Components/CustomHooks";
 import Img from "Components/Img/Img";
 import NavLinkComp from "Components/Router_components/NavLink";
+import { useDispatch } from "react-redux";
+import { update_app_data } from "Views/Common/Slices/Common_slice";
 
 const Sidebar = ({
   menuOptions,
@@ -18,6 +20,9 @@ const Sidebar = ({
   footerClickFunction,
 }) => {
   const navigate = useCustomNavigate();
+  const {commonState} = useCommonState();
+  const offcanvas = commonState?.app_data?.canvasShow;
+  const dispatch = useDispatch();
 
   const hanldeButton = (v) => {
     return (
@@ -34,7 +39,7 @@ const Sidebar = ({
     return (
       <React.Fragment>
         <div className="w-100">
-          <h5>Pixel Advant</h5>
+          <h5 className="text-white">Pixel Advant</h5>
         </div>
       </React.Fragment>
     );
@@ -101,17 +106,16 @@ const Sidebar = ({
               <div className="col text-center">{headerFun()}</div>
             </div>
           </div>
-
           {/* body */}
           <div className="sidebar-body">{bodyContent()}</div>
         </div>
       </div>
 
       <OffCanvas
-        offCanvasShow={offCanvasShow}
+        offCanvasShow={offcanvas}
         offcanvasPlacement="start"
         offcanvasClassname="rounded border-0 sidebar offcanvas-sidebar"
-        handleCanvasOpenOrClose={handleCanvasOpenOrClose}
+        handleCanvasOpenOrClose={()=>dispatch(update_app_data({type:"canvas",data:!commonState?.app_data?.canvasShow}))}
         canvasHeader={headerFun("198px", "33px", companyLogo)}
         offcanvasHeaderClassname="sidebar-header"
         offcanvasHeaderTitleClassname="col-11 text-center"
