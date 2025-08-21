@@ -15,7 +15,7 @@ const RecruiterHeader = () => {
   return (
     <>
       <div className="card rounded-3 shadow-sm p-2 mb-5">
-        <div className="card-body p-0 card overflow-auto">
+        <div className="card-body p-0 card ">
           <div className="row mt-2 p-2">
             <div className="col d-flex flex-wrap gap-2">
               <ButtonComponent

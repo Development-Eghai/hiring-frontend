@@ -403,6 +403,24 @@ const Configure_bg_packages = () => {
                     </td>
                     <td>
                       <Select
+                        menuPortalTarget={document.body}
+                        styles={{
+                          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                          valueContainer: (base) => ({
+                            ...base,
+                            display: "flex",
+                            flexWrap: "nowrap", 
+                            overflowX: "auto",
+                            maxHeight: "38px", 
+                          }),
+                          multiValue: (base) => ({
+                            ...base,
+                            backgroundColor: "#e0f2ff",
+                            borderRadius: "6px",
+                            marginRight: "4px",
+                          }),
+                        }}
+                        menuPosition="fixed"
                         isMulti
                         options={[
                           { value: "Email", label: "Email" },
@@ -665,7 +683,7 @@ const Configure_bg_packages = () => {
 
         <Modal
           show={showVendorEditModal}
-         onHide={() => {
+          onHide={() => {
             setshowVendorEditModal(false);
             setFormRows([
               {
@@ -785,6 +803,24 @@ const Configure_bg_packages = () => {
                     </td>
                     <td>
                       <Select
+                        menuPortalTarget={document.body}
+                        styles={{
+                          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                          valueContainer: (base) => ({
+                            ...base,
+                            display: "flex",
+                            flexWrap: "nowrap", 
+                            overflowX: "auto",
+                            maxHeight: "38px", 
+                          }),
+                          multiValue: (base) => ({
+                            ...base,
+                            backgroundColor: "#e0f2ff",
+                            borderRadius: "6px",
+                            marginRight: "4px",
+                          }),
+                        }}
+                        menuPosition="fixed"
                         isMulti
                         options={[
                           { value: "Email", label: "Email" },

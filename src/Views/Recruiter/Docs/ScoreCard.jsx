@@ -201,7 +201,7 @@ const ScoreCard = () => {
     <>
       <RecruiterHeader />
       <div className="interview-table-wrapper pt-3">
-        <div className="scroll-container bg-white rounded p-2">
+        <div className=" bg-white rounded p-2">
           <div className="row justify-content-between align-items-center mb-3">
             <div className="col-md-2">
               <h5 className="fw-bold mb-0">Screening Round</h5>

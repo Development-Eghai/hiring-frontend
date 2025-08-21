@@ -188,6 +188,7 @@ export const Home = () => {
         <td className="d-flex p-2 gap-2 justify-content-center">
           <Button
             variant="outline-secondary"
+            className="btn-bran-edit-color"
             size="sm"
             onClick={() => handleEdit(row)}
           >
