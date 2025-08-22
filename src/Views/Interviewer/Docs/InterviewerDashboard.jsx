@@ -30,8 +30,9 @@ const DEFAULT_FIELDS = [
   "interviewer_stage",
   // "Email ID",
   "candidate_id",
-  // "Candidate First Name",
-  // "Candidate Last Name",
+  
+  "candidate_first_name",
+  "candidate_last_name",
   // "Role",
   "feedback",
   "interview_results",

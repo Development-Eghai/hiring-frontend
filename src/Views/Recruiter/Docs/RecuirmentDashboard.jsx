@@ -115,7 +115,8 @@ export const RecruiterDashboard = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [modalSourceinput, setModalSourceinput] = useState("");
   const [cvFiles, setCvFiles] = useState([]);
-
+  const [showJdViewModal, setJdViewModal] = useState(false);
+const [jdContent, setJdContent] = useState("");
   const handleFileChange = (e) => {
     const newFiles = Array.from(e.target.files);
     setCvFiles((prev) => [...prev, ...newFiles]);
@@ -324,26 +325,42 @@ export const RecruiterDashboard = () => {
                   ))}
                 </tr>
               </thead>
-              <tbody className="p-2">
-                {candidateData.length > 0 ? (
-                  candidateData.map((data, idx) => (
-                    <tr key={idx}>
-                      {CandidateTableHeading.map((col, i) => (
-                        <td key={i}>{data[col]}</td>
-                      ))}
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td
-                      colSpan={CandidateTableHeading.length}
-                      className="text-center"
-                    >
-                      No data found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
+<tbody className="p-2">
+  {candidateData.length > 0 ? (
+    candidateData.map((data, idx) => (
+      <tr key={idx}>
+        {CandidateTableHeading.map((col, i) => (
+          <td key={i}>
+            {col === "JD From applied Position" && data["JD From applied Position"]? (
+              <Button
+                variant="outline-success"
+                size="sm"
+                onClick={() => {
+                  setJdContent(data["JD From applied Position"]);
+                  setJdViewModal(true);
+                }}
+              >
+                View JD
+              </Button>
+            ) : (
+              data[col] // fallback for normal fields
+            )}
+          </td>
+        ))}
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td
+        colSpan={CandidateTableHeading.length}
+        className="text-center"
+      >
+        No data found
+      </td>
+    </tr>
+  )}
+</tbody>
+
             </table>
           </div>
         </div>
@@ -354,6 +371,22 @@ export const RecruiterDashboard = () => {
       {/* <div className="row">
         <PaginationWithLimit totalItems={50} options={[10, 25, 50]} />
       </div> */}
+
+                  <Modal show={showJdViewModal} onHide={() => setJdViewModal(false)} size="lg" centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Job Description</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="d-flex flex-wrap">
+        <div style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+        {jdContent || "No JD available"}
+      </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setJdViewModal(false)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

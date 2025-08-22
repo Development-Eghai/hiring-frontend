@@ -32,7 +32,8 @@ const CandidateScreen = () => {
 
   const [candidateDetails, setCandidateDetails] = useState([]);
   console.log(candidateDetails, "dscdas");
-
+  const [showJdViewModal, setJdViewModal] = useState(false);
+const [jdContent, setJdContent] = useState("");
   const [showModal, setShowModal] = useState(false);
 
   const [selectedCandidate, setSelectedCandidate] = useState({});
@@ -224,7 +225,16 @@ const CandidateScreen = () => {
                             <td>{data?.Candidate_Last_Name}</td>
                             <td>{data?.Applied_Position}</td>
                             <td>{data?.Time_in_Stage}</td>
-                            <td>{data?.JD_From_applied_Position}</td>
+                            <td>{data?.JD_From_applied_Position &&   <Button
+                                        variant="outline-success"
+                                        size="sm"
+                                        onClick={() => {
+                                          setJdContent(data?.JD_From_applied_Position);
+                                          setJdViewModal(true);
+                                        }}
+                                      >
+                                        View JD
+                                      </Button>}</td>
                             <td>
                               {data?.CV_Resume && (
                                 <>
@@ -469,6 +479,23 @@ const CandidateScreen = () => {
           </button>
         </Modal.Footer>
       </Modal>
+
+
+            <Modal show={showJdViewModal} onHide={() => setJdViewModal(false)} size="lg" centered>
+  <Modal.Header closeButton>
+    <Modal.Title>Job Description</Modal.Title>
+  </Modal.Header>
+  <Modal.Body className="d-flex flex-wrap">
+  <div style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+  {jdContent || "No JD available"}
+</div>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={() => setJdViewModal(false)}>
+      Close
+    </Button>
+  </Modal.Footer>
+</Modal>
     </>
   );
 };

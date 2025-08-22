@@ -645,6 +645,10 @@ const RequisitionForm = (handleNext) => {
 
   const BuisnessLine = ["Finance", "SWE", "Products"];
   const BuisnessUnit = ["Banking", "Insurance", "Healthcare"];
+  const [selectedBand, setSelectedBand] = useState("");
+const [selectedSubBand, setSelectedSubBand] = useState("");
+
+console.log(selectedBand,"adasas")
 
   const Division = ["Banking", "Insurance", "Healthcare"];
 
@@ -705,7 +709,14 @@ const locations = [
 
   const Band = ["P3", "P4", "P5", "M1", "M2", "M3"];
 
-  const Subband = ["P3.1", "P4.2", "P5.3"];
+ const subBandMapping = {
+  P3: ["P3.1", "P3.2", "P3.3"],
+  P4: ["P4.1", "P4.2", "P4.3"],
+  P5: ["P5.1", "P5.2", "P5.3"],
+  M1: ["M1.1", "M1.2"],
+  M2: ["M2.1", "M2.2"],
+  M3: ["M3.1", "M3.2"]
+};
 
   const ModeOfWorking = ["Remote", "Onsite", "hybrid", "client site"];
 
@@ -715,6 +726,7 @@ const locations = [
     "Contractor",
     "Internship",
   ];
+
 
   const BillingTypes = ["Recrruing", "Onetime", "SOW"];
 
@@ -1091,7 +1103,12 @@ const locations = [
               <select
                 {...register("band", { required: "Band is required" })}
                 className={`form-select ${errors.band ? "is-invalid" : ""}`}
+                                onChange={(e) => {
+      setSelectedBand(e.target.value);
+      setSelectedSubBand("");
+    }}
               >
+
                 <option value="">Select Band</option>
                 {Band.map((band) => (
                   <option value={band}>{band}</option>
@@ -1110,9 +1127,12 @@ const locations = [
                 className={`form-select ${errors.sub_band ? "is-invalid" : ""}`}
               >
                 <option value="">Select Sub Band</option>
-                {Subband.map((band) => (
-                  <option value={band}>{band}</option>
-                ))}
+                 {selectedBand &&
+      subBandMapping[selectedBand].map((sub) => (
+        <option key={sub} value={sub}>
+          {sub}
+        </option>
+      ))}
               </select>
               {errors.sub_band && (
                 <div className="invalid-feedback">
