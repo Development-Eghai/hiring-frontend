@@ -14,6 +14,7 @@ import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import { ToastContainer, toast } from "react-toastify";
 import { BsArrowLeft } from "react-icons/bs";
+import axios from "axios";
 
 const AccordionItem = ({ title, children, isOpen, onClick }) => (
   <div className="mb-2">
@@ -92,6 +93,8 @@ const PlanninggForm = (handleNext) => {
   // setLanguageProficiency(profMap);
   setRows(data?.communication_language)
   setJobDesc(data?.jd_details)
+  setDomainRows(data?.domain_details || [] )
+  setVisaRows((data?.visa_details || []))
           reset({
             job_role: data?.job_role,
             no_of_openings: data?.no_of_openings,
@@ -99,7 +102,7 @@ const PlanninggForm = (handleNext) => {
             experience_range: data?.experience_range,
             designation: data?.designation,
             target_companies: data?.target_companies,
-            compensation_range: data?.compensation,
+            compensation_range: data?.compensation_range,
             location: data?.location,
             currency_type:data?.currency_type,
             working_modal: data?.working_modal,
@@ -185,6 +188,8 @@ const PlanninggForm = (handleNext) => {
     },
   });
 
+
+
   const hasDomain = watch("has_domain");
   const hasRelocation = watch("relocation");
   const hasVisa = watch("visa_required");
@@ -193,8 +198,10 @@ const PlanninggForm = (handleNext) => {
    const hasHealthRecruirment = watch("health_requirmnebt")
    const hasCitizenRequirment = watch("citizen_requirement")
    const [rows, setRows] = useState([]);
+  const [bgdropDown,setBGdropdown] = useState([]);
 
-   console.log(rows,"sdsdsadsa")
+  const [visaRows, setVisaRows] = useState([{ visa_country: "", visa_type: "" }]);   console.log(rows,"sdsdsadsa")
+  const [domainRows, setDomainRows] = useState([{ domain_name: "", sub_domain_name: "" }]);
 
      const { fields, append, remove } = useFieldArray({
     control,
@@ -213,6 +220,39 @@ const handleRemoveCitizenCountry = (index) => {
 };
   const handleAddCommunicationRow = () => {
     setRows([...rows, { language: null, proficiency: null }]);
+  };
+
+    const handleAddDomainRow = () => {
+    setDomainRows([...domainRows, { domain_name: "", sub_domain_name: "" }]);
+  };
+
+    const handleDomainChange = (index, field, value) => {
+    const updated = [...domainRows];
+    updated[index][field] = value;
+    setDomainRows(updated);
+  };
+
+    const handleRemoveDomainRow = (index) => {
+    const updatedRows = [...domainRows];
+    updatedRows.splice(index, 1);
+    setDomainRows(updatedRows);
+  };
+
+  const handleAddVisaRow = () =>{
+    setVisaRows([...visaRows, { visa_country: "", visa_type: "" }]);
+  }
+
+    // Update specific field in a row
+  const handleVisaChange = (index, field, value) => {
+    const updatedRows = [...visaRows];
+    updatedRows[index][field] = value;
+    setVisaRows(updatedRows);
+  };
+
+    const handleRemoveVisaRow = (index) => {
+    const updatedRows = [...visaRows];
+    updatedRows.splice(index, 1);
+    setVisaRows(updatedRows);
   };
 
   const handleCommunicationChange = (index, field, value) => {
@@ -255,7 +295,10 @@ const handleRemoveCitizenCountry = (index) => {
         relocation_amount:data?.relocation_amount,
         relocation_currency_type:data?.relocation_currency_type,
         has_domain:data?.has_domain,
-        domain_name:data?.domain_name,
+        // domain_name:data?.domain_name,
+        doamin_details:domainRows,
+        visa_details:visaRows,
+
         shift_timings:data?.shift_timings,
         education_qualification:data?.education_qualification,
         travel_opportunities:data?.travel_opportunities,
@@ -266,7 +309,7 @@ const handleRemoveCitizenCountry = (index) => {
         bg_verification_type:data?.bg_verification_type,
         communication_language:rows,
         citizen_requirement:data?.citizen_requirement,
-        sub_domain_name:data?.sub_domain_name,
+        // sub_domain_name:data?.sub_domain_name,
         // job_health_requirement:data?.health_requirmnebt,
       career_gap:data?.career_gap,
       social_media_link:data?.social_media_link,
@@ -275,6 +318,7 @@ const handleRemoveCitizenCountry = (index) => {
       citizen_countries:data?.citizen_countries,
       health_describe:data?.health_describe,
     };
+    
     if(!edit_id){
           const response = await axiosInstance.post(
       "/hiring_plan/",
@@ -303,6 +347,7 @@ const handleRemoveCitizenCountry = (index) => {
     }
     console.log(formdata,"efadaw")
   };
+  
 
   const formatCompensationInput = (input) => {
     input = input.trim();
@@ -315,6 +360,21 @@ const handleRemoveCitizenCountry = (index) => {
       return `0-${input}`;
     }
   };
+
+  const fetchBGDropDown = async()=>{
+  const response = await axios.get("https://api.pixeladvant.com/bg-packages/dropdown/");
+  const {data,success,message} = response?.data
+  if(success){
+    setBGdropdown(data)
+  }
+  if(!success){
+    toast.error(message)
+  }
+}
+
+useEffect(()=>{
+  fetchBGDropDown()
+},[])
 
   const customStyles = {
     control: (provided) => ({
@@ -842,46 +902,84 @@ useEffect(() => {
               )}
             </div>
             {hasDomain === "Yes" && (
-              <>
-              <div className="col-md-3">
-                <label className="form-label">
-                  Domain Name <span className="text-danger">*</span>
-                </label>
-                <input
-                  {...register("domain_name", {
-                    required: "Domain name is required",
-                  })}
-                  className={`form-control ${
-                    errors.domain_name ? "is-invalid" : ""
-                  }`}
-                  placeholder="Enter domain name"
-                />
-                {errors.domain_name && (
-                  <div className="invalid-feedback">
-                    {errors.domain_name.message}
-                  </div>
-                )}
-              </div>
-              <div className="col-md-3">
-                <label className="form-label">
-                 Sub Domain Name <span className="text-danger">*</span>
-                </label>
-                <input
-                  {...register("sub_domain_name", {
-                    required: "Sub Domain name is required",
-                  })}
-                  className={`form-control ${
-                    errors.domain_name ? "is-invalid" : ""
-                  }`}
-                  placeholder="Enter Sub domain name"
-                />
-                {errors.sub_domain_name && (
-                  <div className="invalid-feedback">
-                    {errors.sub_domain_name.message}
-                  </div>
-                )}
-              </div>
-              </>
+           <>
+            <div className="row">
+        {domainRows.map((row, index) => (
+          <div key={index} className="d-flex gap-2 mb-2">
+            {/* Domain Name */}
+            <div className="col-md-3">
+              <label className="form-label">
+                Domain Name <span className="text-danger">*</span>
+              </label>
+              <input
+                {...register(`domainRows.${index}.domain_name`, {
+                  required: "Domain name is required",
+                })}
+                className={`form-control ${
+                  errors.domainRows?.[index]?.domain_name ? "is-invalid" : ""
+                }`}
+                placeholder="Enter domain name"
+             onChange={(e) => handleDomainChange(index, "domain_name", e.target.value)}
+
+              />
+              {errors.domainRows?.[index]?.domain_name && (
+                <div className="invalid-feedback">
+                  {errors.domainRows[index].domain_name.message}
+                </div>
+              )}
+            </div>
+
+            {/* Sub Domain Name */}
+            <div className="col-md-3">
+              <label className="form-label">
+                Sub Domain Name <span className="text-danger">*</span>
+              </label>
+              <input
+                {...register(`domainRows.${index}.sub_domain_name`, {
+                  required: "Sub Domain name is required",
+                })}
+                className={`form-control ${
+                  errors.domainRows?.[index]?.sub_domain_name ? "is-invalid" : ""
+                }`}
+                placeholder="Enter sub domain name"
+                   onChange={(e) =>
+                  handleDomainChange(index, "sub_domain_name", e.target.value)
+                }
+              />
+              {errors.domainRows?.[index]?.sub_domain_name && (
+                <div className="invalid-feedback">
+                  {errors.domainRows[index].sub_domain_name.message}
+                </div>
+              )}
+            </div>
+
+            {/* Remove button */}
+            <div className="d-flex align-items-end">
+             <button
+                type="button"
+                className="btn btn-danger btn-sm mb-2"
+                onClick={() => handleRemoveDomainRow(index)}
+                disabled={domainRows.length === 1}
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        ))}
+            </div>
+
+      {/* Add row button */}
+      <div className="mt-2">
+        <button
+          type="button"
+          className="btn btn-primary btn-sm"
+          onClick={handleAddDomainRow}
+        >
+          + Add Domain
+        </button>
+      </div>
+      </>
+
             )}
 
             {/* shift timing */}
@@ -1030,27 +1128,52 @@ useEffect(() => {
           <div className="row d-flex gap-3">
 
 
-            {hasVisa === "Yes" && (
+      {hasVisa === "Yes" && (
               <>
-                {/* Visa Country */}
-                <div className="col-md-3">
-                  <label className="form-label">Visa Country</label>
-                  <input
-                    {...register("visa_country")}
-                    className="form-control"
-                    placeholder="Enter Visa Country"
-                  />
-                </div>
+        {visaRows.map((row, index) => (
+           <div className="row">
+            <div className="col-md-3">
+              <label className="form-label">Visa Country</label>
+              <input
+                {...register(`visaRows.${index}.visa_country`)}
+                className="form-control"
+                placeholder="Enter Visa Country"
+                 onChange={(e) => handleVisaChange(index, "visa_country", e.target.value)}
+              />
+            </div>
 
-                {/* Visa Type */}
-                <div className="col-md-3">
-                  <label className="form-label">Visa Type</label>
-                  <input
-                    {...register("visa_type")}
-                    className="form-control"
-                    placeholder="Enter Visa type"
-                  />
-                </div>
+            <div className="col-md-3">
+              <label className="form-label">Visa Type</label>
+              <input
+                {...register(`visaRows.${index}.visa_type`)}
+                className="form-control"
+                placeholder="Enter Visa Type"
+                onChange={(e) => handleVisaChange(index, "visa_type", e.target.value)}
+              />
+            </div>
+
+            <div className="col-2 mt-4">
+              <button
+                type="button"
+                className="btn btn-danger btn-sm mt-2"
+                onClick={() => handleRemoveVisaRow(index)}
+                disabled={visaRows.length === 1}
+              >
+                Remove
+              </button>
+            </div>
+      </div>
+        ))}
+
+      <div className="mt-2">
+        <button
+          type="button"
+          className="btn btn-primary btn-sm"
+          onClick={handleAddVisaRow}
+        >
+          + Add Visa
+        </button>
+      </div>
               </>
             )}
           </div>
@@ -1104,7 +1227,7 @@ useEffect(() => {
                     <CreatableSelect
                       {...field}
                       isMulti
-                      options={dropdownOptions?.bg_verification_type}
+                      options={bgdropDown}
                       classNamePrefix="react-select"
                       placeholder="SelectBG Verification Type"
                       onChange={(val) => field.onChange(val)}
@@ -1270,7 +1393,7 @@ useEffect(() => {
 </div>
 
 {/* Dynamic Citizen Country fields */}
-{hasCitizenRequirement === "Yes" && (
+{hasCitizenRequirment === "Yes" && (
   <div className="col-12 mt-2">
     <label className="form-label">Citizen Country Name</label>
     {citizenCountries.map((country, index) => (

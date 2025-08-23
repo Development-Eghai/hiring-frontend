@@ -35,7 +35,8 @@ const RecruiterScreeningDashboard = () => {
     "Req ID",
     "Candidate Id",
     "Client Name",
-    // "Candidate Second Name",
+    "Candidate First Name",
+    "Candidate Second Name",
     "Applied Postion",
     "Time in Stage",
     // "JD From applied Position",
@@ -286,7 +287,8 @@ const RecruiterScreeningDashboard = () => {
                             <th>{data?.req_id}</th>
                             <td>{data?.candidate_id}</td>
                             <td>{data?.client_name}</td>
-                            {/* <td>{data?.Candidate_Last_Name}</td> */}
+                            <td>{data?.candidate_first_name}</td>
+                            <td>{data?.candidate_last_name}</td>
                             <td>{data?.applied_position}</td>
                             <td>{data?.time_in_stage}</td>
                             {/* <td>{data?.JD_From_applied_Position}</td> */}
