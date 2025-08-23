@@ -312,7 +312,7 @@ const UploadScreen = () => {
           </tr>
         </thead>
         <tbody>
-          {calenderList.map((item, idx) => (
+          {calenderList?.length > 0 ? calenderList.map((item, idx) => (
             <tr key={item?.interviewer_id}>
               <td>{idx + 1}</td>
               <td>{item?.req_id}</td>
@@ -353,7 +353,7 @@ const UploadScreen = () => {
                 </div>
               </td>
             </tr>
-          ))}
+          )):<tr className="text-center"><td colSpan={12}>No Data Found</td></tr>}
         </tbody>
       </Table>
 

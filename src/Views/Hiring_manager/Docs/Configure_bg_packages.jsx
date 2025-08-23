@@ -361,7 +361,16 @@ const Configure_bg_packages = () => {
             </Row>
 
             {/* Package Details */}
-            <h5 className="mb-3">Package Details</h5>
+            <div className="d-flex justify-content-between mb-2">
+              <h5 className="">Package Details</h5>
+              <Button
+                variant="outline-success"
+                size="sm"
+                onClick={addPackageRow}
+              >
+                Add
+              </Button>
+            </div>
             <Table bordered hover responsive>
               <thead className="table-light">
                 <tr>
@@ -409,9 +418,9 @@ const Configure_bg_packages = () => {
                           valueContainer: (base) => ({
                             ...base,
                             display: "flex",
-                            flexWrap: "nowrap", 
+                            flexWrap: "nowrap",
                             overflowX: "auto",
-                            maxHeight: "38px", 
+                            maxHeight: "38px",
                           }),
                           multiValue: (base) => ({
                             ...base,
@@ -472,7 +481,7 @@ const Configure_bg_packages = () => {
                           Remove
                         </Button>
                       )}
-                      {index === packageRows.length - 1 && (
+                      {/* {index === packageRows.length - 1 && (
                         <Button
                           variant="outline-success"
                           size="sm"
@@ -480,7 +489,7 @@ const Configure_bg_packages = () => {
                         >
                           Add
                         </Button>
-                      )}
+                      )} */}
                     </td>
                   </tr>
                 ))}
@@ -488,7 +497,12 @@ const Configure_bg_packages = () => {
             </Table>
 
             {/* Add-on Details */}
-            <h5 className="mb-3">Add-on Details</h5>
+            <div className="d-flex justify-content-between mb-2">
+              <h5 className="">Add-on Details</h5>
+              <Button variant="outline-success" size="sm" onClick={addRow}>
+                Add
+              </Button>
+            </div>
             <Table bordered hover responsive>
               <thead className="table-light">
                 <tr>
@@ -554,7 +568,7 @@ const Configure_bg_packages = () => {
                       )}
 
                       {/* Add button only for last row */}
-                      {index === formRows.length - 1 && (
+                      {/* {index === formRows.length - 1 && (
                         <Button
                           variant="outline-success"
                           size="sm"
@@ -562,7 +576,7 @@ const Configure_bg_packages = () => {
                         >
                           Add
                         </Button>
-                      )}
+                      )} */}
                     </td>
                   </tr>
                 ))}
@@ -761,7 +775,16 @@ const Configure_bg_packages = () => {
             </Row>
 
             {/* Package Details */}
-            <h5 className="mb-3">Package Details</h5>
+            <div className="d-flex justify-content-between mb-2">
+              <h5 className="">Package Details</h5>
+              <Button
+                variant="outline-success"
+                size="sm"
+                onClick={addPackageRow}
+              >
+                Add
+              </Button>
+            </div>
             <Table bordered hover responsive>
               <thead className="table-light">
                 <tr>
@@ -809,9 +832,9 @@ const Configure_bg_packages = () => {
                           valueContainer: (base) => ({
                             ...base,
                             display: "flex",
-                            flexWrap: "nowrap", 
+                            flexWrap: "nowrap",
                             overflowX: "auto",
-                            maxHeight: "38px", 
+                            maxHeight: "38px",
                           }),
                           multiValue: (base) => ({
                             ...base,
@@ -872,15 +895,6 @@ const Configure_bg_packages = () => {
                           Remove
                         </Button>
                       )}
-                      {index === packageRows.length - 1 && (
-                        <Button
-                          variant="outline-success"
-                          size="sm"
-                          onClick={addPackageRow}
-                        >
-                          Add
-                        </Button>
-                      )}
                     </td>
                   </tr>
                 ))}
@@ -888,7 +902,12 @@ const Configure_bg_packages = () => {
             </Table>
 
             {/* Add-on Details */}
-            <h5 className="mb-3">Add-on Details</h5>
+            <div className="d-flex justify-content-between mb-2">
+              <h5 className="">Add-on Details</h5>
+              <Button variant="outline-success" size="sm" onClick={addRow}>
+                Add
+              </Button>
+            </div>
             <Table bordered hover responsive>
               <thead className="table-light">
                 <tr>
@@ -954,15 +973,9 @@ const Configure_bg_packages = () => {
                       )}
 
                       {/* Add button only for last row */}
-                      {index === formRows.length - 1 && (
-                        <Button
-                          variant="outline-success"
-                          size="sm"
-                          onClick={addRow}
-                        >
-                          Add
-                        </Button>
-                      )}
+                      {/* {index === formRows.length - 1 && (
+
+                      )} */}
                     </td>
                   </tr>
                 ))}

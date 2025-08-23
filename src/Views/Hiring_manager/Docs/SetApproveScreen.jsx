@@ -392,14 +392,14 @@ const SetApproveScreen = () => {
                 <Row className="mb-3">
                   <Col md={6}>
                     <Form.Group>
-                      <Form.Label>Req ID</Form.Label>
+                      <Form.Label>Planning ID</Form.Label>
                       <Form.Select
-                        name="req_id"
-                        value={formState.req_id}
+                        name="planning_id"
+                        value={formState.planning_id}
                         onChange={handleMainChange}
                       >
-                        <option value="">-- Select Req ID --</option>
-                        {dropdownOptions.requisition_id.map((id, index) => (
+                        <option value="">-- Select Planning ID --</option>
+                        {dropdownOptions.plan_id.map((id, index) => (
                           <option key={index} value={id}>
                             {id}
                           </option>
@@ -409,14 +409,14 @@ const SetApproveScreen = () => {
                   </Col>
                   <Col md={6}>
                     <Form.Group>
-                      <Form.Label>Planning ID</Form.Label>
+                      <Form.Label>Req ID</Form.Label>
                       <Form.Select
-                        name="planning_id"
-                        value={formState.planning_id}
+                        name="req_id"
+                        value={formState.req_id}
                         onChange={handleMainChange}
                       >
-                        <option value="">-- Select Planning ID --</option>
-                        {dropdownOptions.plan_id.map((id, index) => (
+                        <option value="">-- Select Req ID --</option>
+                        {dropdownOptions.requisition_id.map((id, index) => (
                           <option key={index} value={id}>
                             {id}
                           </option>
