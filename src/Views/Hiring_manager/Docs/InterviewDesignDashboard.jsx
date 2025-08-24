@@ -48,7 +48,7 @@ const InterviewDesignDashboard = () => {
             grow: 2,
           },
           {
-            name: "Screening Type",
+            name: "Mode of Interview",
             selector: (row) => row.screeningtype || "-",
             wrap: true,
             grow: 2,

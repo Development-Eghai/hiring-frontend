@@ -199,10 +199,10 @@ const PlanninggForm = (handleNext) => {
    const hasCitizenRequirment = watch("citizen_requirement")
    const [rows, setRows] = useState([]);
   const [bgdropDown,setBGdropdown] = useState([]);
-
+  const [CompensationDropDown,setCompensationDropDown] = useState([]);
   const [visaRows, setVisaRows] = useState([{ visa_country: "", visa_type: "" }]);   console.log(rows,"sdsdsadsa")
   const [domainRows, setDomainRows] = useState([{ domain_name: "", sub_domain_name: "" }]);
-console.log(domainRows,"adsadas")
+
      const { fields, append, remove } = useFieldArray({
     control,
     name: "social_media",
@@ -271,6 +271,25 @@ const handleRemoveCitizenCountry = (index) => {
       toast.error("Please fill all required fields");
     }
   };
+
+    async function fetchCompensationDropdown (){
+      try {
+        const response = await axios.get("https://api.pixeladvant.com/api/hiring-plan/compensation-ranges/");
+  
+        const {message ,data,success} = response?.data;
+  
+        if(success){
+          setCompensationDropDown(data?.compensation_range)
+          console.log(data,"adsadas")
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  
+    useEffect(()=>{
+      fetchCompensationDropdown()
+    },[])
 
   const onSubmit = async (data) => {
     //  const finalData = selectedLanguages.map((lang) => ({
@@ -683,7 +702,7 @@ useEffect(() => {
             <div className="col-md-3">
               <label className="form-label">Compensation Range (Yearly)</label>
               <Controller
-                name="compensation"
+                name="compensation_range"
                 control={control}
                 render={({ field }) => (
                   <CreatableSelect

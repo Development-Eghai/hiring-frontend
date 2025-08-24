@@ -532,7 +532,7 @@ const InterviewForm = () => {
                 <span>Options</span>
                 <span>Guideline</span>
                 <span>Min Qs</span>
-                <span>Screening Type</span>
+                <span>Mode of Interview</span>
                 <span>Duration</span>
                 <span>Duration Metric</span> 
                 <span>Weightage</span>

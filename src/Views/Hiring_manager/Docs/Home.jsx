@@ -19,16 +19,18 @@ import { decryptData } from "Security/Crypto/Crypto";
 import Cookies from "js-cookie";
 import Creatmodel from "./Creatmodel";
 import { BsPencilSquare, BsTrash } from "react-icons/bs";
+import axios from "axios";
 
 const DEFAULT_FIELDS = [
   "id",
-  "Client_name",
   "Requisition_id",
-  "Planning_id",
+  "Client_name",
+  // "Planning_id",
   "job_position",
   "Recruiter",
-  "division",
-  "department",
+  // "division",
+  // "department",
+  "No_of_positions",
   "location",
   "status",
 ];
@@ -57,6 +59,7 @@ const ALL_FIELDS = [
   "Feedback",
   "Relocation",
   "Travel",
+   "No_of_positions",
   "Visa",
   "Domain",
   "CIBIL",
