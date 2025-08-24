@@ -40,7 +40,6 @@ const PlanninggForm = (handleNext) => {
   const [citizenCountries, setCitizenCountries] = useState([""]);
 
   const [jobdesc, setJobDesc] = useState("");
-  console.log(citizenCountries,"dfsdsa")
 
   const [inputOptions, setInputOptions] = useState([]);
   const [dropdownOptions, setDropdownOptions] = useState([]);
@@ -93,8 +92,9 @@ const PlanninggForm = (handleNext) => {
   // setLanguageProficiency(profMap);
   setRows(data?.communication_language)
   setJobDesc(data?.jd_details)
-  setDomainRows(data?.domain_details || [] )
+  setDomainRows(data?.doamin_details || [] )
   setVisaRows((data?.visa_details || []))
+  setCitizenCountries(data?.citizen_countries)
           reset({
             job_role: data?.job_role,
             no_of_openings: data?.no_of_openings,
@@ -202,7 +202,7 @@ const PlanninggForm = (handleNext) => {
 
   const [visaRows, setVisaRows] = useState([{ visa_country: "", visa_type: "" }]);   console.log(rows,"sdsdsadsa")
   const [domainRows, setDomainRows] = useState([{ domain_name: "", sub_domain_name: "" }]);
-
+console.log(domainRows,"adsadas")
      const { fields, append, remove } = useFieldArray({
     control,
     name: "social_media",
@@ -912,15 +912,12 @@ useEffect(() => {
                 Domain Name <span className="text-danger">*</span>
               </label>
               <input
-                {...register(`domainRows.${index}.domain_name`, {
-                  required: "Domain name is required",
-                })}
                 className={`form-control ${
                   errors.domainRows?.[index]?.domain_name ? "is-invalid" : ""
                 }`}
                 placeholder="Enter domain name"
              onChange={(e) => handleDomainChange(index, "domain_name", e.target.value)}
-
+                defaultValue={row?.domain_name}
               />
               {errors.domainRows?.[index]?.domain_name && (
                 <div className="invalid-feedback">
@@ -935,9 +932,6 @@ useEffect(() => {
                 Sub Domain Name <span className="text-danger">*</span>
               </label>
               <input
-                {...register(`domainRows.${index}.sub_domain_name`, {
-                  required: "Sub Domain name is required",
-                })}
                 className={`form-control ${
                   errors.domainRows?.[index]?.sub_domain_name ? "is-invalid" : ""
                 }`}
@@ -945,6 +939,7 @@ useEffect(() => {
                    onChange={(e) =>
                   handleDomainChange(index, "sub_domain_name", e.target.value)
                 }
+                defaultValue={row?.sub_domain_name}
               />
               {errors.domainRows?.[index]?.sub_domain_name && (
                 <div className="invalid-feedback">
@@ -1135,20 +1130,20 @@ useEffect(() => {
             <div className="col-md-3">
               <label className="form-label">Visa Country</label>
               <input
-                {...register(`visaRows.${index}.visa_country`)}
                 className="form-control"
                 placeholder="Enter Visa Country"
                  onChange={(e) => handleVisaChange(index, "visa_country", e.target.value)}
+                 defaultValue={row?.visa_country}
               />
             </div>
 
             <div className="col-md-3">
               <label className="form-label">Visa Type</label>
               <input
-                {...register(`visaRows.${index}.visa_type`)}
                 className="form-control"
                 placeholder="Enter Visa Type"
                 onChange={(e) => handleVisaChange(index, "visa_type", e.target.value)}
+                defaultValue={row?.visa_type}
               />
             </div>
 
@@ -1403,7 +1398,7 @@ useEffect(() => {
             {...register(`citizen_countries.${index}`)}
             className="form-control"
             placeholder="Enter Citizen Country name"
-            defaultValue={country.value}
+            defaultValue={country}
           />
         </div>
         <div className="col-md-2">
