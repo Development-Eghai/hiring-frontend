@@ -121,6 +121,7 @@ export const PlanningScreen = () => {
   const [showJdViewModal, setJdViewModal] = useState(false);
 const [jdContent, setJdContent] = useState("");
 
+console.log(jdContent,"sadasd")
   const handleFieldChange = (fields) => setSelectedFields(fields);
   const handleReset = () => setSelectedFields(defaultFields);
 
@@ -168,7 +169,7 @@ const columns = [
             variant="outline-success"
             size="sm"
             onClick={() => {
-              setJdContent(row[field]);
+              setJdContent(row);
               setJdViewModal(true);
             }}
           >
@@ -277,12 +278,28 @@ const columns = [
       </Card>
 
       <Modal show={showJdViewModal} onHide={() => setJdViewModal(false)} size="lg" centered>
-  <Modal.Header closeButton>
-    <Modal.Title>Job Description</Modal.Title>
-  </Modal.Header>
+<Modal.Header closeButton>
+  <Modal.Title>Job Description</Modal.Title>
+  <div className="d-flex justify-content-end gap-2 ms-auto">
+
+    {jdContent?.req_id && (
+      <>
+        <strong>Req ID:</strong>
+        <span>{jdContent?.req_id}</span>
+      </>
+    )}  
+    {jdContent?.id && (
+      <>
+        <strong>Planning ID:</strong>
+        <span>{jdContent?.id}</span>
+      </>
+    )}  
+  </div>
+</Modal.Header>
+
   <Modal.Body className="d-flex flex-wrap">
   <div style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
-  {jdContent || "No JD available"}
+  {jdContent?.JD || "No JD available"}
 </div>
   </Modal.Body>
   <Modal.Footer>
