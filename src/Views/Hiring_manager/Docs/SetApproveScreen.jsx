@@ -498,6 +498,7 @@ const SetApproveScreen = () => {
                     <option value="">-- Select Role --</option>
                     <option value="Manager">Manager</option>
                     <option value="HR">HR</option>
+                    <option value="HM">HM</option>
                     <option value="Finance">Finance</option>
                     <option value="Reviewer">Reviewer</option>
                   </Form.Select>
