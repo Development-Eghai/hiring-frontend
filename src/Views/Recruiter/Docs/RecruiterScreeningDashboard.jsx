@@ -9,11 +9,13 @@ import { saveAs } from "file-saver";
 import Modal from "react-bootstrap/Modal";
 import axiosInstance from "Services/axiosInstance";
 import { useNavigate } from "react-router-dom";
+import { useCommonState } from "Components/CustomHooks";
 
 const RecruiterScreeningDashboard = () => {
   //  states
   const [tableData, setTableData] = useState([]);
   const [candidateData, setCandidateData] = useState([]);
+  const {commonState} = useCommonState();
 
     const RecuiterTableHeadings = [
     "S.no",
@@ -57,7 +59,9 @@ const RecruiterScreeningDashboard = () => {
       try {
         const response = await axios.post(
           "https://api.pixeladvant.com/api/jobrequisition/list-requisitions/",
-          { user_role: 2 }
+                    { user_role: commonState?.app_data?.user_id,
+            username:commonState?.app_data?.user_role
+           }
         );
 
         console.log(response?.data?.data, "caa");

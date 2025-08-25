@@ -3,13 +3,19 @@ import axios from "axios";
 import { Modal, Button, Form } from "react-bootstrap";
 // import PaginationWithLimit from "../Recruiter_utils/PaginationRecruiter";
 import RecruiterHeader from "../Recruiter_utils/Navbar";
+import { useCommonState } from "Components/CustomHooks";
 
 export const RecruiterDashboard = () => {
   const [tableData, setTableData] = useState([]);
   const [candidateData, setCandidateData] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  
   console.log(candidateData,"hv")
   console.log(tableData, "uyi");
+
+  const {commonState} = useCommonState();
+  
+  console.log(commonState,"asdasd")
   const RecuiterTableHeadings = [
     "S.no",
     "Planning ID",
@@ -84,7 +90,9 @@ export const RecruiterDashboard = () => {
       try {
         const response = await axios.post(
           "https://api.pixeladvant.com/api/jobrequisition/list-requisitions/",
-          { user_role: 2 }
+          { user_role: commonState?.app_data?.user_id,
+            username:commonState?.app_data?.user_role
+           }
         );
 
         if (response?.data?.success && Array.isArray(response.data.data)) {

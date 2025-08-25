@@ -20,6 +20,7 @@ import Cookies from "js-cookie";
 import Creatmodel from "./Creatmodel";
 import { BsPencilSquare, BsTrash } from "react-icons/bs";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const DEFAULT_FIELDS = [
   "id",
@@ -157,6 +158,8 @@ export const Home = () => {
   const [showModal, setShowModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [rowToDelete, setRowToDelete] = useState(null);
+  const [selectedReqId, setSelectedReqId] = useState(null);
+
   const fetchData = (fields) => {
     const params = {
       user_role:commonState?.app_data?.user_id,
@@ -211,8 +214,30 @@ export const Home = () => {
       button: true,
     });
 
+    dynamicColumns.unshift({
+  name: "Select",
+  cell: (row) => (
+    <input
+      type="radio"
+      name="selectedRow" // all radios in the table share the same name
+      onChange={() => handleRadioSelect(row)}
+    />
+  ),
+  ignoreRowClick: true,
+  allowOverflow: true,
+  button: true,
+});
+
+
     setColumns(dynamicColumns);
   }, [selectedFields]);
+
+
+  const handleRadioSelect = (row) => {
+  setSelectedReqId(row?.id);
+  console.log("Selected Req ID:", row?.id);
+};
+
 
   const handleEdit = (row) => {
     // open edit modal or navigate to edit page
@@ -224,6 +249,9 @@ export const Home = () => {
     setShowConfirmModal(true);
   };
 
+
+  
+const [show, setShow] = useState(false);
   const handleConfirmDelete = async () => {
     try {
       if (!rowToDelete?.id) {
@@ -273,6 +301,53 @@ export const Home = () => {
       Requisition_id: row.id,
     }));
 
+  const [recruiterDropDown,setrecruiterDropDown] = useState([]);
+  const [formData, setFormData] = useState({
+    type: "",
+    recruiter: "",
+    vendor: "",
+  });
+
+  async function fetchAssignRecDropdown() {
+    try {
+      const response = await axios.get("https://api.pixeladvant.com/api/jobrequisition/recruiter-vendor-dropdown/")
+      const {success,data} = response?.data;
+      if(success){
+        setrecruiterDropDown(data)
+      }
+    } catch (error) {
+      console.log(error,"dasda")
+    }
+  }
+
+  useEffect(()=>{
+    fetchAssignRecDropdown()
+  },[])
+
+  const handleChange = (e) => {
+
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleAssign = async() => {
+    try {
+      const payload = {
+         requisition_id:selectedReqId,
+         recruiter_name:formData?.vendor ? formData?.recruiter+ "," +formData?.vendor : formData?.recruiter
+     }
+      const response = await axios.post("https://api.pixeladvant.com/api/requisition/assign-recruiter/",payload)
+      const {success,data,message} = response?.data;
+      if(success){
+        setShow(false);
+        toast.success(message)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  };
 
   return (
     <div className="h-100">
@@ -285,7 +360,7 @@ export const Home = () => {
             <HiringManagerHomeCard data={card} />
           </div>
         </div>
-      ))}
+      ))} 
 
       <Card className="p-4 home_data_table">
         <div className="row align-items-center mb-4">
@@ -310,6 +385,8 @@ export const Home = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </InputGroup>
+
+              {selectedReqId && <button className="btn btn-secondary" onClick={() => setShow(true)}>assign recruiter</button>}
 
               <Creatmodel show={showModal} onHide={() => setShowModal(false)} />
             </div>
@@ -358,6 +435,68 @@ export const Home = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+
+          <Modal show={show} onHide={()=>setShow(false)} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>Assign Recruiter</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form>
+          {/* Dropdown 1 */}
+          <Form.Group className="mb-3">
+            <Form.Label>Select Type</Form.Label>
+            <Form.Select
+              name="type"
+              value={formData.type}
+              onChange={handleChange}
+            >
+              <option value="">Select</option>
+              <option value="internal">Internal</option>
+              <option value="external">External</option>
+            </Form.Select>
+          </Form.Group>
+
+          {/* Dropdown 2 */}
+{ formData?.type && <Form.Group className="mb-3">
+            <Form.Label>Select Recruiter</Form.Label>
+            <Form.Select
+              name="recruiter"
+              value={formData.recruiter}
+              onChange={handleChange}
+            >
+              <option value="">Select</option>
+                            <option value="fdfdsfsw">fadfdafwe</option>
+
+              {recruiterDropDown && recruiterDropDown?.Recruiter?.map((val,ind)=><option value={val.value} key={ind}>{val.label}</option>)}
+            </Form.Select>
+          </Form.Group>}
+
+          {/* Dropdown 3 */}
+{  formData?.type === "external" && <Form.Group className="mb-3">
+            <Form.Label>Select Vendor</Form.Label>
+            <Form.Select
+              name="vendor"
+              value={formData.vendor}
+              onChange={handleChange}
+            >
+              <option value="">Select</option>
+              <option value={"fdfdsfsw"}>fadfdafwe</option>
+              {recruiterDropDown && recruiterDropDown?.Vendor?.map((val,ind)=><option value={val.value} key={ind}>{val.label}</option>)}
+
+            </Form.Select>
+          </Form.Group>}
+        </Form>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={()=>setShow(false)}>
+          Cancel
+        </Button>
+        <Button variant="primary" onClick={handleAssign}>
+          Assign
+        </Button>
+      </Modal.Footer>
+    </Modal>
+
     </div>
   );
 };

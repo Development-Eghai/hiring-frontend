@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Modal, Button, Form } from "react-bootstrap";
+import { useCommonState } from "Components/CustomHooks";
 
 export const VendorDashboard = () => {
   const [tableData, setTableData] = useState([]);
   const [candidateData, setCandidateData] = useState([]);
+  const {commonState} = useCommonState();
 
   console.log(candidateData,"hv")
   console.log(tableData, "uyi");
@@ -83,8 +85,9 @@ export const VendorDashboard = () => {
       try {
         const response = await axios.post(
           "https://api.pixeladvant.com/api/jobrequisition/list-requisitions/",
-          { user_role: 2 }
-        );
+          { user_role: commonState?.app_data?.user_id,
+            username:commonState?.app_data?.user_role
+           }        );
 
         console.log(response?.data?.data, "caa");
 
