@@ -88,10 +88,11 @@ export const RecruiterDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const userInfo = JSON.parse(localStorage.getItem("userInfo"));
         const response = await axios.post(
           "https://api.pixeladvant.com/api/jobrequisition/list-requisitions/",
-          { user_role: commonState?.app_data?.user_id,
-            username:commonState?.app_data?.user_role
+          { user_role: userInfo?.user_id,
+          username: userInfo?.Name,
            }
         );
 
