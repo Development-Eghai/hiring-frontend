@@ -465,7 +465,6 @@ const [show, setShow] = useState(false);
               onChange={handleChange}
             >
               <option value="">Select</option>
-                            <option value="fdfdsfsw">fadfdafwe</option>
 
               {recruiterDropDown && recruiterDropDown?.Recruiter?.map((val,ind)=><option value={val.value} key={ind}>{val.label}</option>)}
             </Form.Select>
@@ -480,7 +479,6 @@ const [show, setShow] = useState(false);
               onChange={handleChange}
             >
               <option value="">Select</option>
-              <option value={"fdfdsfsw"}>fadfdafwe</option>
               {recruiterDropDown && recruiterDropDown?.Vendor?.map((val,ind)=><option value={val.value} key={ind}>{val.label}</option>)}
 
             </Form.Select>
