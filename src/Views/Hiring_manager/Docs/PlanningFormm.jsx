@@ -382,7 +382,7 @@ const handleRemoveCitizenCountry = (index) => {
         designation:data?.designation,
         currency_type:data?.currency_type,
         target_companies:data?.target_companies,
-        compensation_range:data?.compensation,
+        compensation_range:data?.compensation_range,
         location:data?.location,
         working_modal:data?.working_modal,
         job_type:data?.job_type,
@@ -611,7 +611,7 @@ useEffect(() => {
                   errors.planning_template ? "is-invalid" : ""
                 }`}
               >
-                <option value="">Select currency_type</option>
+                <option value="">Select planning_template</option>
                 <option value="template1">template1</option>
                 {dropdownOptions?.planning_templates?.map((val,ind)=>(
                    <option value={val} key={ind}>{val}</option>
