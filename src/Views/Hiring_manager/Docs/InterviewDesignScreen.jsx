@@ -528,6 +528,7 @@ const InterviewForm = () => {
           <div className="interview-parameters">
             <div className="parameter-scroll-wrapper px-2">
               <div className="parameter-header fw-bold bg-secondary text-white p-2 rounded d-flex justify-content-between">
+                <span>S.no</span>
                 <span style={{ minWidth: 150 }}>Score Card</span>
                 <span>Options</span>
                 <span>Guideline</span>
@@ -551,7 +552,8 @@ const InterviewForm = () => {
 
                   return (
                     <div className="parameter-body d-flex gap-2 mt-2" key={index}>
-                     
+
+                     <p className="d-flex align-items-center justify-content-center pt-3 pe-3 ps-2">{index+1}</p>
                       <CreatableSelect
                         isClearable
                         menuPortalTarget={document.body}

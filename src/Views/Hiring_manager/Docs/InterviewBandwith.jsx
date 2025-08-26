@@ -25,7 +25,7 @@ const InterviewBandwidth = () => {
 
   const navigate = useNavigate();
 
-
+  const [responseData,setresponseData] = useState([]);
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const editId = queryParams.get("edit_id");
@@ -183,29 +183,30 @@ const InterviewBandwidth = () => {
 
       if (res.data.success) {
         const data = res.data.data;
+        setresponseData(data)
         const results = [
-          { metric: "Candidates Required", value: data.required_candidate },
-          {
-            metric: "Decline Adjusted Count",
-            value: data.decline_adjust_count,
-          },
-          {
-            metric: "Total Candidate Pipeline",
-            value: data.total_candidate_pipline,
-          },
-          {
-            metric: "Total Interviews Needed",
-            value: data.total_interviews_needed,
-          },
-          { metric: "Total Interview Hours", value: data.total_interview_hrs },
-          {
-            metric: "Working Hours per Week",
-            value: data.working_hrs_per_week,
-          },
-          {
-            metric: "Total Interview Weeks",
-            value: data.total_interview_weeks,
-          },
+          // { metric: "Candidates Required", value: data.required_candidate },
+          // {
+          //   metric: "Decline Adjusted Count",
+          //   value: data.decline_adjust_count,
+          // },
+          // {
+          //   metric: "Total Candidate Pipeline",
+          //   value: data.total_candidate_pipline,
+          // },
+          // {
+          //   metric: "Total Interviews Needed",
+          //   value: data.total_interviews_needed,
+          // },
+          // { metric: "Total Interview Hours", value: data.total_interview_hrs },
+          // {
+          //   metric: "Working Hours per Week",
+          //   value: data.working_hrs_per_week,
+          // },
+          // {
+          //   metric: "Total Interview Weeks",
+          //   value: data.total_interview_weeks,
+          // },
           {
             metric: "No. of Interviewers Needed",
             value: data.no_of_interviewer_need,
@@ -213,7 +214,7 @@ const InterviewBandwidth = () => {
           { metric: "Leaves Adjustment", value: data.leave_adjustment },
         ];
         setResultData(results);
-        toast.success("Calculation completed successfully!");
+        toast.success(res.data.message);
       } else {
         toast.error("API responded with an error.");
       }
@@ -502,7 +503,7 @@ const InterviewBandwidth = () => {
           </div>
         </Form>
 
-        {resultData.length > 0 && (
+        {responseData && (
           <div className="results-section">
             <h4 className="mb-3">Calculated Results</h4>
             <div style={{ maxHeight: "400px", overflowY: "auto" }}>

@@ -192,6 +192,7 @@ const PlanninggForm = (handleNext) => {
 
   const hasDomain = watch("has_domain");
   const hasRelocation = watch("relocation");
+  const hasTemplate = watch("planning_template");
   const hasVisa = watch("visa_required");
   const hasBgVerfication = watch("background_verfication");
    const socialMediaLinkValue = watch("social_media_link");
@@ -207,6 +208,82 @@ const PlanninggForm = (handleNext) => {
     control,
     name: "social_media",
   });
+
+  async function fetchTemplateData() {
+    try {
+      const response = await axios.post("");
+
+      const { data, success } = response?.data;
+
+      if (success) {
+        const langOptions = response?.data?.data?.communication_language.map(
+          (item) => ({
+            label: item.language,
+            value: item.language,
+          })
+        );
+
+        setSelectedLanguages(langOptions);
+
+        const profMap = {};
+        response?.data?.data?.communication_language.forEach((item) => {
+          profMap[item.language] = {
+            label: item.proficiency,
+            value: item.proficiency,
+          };
+        });
+        setCitizenCountries(data?.citizen_countries);
+        // setLanguageProficiency(profMap);
+        setRows(data?.communication_language);
+        setJobDesc(data?.jd_details);
+        setDomainRows(data?.doamin_details || []);
+        setVisaRows(data?.visa_details || []);
+        setCitizenCountries(data?.citizen_countries);
+        reset({
+          job_role: data?.job_role,
+          no_of_openings: data?.no_of_openings,
+          tech_stack: data?.tech_stacks,
+          experience_range: data?.experience_range,
+          designation: data?.designation,
+          target_companies: data?.target_companies,
+          compensation_range: data?.compensation_range,
+          location: data?.location,
+          currency_type: data?.currency_type,
+          working_modal: data?.working_modal,
+          job_type: data?.job_type,
+          sub_domain_name: data?.sub_domain_name,
+          role_type: data?.role_type,
+          relocation: data?.relocation,
+          relocation_currency_type: data?.relocation_currency_type,
+          relocation_amount: data?.relocation_amount,
+          has_domain: data?.has_domain,
+          domain_name: data?.domain_name,
+          shift_timings: data?.shift_timings,
+          education_qualification: data?.education_qualification,
+          travel_opportunities: data?.travel_opportunities,
+          visa_required: data?.visa_required,
+          visa_country: data?.visa_country,
+          visa_type: data?.visa_type,
+          background_verfication: data?.background_verfication,
+          bg_verification_type: data?.bg_verification_type,
+          communication_language: langOptions,
+          citizen_requirement: data?.citizen_requirement,
+          health_requirmnebt: data?.job_health_requirement,
+          career_gap: data?.career_gap,
+          social_media_link: data?.social_media_link,
+          social_media: data?.social_media_data,
+          citizen_describe: data?.citizen_describe,
+          health_describe: data?.health_describe,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(()=>{
+    fetchTemplateData();
+  },[hasTemplate])
 
 
 const handleAddCitizenCountry = () => {
@@ -524,6 +601,47 @@ useEffect(() => {
               )}
             </div>
 
+            {/*  template*/}
+
+            <div className="col-md-3">
+              <label className="form-label">Select Planning Template</label>
+              <select
+                {...register("planning_template")}
+                className={`form-select ${
+                  errors.planning_template ? "is-invalid" : ""
+                }`}
+              >
+                <option value="">Select currency_type</option>
+                <option value="template1">template1</option>
+                {dropdownOptions?.planning_templates?.map((val,ind)=>(
+                   <option value={val} key={ind}>{val}</option>
+                ))}
+              </select>
+              {errors.planning_template && (
+                <div className="invalid-feedback">
+                  {errors.planning_template.message}
+                </div>
+              )}
+            </div>
+
+            {/*Client Name*/}
+            <div className="col-md-3">
+              <label className="form-label">Client Name</label>
+              <input
+                type="text"
+                {...register("client_name")}
+                className={`form-control ${
+                  errors.client_name ? "is-invalid" : ""
+                }`}
+                placeholder="Enter Client Name"
+              />
+              {errors.client_name && (
+                <div className="invalid-feedback">
+                  {errors.client_name.message}
+                </div>
+              )}
+            </div>
+
             {/* No of Openings */}
             <div className="col-md-3">
               <label className="form-label">No of Openings</label>
@@ -559,8 +677,8 @@ useEffect(() => {
                 </div>
               )}
             </div>
-                        {/* Tech Stacks*/}
-                        <div className="col-md-3">
+            {/* Tech Stacks*/}
+            <div className="col-md-3">
               <label className="form-label">Tech Stack</label>
               <Controller
                 className={`form-select ${
@@ -585,19 +703,18 @@ useEffect(() => {
               )}
             </div>
 
-                        <div className="mb-4">
-                          <label className="form-label fw-semibold">
-                           Job Description<span className="text-danger">*</span>:
-                          </label>
-                          <ReactQuill
-                            value={jobdesc}
-                            onChange={setJobDesc}
-                            theme="snow"
-                            placeholder="Enter your text here"
-                            className="quill-editor"
-                          />
-                        </div>
-
+            <div className="mb-4">
+              <label className="form-label fw-semibold">
+                Job Description<span className="text-danger">*</span>:
+              </label>
+              <ReactQuill
+                value={jobdesc}
+                onChange={setJobDesc}
+                theme="snow"
+                placeholder="Enter your text here"
+                className="quill-editor"
+              />
+            </div>
           </div>
 
           <div className="row d-flex gap-3">
@@ -734,8 +851,8 @@ useEffect(() => {
               )}
             </div>
 
-                        {/* currency type*/}
-                        <div className="col-md-3">
+            {/* currency type*/}
+            <div className="col-md-3">
               <label className="form-label">Currency Type</label>
               <select
                 {...register("currency_type")}
@@ -751,7 +868,7 @@ useEffect(() => {
                 <div className="invalid-feedback">
                   {errors.currency_type.message}
                 </div>
-              )}  
+              )}
             </div>
 
             {/* Location */}
@@ -780,7 +897,6 @@ useEffect(() => {
           </div>
 
           <div className="row d-flex gap-3">
-            
             {/* Job Type */}
             <div className="col-md-3">
               <label className="form-label">Job Type </label>
@@ -853,51 +969,50 @@ useEffect(() => {
             </div>
           </div>
 
-         <div className="row d-flex gap-3">
-         {hasRelocation === "Yes" && (
-            <>
-            <div className="col-md-3">
-              <label className="form-label">
-                Relocation Amount <span className="text-danger">*</span>
-              </label>
-              <input
-                {...register("relocation_amount", {
-                  required: "Relocation amount is required",
-                })}
-                className={`form-control ${
-                  errors.relocation_amount ? "is-invalid" : ""
-                }`}
-                placeholder="Enter relocation amount"
-              />
-              {errors.relocation_amount && (
-                <div className="invalid-feedback">
-                  {errors.relocation_amount.message}
+          <div className="row d-flex gap-3">
+            {hasRelocation === "Yes" && (
+              <>
+                <div className="col-md-3">
+                  <label className="form-label">
+                    Relocation Amount <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    {...register("relocation_amount", {
+                      required: "Relocation amount is required",
+                    })}
+                    className={`form-control ${
+                      errors.relocation_amount ? "is-invalid" : ""
+                    }`}
+                    placeholder="Enter relocation amount"
+                  />
+                  {errors.relocation_amount && (
+                    <div className="invalid-feedback">
+                      {errors.relocation_amount.message}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-                        {/*Relocation currency type*/}
-                        <div className="col-md-3">
-              <label className="form-label">Relocation Currency Type</label>
-              <select
-                {...register("relocation_currency_type")}
-                className={`form-select ${
-                  errors.relocation_currency_type ? "is-invalid" : ""
-                }`}
-              >
-                <option value="">Select currency_type</option>
-                <option value={"INR"}>INR</option>
-                <option value={"USA"}>USA</option>
-              </select>
-              {errors.relocation_currency_type && (
-                <div className="invalid-feedback">
-                  {errors.relocation_currency_type.message}
+                {/*Relocation currency type*/}
+                <div className="col-md-3">
+                  <label className="form-label">Relocation Currency Type</label>
+                  <select
+                    {...register("relocation_currency_type")}
+                    className={`form-select ${
+                      errors.relocation_currency_type ? "is-invalid" : ""
+                    }`}
+                  >
+                    <option value="">Select currency_type</option>
+                    <option value={"INR"}>INR</option>
+                    <option value={"USA"}>USA</option>
+                  </select>
+                  {errors.relocation_currency_type && (
+                    <div className="invalid-feedback">
+                      {errors.relocation_currency_type.message}
+                    </div>
+                  )}
                 </div>
-              )}  
-            </div>
-            </>
-            
-          )}
-         </div>
+              </>
+            )}
+          </div>
 
           <div className="row d-flex gap-3">
             {/* has Domain*/}
@@ -921,79 +1036,92 @@ useEffect(() => {
               )}
             </div>
             {hasDomain === "Yes" && (
-           <>
-            <div className="row">
-        {domainRows.map((row, index) => (
-          <div key={index} className="d-flex gap-2 mb-2">
-            {/* Domain Name */}
-            <div className="col-md-3">
-              <label className="form-label">
-                Domain Name <span className="text-danger">*</span>
-              </label>
-              <input
-                className={`form-control ${
-                  errors.domainRows?.[index]?.domain_name ? "is-invalid" : ""
-                }`}
-                placeholder="Enter domain name"
-             onChange={(e) => handleDomainChange(index, "domain_name", e.target.value)}
-                defaultValue={row?.domain_name}
-              />
-              {errors.domainRows?.[index]?.domain_name && (
-                <div className="invalid-feedback">
-                  {errors.domainRows[index].domain_name.message}
+              <>
+                <div className="row">
+                  {domainRows.map((row, index) => (
+                    <div key={index} className="d-flex gap-2 mb-2">
+                      {/* Domain Name */}
+                      <div className="col-md-3">
+                        <label className="form-label">
+                          Domain Name <span className="text-danger">*</span>
+                        </label>
+                        <input
+                          className={`form-control ${
+                            errors.domainRows?.[index]?.domain_name
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                          placeholder="Enter domain name"
+                          onChange={(e) =>
+                            handleDomainChange(
+                              index,
+                              "domain_name",
+                              e.target.value
+                            )
+                          }
+                          defaultValue={row?.domain_name}
+                        />
+                        {errors.domainRows?.[index]?.domain_name && (
+                          <div className="invalid-feedback">
+                            {errors.domainRows[index].domain_name.message}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Sub Domain Name */}
+                      <div className="col-md-3">
+                        <label className="form-label">
+                          Sub Domain Name <span className="text-danger">*</span>
+                        </label>
+                        <input
+                          className={`form-control ${
+                            errors.domainRows?.[index]?.sub_domain_name
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                          placeholder="Enter sub domain name"
+                          onChange={(e) =>
+                            handleDomainChange(
+                              index,
+                              "sub_domain_name",
+                              e.target.value
+                            )
+                          }
+                          defaultValue={row?.sub_domain_name}
+                        />
+                        {errors.domainRows?.[index]?.sub_domain_name && (
+                          <div className="invalid-feedback">
+                            {errors.domainRows[index].sub_domain_name.message}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Remove button */}
+                      <div className="d-flex align-items-end">
+                        <button
+                          type="button"
+                          className="btn btn-danger btn-sm mb-2"
+                          onClick={() => handleRemoveDomainRow(index)}
+                          disabled={domainRows.length === 1}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              )}
-            </div>
 
-            {/* Sub Domain Name */}
-            <div className="col-md-3">
-              <label className="form-label">
-                Sub Domain Name <span className="text-danger">*</span>
-              </label>
-              <input
-                className={`form-control ${
-                  errors.domainRows?.[index]?.sub_domain_name ? "is-invalid" : ""
-                }`}
-                placeholder="Enter sub domain name"
-                   onChange={(e) =>
-                  handleDomainChange(index, "sub_domain_name", e.target.value)
-                }
-                defaultValue={row?.sub_domain_name}
-              />
-              {errors.domainRows?.[index]?.sub_domain_name && (
-                <div className="invalid-feedback">
-                  {errors.domainRows[index].sub_domain_name.message}
+                {/* Add row button */}
+                <div className="mt-2">
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-sm"
+                    onClick={handleAddDomainRow}
+                  >
+                    + Add Domain
+                  </button>
                 </div>
-              )}
-            </div>
-
-            {/* Remove button */}
-            <div className="d-flex align-items-end">
-             <button
-                type="button"
-                className="btn btn-danger btn-sm mb-2"
-                onClick={() => handleRemoveDomainRow(index)}
-                disabled={domainRows.length === 1}
-              >
-                Remove
-              </button>
-            </div>
-          </div>
-        ))}
-            </div>
-
-      {/* Add row button */}
-      <div className="mt-2">
-        <button
-          type="button"
-          className="btn btn-primary btn-sm"
-          onClick={handleAddDomainRow}
-        >
-          + Add Domain
-        </button>
-      </div>
-      </>
-
+              </>
             )}
 
             {/* shift timing */}
@@ -1021,8 +1149,8 @@ useEffect(() => {
                 </div>
               )}
             </div>
-                        {/* Working Model  */}
-                        <div className="col-md-3">
+            {/* Working Model  */}
+            <div className="col-md-3">
               <label className="form-label">Working Model </label>
               <Controller
                 className={`form-select ${
@@ -1117,8 +1245,8 @@ useEffect(() => {
                 </div>
               )}
             </div>
-                        {/* Visa Required */}
-                        <div className="col-md-3">
+            {/* Visa Required */}
+            <div className="col-md-3">
               <label className="form-label">Visa Required</label>
               <select
                 {...register("visa_required")}
@@ -1140,54 +1268,60 @@ useEffect(() => {
           </div>
 
           <div className="row d-flex gap-3">
-
-
-      {hasVisa === "Yes" && (
+            {hasVisa === "Yes" && (
               <>
-        {visaRows.map((row, index) => (
-           <div className="row">
-            <div className="col-md-3">
-              <label className="form-label">Visa Country</label>
-              <input
-                className="form-control"
-                placeholder="Enter Visa Country"
-                 onChange={(e) => handleVisaChange(index, "visa_country", e.target.value)}
-                 defaultValue={row?.visa_country}
-              />
-            </div>
+                {visaRows.map((row, index) => (
+                  <div className="row">
+                    <div className="col-md-3">
+                      <label className="form-label">Visa Country</label>
+                      <input
+                        className="form-control"
+                        placeholder="Enter Visa Country"
+                        onChange={(e) =>
+                          handleVisaChange(
+                            index,
+                            "visa_country",
+                            e.target.value
+                          )
+                        }
+                        defaultValue={row?.visa_country}
+                      />
+                    </div>
 
-            <div className="col-md-3">
-              <label className="form-label">Visa Type</label>
-              <input
-                className="form-control"
-                placeholder="Enter Visa Type"
-                onChange={(e) => handleVisaChange(index, "visa_type", e.target.value)}
-                defaultValue={row?.visa_type}
-              />
-            </div>
+                    <div className="col-md-3">
+                      <label className="form-label">Visa Type</label>
+                      <input
+                        className="form-control"
+                        placeholder="Enter Visa Type"
+                        onChange={(e) =>
+                          handleVisaChange(index, "visa_type", e.target.value)
+                        }
+                        defaultValue={row?.visa_type}
+                      />
+                    </div>
 
-            <div className="col-2 mt-4">
-              <button
-                type="button"
-                className="btn btn-danger btn-sm mt-2"
-                onClick={() => handleRemoveVisaRow(index)}
-                disabled={visaRows.length === 1}
-              >
-                Remove
-              </button>
-            </div>
-      </div>
-        ))}
+                    <div className="col-2 mt-4">
+                      <button
+                        type="button"
+                        className="btn btn-danger btn-sm mt-2"
+                        onClick={() => handleRemoveVisaRow(index)}
+                        disabled={visaRows.length === 1}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
 
-      <div className="mt-2">
-        <button
-          type="button"
-          className="btn btn-primary btn-sm"
-          onClick={handleAddVisaRow}
-        >
-          + Add Visa
-        </button>
-      </div>
+                <div className="mt-2">
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-sm"
+                    onClick={handleAddVisaRow}
+                  >
+                    + Add Visa
+                  </button>
+                </div>
               </>
             )}
           </div>
@@ -1301,147 +1435,154 @@ useEffect(() => {
               </div>
             ))} */}
 
-{/* <div className="card p-3"> */}
-  <h6 className=" mt-3">Communication Languages</h6>
+            {/* <div className="card p-3"> */}
+            <h6 className=" mt-3">Communication Languages</h6>
 
-  {rows.map((row, index) => {
-    // get all selected languages
-    const selectedLanguages = rows
-      .map((r) => r.language?.value)
-      .filter(Boolean); 
+            {rows.map((row, index) => {
+              // get all selected languages
+              const selectedLanguages = rows
+                .map((r) => r.language?.value)
+                .filter(Boolean);
 
-    return (
-      <div className="row align-items-center gap-3 mb-2" key={index}>
-        {/* Language Dropdown */}
-        <div className="col-md-3">
-          <Select
-            styles={{
-              control: (base) => ({
-                ...base,
-                minHeight: "32px",
-                height: "32px",
-                fontSize: "0.85rem",
-              }),
-            }}
-            options={(dropdownOptions?.communication_language ?? []).filter(
-              (opt) =>
-                // allow if not selected OR it's already the current row's value
-                !selectedLanguages.includes(opt.value) ||
-                row.language?.value === opt.value
-            )}
-            value={row.language}
-            onChange={(selected) =>
-              handleCommunicationChange(index, "language", selected)
-            }
-            placeholder="Language"
-          />
-        </div>
+              return (
+                <div className="row align-items-center gap-3 mb-2" key={index}>
+                  {/* Language Dropdown */}
+                  <div className="col-md-3">
+                    <Select
+                      styles={{
+                        control: (base) => ({
+                          ...base,
+                          minHeight: "32px",
+                          height: "32px",
+                          fontSize: "0.85rem",
+                        }),
+                      }}
+                      options={(
+                        dropdownOptions?.communication_language ?? []
+                      ).filter(
+                        (opt) =>
+                          // allow if not selected OR it's already the current row's value
+                          !selectedLanguages.includes(opt.value) ||
+                          row.language?.value === opt.value
+                      )}
+                      value={row.language}
+                      onChange={(selected) =>
+                        handleCommunicationChange(index, "language", selected)
+                      }
+                      placeholder="Language"
+                    />
+                  </div>
 
-        {/* Proficiency Dropdown */}
-        <div className="col-md-3">
-          <Select
-            styles={{
-              control: (base) => ({
-                ...base,
-                minHeight: "32px",
-                height: "32px",
-                fontSize: "0.85rem",
-              }),
-            }}
-            options={proficiencyOptions}
-            value={row.proficiency}
-            onChange={(selected) =>
-              handleCommunicationChange(index, "proficiency", selected)
-            }
-            placeholder="Proficiency"
-          />
-        </div>
+                  {/* Proficiency Dropdown */}
+                  <div className="col-md-3">
+                    <Select
+                      styles={{
+                        control: (base) => ({
+                          ...base,
+                          minHeight: "32px",
+                          height: "32px",
+                          fontSize: "0.85rem",
+                        }),
+                      }}
+                      options={proficiencyOptions}
+                      value={row.proficiency}
+                      onChange={(selected) =>
+                        handleCommunicationChange(
+                          index,
+                          "proficiency",
+                          selected
+                        )
+                      }
+                      placeholder="Proficiency"
+                    />
+                  </div>
 
-        {/* Remove Button */}
-        <div className="col-md-2">
-          <button
-            type="button"
-            className="btn btn-danger btn-sm"
-            onClick={() => handleRemoveCommunicationRow(index)}
-          >
-            Remove
-          </button>
-        </div>
-      </div>
-    );
-  })}
+                  {/* Remove Button */}
+                  <div className="col-md-2">
+                    <button
+                      type="button"
+                      className="btn btn-danger btn-sm"
+                      onClick={() => handleRemoveCommunicationRow(index)}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
 
-  {/* Add Button */}
-  <div className="mt-2">
-    <button
-      type="button"
-      className="btn btn-primary btn-sm"
-      onClick={handleAddCommunicationRow}
-    >
-      + Add Language
-    </button>
-  </div>
-{/* </div>   */}
-
+            {/* Add Button */}
+            <div className="mt-2">
+              <button
+                type="button"
+                className="btn btn-primary btn-sm"
+                onClick={handleAddCommunicationRow}
+              >
+                + Add Language
+              </button>
+            </div>
+            {/* </div>   */}
 
             {/* Citizen Requirement*/}
             <div className="col-md-3">
-  <label className="form-label">Citizen Requirement</label>
-  <select
-    {...register("citizen_requirement")}
-    className={`form-select ${
-      errors.citizen_requirement ? "is-invalid" : ""
-    }`}
-    onChange={(e) => setHasCitizenRequirement(e.target.value)}
-  >
-    <option value="">Select requirement</option>
-    <option value="Yes">Yes</option>
-    <option value="No">No</option>
-    <option value="Decide Later">Decide Later</option>
-  </select>
-  {errors.citizen_requirement && (
-    <div className="invalid-feedback">
-      {errors.citizen_requirement.message}
-    </div>
-  )}
-</div>
+              <label className="form-label">Citizen Requirement</label>
+              <select
+                {...register("citizen_requirement")}
+                className={`form-select ${
+                  errors.citizen_requirement ? "is-invalid" : ""
+                }`}
+                onChange={(e) => setHasCitizenRequirement(e.target.value)}
+              >
+                <option value="">Select requirement</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="Decide Later">Decide Later</option>
+              </select>
+              {errors.citizen_requirement && (
+                <div className="invalid-feedback">
+                  {errors.citizen_requirement.message}
+                </div>
+              )}
+            </div>
 
-{/* Dynamic Citizen Country fields */}
-{hasCitizenRequirment === "Yes" && (
-  <div className="col-12 mt-2">
-    <label className="form-label">Citizen Country Name</label>
-    {citizenCountries.map((country, index) => (
-      <div className="row mb-2 align-items-center gap-3" key={index}>
-        <div className="col-md-3">
-          <input
-            {...register(`citizen_countries.${index}`)}
-            className="form-control"
-            placeholder="Enter Citizen Country name"
-            defaultValue={country}
-          />
-        </div>
-        <div className="col-md-2">
-          <button
-            type="button"
-            className="btn btn-danger btn-sm"
-            onClick={() => handleRemoveCitizenCountry(index)}
-          >
-            Remove
-          </button>
-        </div>
-      </div>
-    ))}
+            {/* Dynamic Citizen Country fields */}
+            {hasCitizenRequirment === "Yes" && (
+              <div className="col-12 mt-2">
+                <label className="form-label">Citizen Country Name</label>
+                {citizenCountries.map((country, index) => (
+                  <div
+                    className="row mb-2 align-items-center gap-3"
+                    key={index}
+                  >
+                    <div className="col-md-3">
+                      <input
+                        {...register(`citizen_countries.${index}`)}
+                        className="form-control"
+                        placeholder="Enter Citizen Country name"
+                        defaultValue={country}
+                      />
+                    </div>
+                    <div className="col-md-2">
+                      <button
+                        type="button"
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleRemoveCitizenCountry(index)}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
 
-    <button
-      type="button"
-      className="btn btn-primary btn-sm"
-      onClick={handleAddCitizenCountry}
-    >
-      + Add Country
-    </button>
-  </div>
-)}
-
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={handleAddCitizenCountry}
+                >
+                  + Add Country
+                </button>
+              </div>
+            )}
 
             {/*Job Health Requirement */}
             {/* <div className="col-md-3">
@@ -1464,7 +1605,7 @@ useEffect(() => {
               )}
             </div> */}
 
-{/*             
+            {/*             
             {hasHealthRecruirment === "Yes" && (
               <>
                 <div className="col-md-3">
