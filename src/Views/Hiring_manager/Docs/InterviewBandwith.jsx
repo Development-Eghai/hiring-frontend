@@ -32,6 +32,7 @@ const InterviewBandwidth = () => {
 
   const [resultData, setResultData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showMore, setShowMore] = useState(false);
 
   const [planIds, setPlanIds] = useState();
   const [planIdsList, setPlanIdsList] = useState([]);
@@ -62,6 +63,12 @@ const InterviewBandwidth = () => {
       getClientdetails();
     }
   }, [reqId, planIds]);
+
+    const visibleResults = showMore
+    ? resultData
+    : resultData.filter((r) =>
+        ["No. of Interviewers Needed", "Leaves Adjustment"].includes(r.metric)
+      );
 
   useEffect(() => {
     const fetchDropdownData = async () => {
@@ -185,28 +192,28 @@ const InterviewBandwidth = () => {
         const data = res.data.data;
         setresponseData(data)
         const results = [
-          // { metric: "Candidates Required", value: data.required_candidate },
-          // {
-          //   metric: "Decline Adjusted Count",
-          //   value: data.decline_adjust_count,
-          // },
-          // {
-          //   metric: "Total Candidate Pipeline",
-          //   value: data.total_candidate_pipline,
-          // },
-          // {
-          //   metric: "Total Interviews Needed",
-          //   value: data.total_interviews_needed,
-          // },
-          // { metric: "Total Interview Hours", value: data.total_interview_hrs },
-          // {
-          //   metric: "Working Hours per Week",
-          //   value: data.working_hrs_per_week,
-          // },
-          // {
-          //   metric: "Total Interview Weeks",
-          //   value: data.total_interview_weeks,
-          // },
+          { metric: "Candidates Required", value: data.required_candidate },
+          {
+            metric: "Decline Adjusted Count",
+            value: data.decline_adjust_count,
+          },
+          {
+            metric: "Total Candidate Pipeline",
+            value: data.total_candidate_pipline,
+          },
+          {
+            metric: "Total Interviews Needed",
+            value: data.total_interviews_needed,
+          },
+          { metric: "Total Interview Hours", value: data.total_interview_hrs },
+          {
+            metric: "Working Hours per Week",
+            value: data.working_hrs_per_week,
+          },
+          {
+            metric: "Total Interview Weeks",
+            value: data.total_interview_weeks,
+          },
           {
             metric: "No. of Interviewers Needed",
             value: data.no_of_interviewer_need,
@@ -258,10 +265,42 @@ const InterviewBandwidth = () => {
       const res = await axiosInstance.put("/interview_planner_calc/", payload);
 
       if (res.data.success) {
+                const data = res.data.data;
+        setresponseData(data)
+        const results = [
+          { metric: "Candidates Required", value: data.required_candidate },
+          {
+            metric: "Decline Adjusted Count",
+            value: data.decline_adjust_count,
+          },
+          {
+            metric: "Total Candidate Pipeline",
+            value: data.total_candidate_pipline,
+          },
+          {
+            metric: "Total Interviews Needed",
+            value: data.total_interviews_needed,
+          },
+          { metric: "Total Interview Hours", value: data.total_interview_hrs },
+          {
+            metric: "Working Hours per Week",
+            value: data.working_hrs_per_week,
+          },
+          {
+            metric: "Total Interview Weeks",
+            value: data.total_interview_weeks,
+          },
+          {
+            metric: "No. of Interviewers Needed",
+            value: data.no_of_interviewer_need,
+          },
+          { metric: "Leaves Adjustment", value: data.leave_adjustment },
+        ];
+        setResultData(results);
         toast.success("Updated successfully!");
-        setTimeout(() => {
-      navigate("/hiring_manager/planning/interviewer_bandwidth_dashboard");
-    }, 560);
+    //     setTimeout(() => {
+    //   navigate("/hiring_manager/planning/interviewer_bandwidth_dashboard");
+    // }, 560);
 
       } else {
         toast.error("Update failed.");
@@ -507,27 +546,37 @@ const InterviewBandwidth = () => {
           <div className="results-section">
             <h4 className="mb-3">Calculated Results</h4>
             <div style={{ maxHeight: "400px", overflowY: "auto" }}>
-              <DataTable
-                columns={columns}
-                data={resultData}
-                striped
-                dense
-                persistTableHead
-                customStyles={{
-                  headRow: {
-                    style: {
-                      backgroundColor: "#f1f5fb",
-                      fontSize: "16px",
-                      fontWeight: "bold",
-                    },
-                  },
-                  rows: {
-                    style: {
-                      fontSize: "14px",
-                    },
-                  },
-                }}
-              />
+ <DataTable
+        columns={columns}
+        data={visibleResults}
+        striped
+        dense
+        persistTableHead
+        customStyles={{
+          headRow: {
+            style: {
+              backgroundColor: "#f1f5fb",
+              fontSize: "16px",
+              fontWeight: "bold",
+            },
+          },
+          rows: {
+            style: {
+              fontSize: "14px",
+            },
+          },
+        }}
+      />
+
+      {resultData?.length > 0 && <div className="d-flex justify-content-center mt-2">
+        <Button
+          variant="outline-primary"
+          size="sm"
+          onClick={() => setShowMore(!showMore)}
+        >
+          {showMore ? "View Less" : "View More"}
+        </Button>
+      </div>}
             </div>
           </div>
         )}

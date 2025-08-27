@@ -1552,7 +1552,7 @@ useEffect(() => {
             </div>
 
             {/* Dynamic Citizen Country fields */}
-            {hasCitizenRequirement === "Yes" && (
+            {hasCitizenRequirment === "Yes" && (
 
               <div className="col-12 mt-2">
                 <label className="form-label">Citizen Country Name</label>
