@@ -349,20 +349,23 @@ const handleRemoveCitizenCountry = (index) => {
     }
   };
 
-    async function fetchCompensationDropdown (){
-      try {
-        const response = await axios.get("https://api.pixeladvant.com/api/hiring-plan/compensation-ranges/");
-  
-        const {message ,data,success} = response?.data;
-  
-        if(success){
-          setCompensationDropDown(data?.compensation_range)
-          console.log(data,"adsadas")
-        }
-      } catch (error) {
-        console.log(error)
+    const fetchCompensationDropdown = async () => {
+    try {
+      const response = await axios.get("https://api.pixeladvant.com/api/hiring-plan/compensation-ranges/");
+      const { data, success } = response?.data;
+
+      if (success) {
+        const normalizedOptions = data?.compensation_range?.map(item => ({
+          label: item.label,
+          value: item.value,
+        }));
+        setInputOptions(normalizedOptions); // <-- this is key
       }
+    } catch (error) {
+      console.error("Error fetching compensation ranges:", error);
     }
+  };
+
   
     useEffect(()=>{
       fetchCompensationDropdown()
