@@ -64,12 +64,12 @@ const PlanninggForm = (handleNext) => {
   const toggleSection = (section) => {
     setOpenSection(openSection === section ? null : section);
   };
-  useEffect(()=>{
-     const fetcheditDetails = async () => {
+
+       const fetcheditDetails = async () => {
       try {
         const response = await axiosInstance.post(
           "/api/hiring-plan/details/",
-          { hiring_plan_id: edit_id },
+          { hiring_plan_id: edit_id || hasTemplate},
           { headers: { "Content-Type": "multipart/form-data" } }
         );
         if (response?.data?.success) {
@@ -137,9 +137,6 @@ const PlanninggForm = (handleNext) => {
         toast.error("Failed to load edit options.");
       }
     };
-
-    fetcheditDetails();
-  },[edit_id])
 
   //   useeffects
   useEffect(() => {
@@ -210,81 +207,81 @@ const PlanninggForm = (handleNext) => {
     name: "social_media",
   });
 
-  async function fetchTemplateData() {
-    try {
-      const response = await axios.post("");
+  // async function fetchTemplateData() {
+  //   try {
+  //     const response = await axios.post("");
 
-      const { data, success } = response?.data;
+  //     const { data, success } = response?.data;
 
-      if (success) {
-        const langOptions = response?.data?.data?.communication_language.map(
-          (item) => ({
-            label: item.language,
-            value: item.language,
-          })
-        );
+  //     if (success) {
+  //       const langOptions = response?.data?.data?.communication_language.map(
+  //         (item) => ({
+  //           label: item.language,
+  //           value: item.language,
+  //         })
+  //       );
 
-        setSelectedLanguages(langOptions);
+  //       setSelectedLanguages(langOptions);
 
-        const profMap = {};
-        response?.data?.data?.communication_language.forEach((item) => {
-          profMap[item.language] = {
-            label: item.proficiency,
-            value: item.proficiency,
-          };
-        });
-        setCitizenCountries(data?.citizen_countries);
-        // setLanguageProficiency(profMap);
-        setRows(data?.communication_language);
-        setJobDesc(data?.jd_details);
-        setDomainRows(data?.doamin_details || []);
-        setVisaRows(data?.visa_details || []);
-        setCitizenCountries(data?.citizen_countries);
-        reset({
-          job_role: data?.job_role,
-          no_of_openings: data?.no_of_openings,
-          tech_stack: data?.tech_stacks,
-          experience_range: data?.experience_range,
-          designation: data?.designation,
-          target_companies: data?.target_companies,
-          compensation_range: data?.compensation_range,
-          location: data?.location,
-          currency_type: data?.currency_type,
-          working_modal: data?.working_modal,
-          job_type: data?.job_type,
-          sub_domain_name: data?.sub_domain_name,
-          role_type: data?.role_type,
-          relocation: data?.relocation,
-          relocation_currency_type: data?.relocation_currency_type,
-          relocation_amount: data?.relocation_amount,
-          has_domain: data?.has_domain,
-          domain_name: data?.domain_name,
-          shift_timings: data?.shift_timings,
-          education_qualification: data?.education_qualification,
-          travel_opportunities: data?.travel_opportunities,
-          visa_required: data?.visa_required,
-          visa_country: data?.visa_country,
-          visa_type: data?.visa_type,
-          background_verfication: data?.background_verfication,
-          bg_verification_type: data?.bg_verification_type,
-          communication_language: langOptions,
-          citizen_requirement: data?.citizen_requirement,
-          health_requirmnebt: data?.job_health_requirement,
-          career_gap: data?.career_gap,
-          social_media_link: data?.social_media_link,
-          social_media: data?.social_media_data,
-          citizen_describe: data?.citizen_describe,
-          health_describe: data?.health_describe,
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  //       const profMap = {};
+  //       response?.data?.data?.communication_language.forEach((item) => {
+  //         profMap[item.language] = {
+  //           label: item.proficiency,
+  //           value: item.proficiency,
+  //         };
+  //       });
+  //       setCitizenCountries(data?.citizen_countries);
+  //       // setLanguageProficiency(profMap);
+  //       setRows(data?.communication_language);
+  //       setJobDesc(data?.jd_details);
+  //       setDomainRows(data?.doamin_details || []);
+  //       setVisaRows(data?.visa_details || []);
+  //       setCitizenCountries(data?.citizen_countries);
+  //       reset({
+  //         job_role: data?.job_role,
+  //         no_of_openings: data?.no_of_openings,
+  //         tech_stack: data?.tech_stacks,
+  //         experience_range: data?.experience_range,
+  //         designation: data?.designation,
+  //         target_companies: data?.target_companies,
+  //         compensation_range: data?.compensation_range,
+  //         location: data?.location,
+  //         currency_type: data?.currency_type,
+  //         working_modal: data?.working_modal,
+  //         job_type: data?.job_type,
+  //         sub_domain_name: data?.sub_domain_name,
+  //         role_type: data?.role_type,
+  //         relocation: data?.relocation,
+  //         relocation_currency_type: data?.relocation_currency_type,
+  //         relocation_amount: data?.relocation_amount,
+  //         has_domain: data?.has_domain,
+  //         domain_name: data?.domain_name,
+  //         shift_timings: data?.shift_timings,
+  //         education_qualification: data?.education_qualification,
+  //         travel_opportunities: data?.travel_opportunities,
+  //         visa_required: data?.visa_required,
+  //         visa_country: data?.visa_country,
+  //         visa_type: data?.visa_type,
+  //         background_verfication: data?.background_verfication,
+  //         bg_verification_type: data?.bg_verification_type,
+  //         communication_language: langOptions,
+  //         citizen_requirement: data?.citizen_requirement,
+  //         health_requirmnebt: data?.job_health_requirement,
+  //         career_gap: data?.career_gap,
+  //         social_media_link: data?.social_media_link,
+  //         social_media: data?.social_media_data,
+  //         citizen_describe: data?.citizen_describe,
+  //         health_describe: data?.health_describe,
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
 
-  useEffect(()=>{
-    fetchTemplateData();
-  },[hasTemplate])
+  // useEffect(()=>{
+  //   fetchTemplateData();
+  // },[hasTemplate])
 
 
 const handleAddCitizenCountry = () => {
@@ -372,12 +369,15 @@ const handleRemoveCitizenCountry = (index) => {
       fetchCompensationDropdown()
     },[])
 
+      useEffect(()=>{
+    fetcheditDetails();
+  },[edit_id,hasTemplate])
+
   const onSubmit = async (data) => {
     //  const finalData = selectedLanguages.map((lang) => ({
     //   language: lang.value,
     //   proficiency: languageProficiency[lang.value]?.value || "",
     // }));
-    console.log(data,"dsasdasas")
     const formdata = {
         job_role:data?.job_role,
         no_of_openings:data?.no_of_openings,
