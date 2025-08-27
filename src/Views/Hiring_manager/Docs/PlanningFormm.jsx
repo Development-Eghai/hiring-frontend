@@ -162,6 +162,7 @@ const PlanninggForm = (handleNext) => {
           education_qualification: configData["Education Qualification"] || [],
           communication_language: configData["Communication Language"] || [],
           location: configData["Location"] || [],
+          planning_templates: configData["planning_templates"] || []
         };
 
         setDropdownOptions((prev) => ({ ...prev, ...mappedOptions }));
@@ -380,6 +381,7 @@ const handleRemoveCitizenCountry = (index) => {
     const formdata = {
         job_role:data?.job_role,
         no_of_openings:data?.no_of_openings,
+        client_name:data?.client_name,
         tech_stacks:data?.tech_stack,
         experience_range:data?.experience_range,
         designation:data?.designation,
@@ -607,25 +609,26 @@ useEffect(() => {
             {/*  template*/}
 
             <div className="col-md-3">
-              <label className="form-label">Select Planning Template</label>
-              <select
-                {...register("planning_template")}
-                className={`form-select ${
-                  errors.planning_template ? "is-invalid" : ""
-                }`}
-              >
-                <option value="">Select planning_template</option>
-                <option value="template1">template1</option>
-                {dropdownOptions?.planning_templates?.map((val,ind)=>(
-                   <option value={val} key={ind}>{val}</option>
-                ))}
-              </select>
-              {errors.planning_template && (
-                <div className="invalid-feedback">
-                  {errors.planning_template.message}
-                </div>
-              )}
-            </div>
+            <label className="form-label">Select Planning Template</label>
+            <select
+              {...register("planning_template")}
+              className={`form-select ${errors.planning_template ? "is-invalid" : ""}`}
+            >
+              <option value="">Select planning_template</option>
+              {dropdownOptions?.planning_templates?.map((val, ind) => (
+                <option value={val.value} key={ind}>
+                  {val.label}
+                </option>
+
+              ))}
+            </select>
+            {errors.planning_template && (
+              <div className="invalid-feedback">
+                {errors.planning_template.message}
+              </div>
+            )}
+          </div>
+
 
             {/*Client Name*/}
             <div className="col-md-3">

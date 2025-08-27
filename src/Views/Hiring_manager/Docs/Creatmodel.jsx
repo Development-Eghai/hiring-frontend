@@ -74,24 +74,32 @@ const Creatmodel = () => {
   const handleChange = async(e) => {
     const { name, value } = e.target;
 
-    if(name === "hiring_plan_id"){
-          try {
-      const res = await axios.post("https://api.pixeladvant.com/api/hiringplan/detail/",{
-        Planning_id:value
-      });
+    if (name === "hiring_plan_id") {
+  try {
+    const res = await axios.post("https://api.pixeladvant.com/api/hiringplan/detail/", {
+      Planning_id: value
+    });
 
-      if (res?.data?.success) {
-          if (res?.data?.data?.no_of_openings !== undefined) {
-    setFormData(prev => ({
-      ...prev,
-      no_of_openings: res?.data?.data?.no_of_openings,
-    }));
+    if (res?.data?.success) {
+      const hiringData = res?.data?.data;
+
+      const updates = {};
+      if (hiringData?.no_of_openings !== undefined) {
+        updates.no_of_openings = hiringData.no_of_openings;
+      }
+      if (hiringData?.client_name !== undefined && hiringData?.client_name !== null) {
+        updates.client_name = hiringData.client_name;
+      }
+
+      setFormData(prev => ({
+        ...prev,
+        ...updates
+      }));
+    }
+  } catch (err) {
+    console.error("Hiring plan fetch error:", err);
   }
-      } 
-    } catch (err) {
-      console.error("No of Role fetch error:", err);
-    }
-    }
+}
 
     if (name === "no_of_openings") {
       const number = parseInt(value, 10);
