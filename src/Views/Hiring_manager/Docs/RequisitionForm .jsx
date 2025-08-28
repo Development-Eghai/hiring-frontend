@@ -785,23 +785,25 @@ const locations = [
           const response = await axiosInstance.get(
             "https://api.pixeladvant.com/admin_configuration/mapped_admin_configurations/"
           );
-          const configData = response.data?.data || {};
-  
-          const mappedOptions = {
-            job_position: configData["Position Role"] || [],
-            designation: configData["Designation"] || [],
-            tech_stacks: configData["Tech Stack"] || [],
-            target_companies: configData["Target Companies"] || [],
-            working_model: configData["Working Model"] || [],
-            role_type: configData["Role Type"] || [],
-            job_type: configData["Job Type"] || [],
-            shift_timings: configData["Shift Timings"] || [],
-            education_qualification: configData["Education Qualification"] || [],
-            communication_language: configData["Communication Language"] || [],
-            location: configData["Location"] || [],
-          };
-  
-          setDropdownOptions((prev) => ({ ...prev, ...mappedOptions }));
+          const configData = response.data?.data || [];
+          // const mappedOptions = {
+          //   job_position: configData["Position Role"] || [],
+          //   designation: configData["Designation"] || [],
+          //   tech_stacks: configData["Tech Stack"] || [],
+          //   target_companies: configData["Target Companies"] || [],
+          //   working_model: configData["Working Model"] || [],
+          //   role_type: configData["Role Type"] || [],
+          //   job_type: configData["Job Type"] || [],
+          //   shift_timings: configData["Shift Timings"] || [],
+          //   education_qualification: configData["Education Qualification"] || [],
+          //   communication_language: configData["Communication Language"] || [],
+          //   location: configData["Location"] || [],
+          // };
+          const {data,success} = response?.data
+          if(success){
+            setDropdownOptions(data);
+          }
+          console.log(dropdownOptions,"dsdewdw")
         } catch (error) {
           console.error("Failed to fetch config data", error);
           toast.error("Failed to load dropdown options.");
@@ -902,8 +904,8 @@ const locations = [
                 }`}
               >
                 <option value="">Select Position</option>
-                {jobPositions.map((pos) => (
-                  <option value={pos}>{pos}</option>
+                {dropdownOptions["Position Role"]?.map((pos) => (
+                  <option value={pos.value}>{pos.label}</option>
                 ))}
               </select>
               {errors.job_position && (
@@ -1055,7 +1057,7 @@ const locations = [
                   <CreatableSelect
                     {...field}
                     isMulti
-                    options={dropdownOptions?.location}
+                    options={dropdownOptions["Location"]}
                     classNamePrefix="react-select"
                     placeholder="Select location"
                   />
@@ -1184,8 +1186,8 @@ const locations = [
                 }`}
               >
                 <option value="">Select</option>
-                {ModeOfWorking.map((row) => (
-                  <option value={row}>{row}</option>
+                {dropdownOptions["Working Model"]?.map((row) => (
+                  <option value={row.value}>{row.label}</option>
                 ))}
               </select>
               {errors.working_model && (
@@ -1470,7 +1472,7 @@ const locations = [
                   <CreatableSelect
                     {...field}
                     isMulti
-                    options={qualificationOptions}
+                    options={dropdownOptions["Education Qualification"]}
                     classNamePrefix="react-select"
                     placeholder="Select Qualification"
                     onChange={(val) => field.onChange(val)}
@@ -1505,7 +1507,7 @@ const locations = [
                   <CreatableSelect
                     {...field}
                     isMulti
-                    options={designationOptions}
+                    options={dropdownOptions["Designation"]}
                     classNamePrefix="react-select"
                     placeholder="Select Designation"
                     onChange={(val) => field.onChange(val)}

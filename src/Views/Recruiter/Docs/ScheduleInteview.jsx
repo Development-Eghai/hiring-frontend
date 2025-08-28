@@ -15,6 +15,7 @@ const ScheduleInterview = () => {
     { date: "", time: "", guests: [] },
   ]);
   const [editData, setEditData] = useState(null);
+  console.log(editData,"ccccsds")
   const [showConfirm, setShowConfirm] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
 
@@ -33,6 +34,11 @@ const ScheduleInterview = () => {
   const [rounds, setRounds] = useState([]);
   const [selectedRoundIndex, setSelectedRoundIndex] = useState(0);
   const [selectedSlots, setSelectedSlots] = useState([]);
+
+  const handleChange = (e) => {
+  const { name, value } = e.target;
+  setEditData((prev) => ({ ...prev, [name]: value }));
+};
 
   //Get api calll
   useEffect(() => {
@@ -730,8 +736,10 @@ const ScheduleInterview = () => {
                 <Col>
                   <Form.Label>Position Name</Form.Label>
                   <Form.Control
+                  name="position"
                     placeholder="Position Name here"
                     value={editData?.position || ""}
+                    onChange={(e=>handleChange(e))}
                   />{" "}
                 </Col>
               </Row>
@@ -805,13 +813,17 @@ const ScheduleInterview = () => {
                 <Col>
                   <Form.Label>Location</Form.Label>
                   <Form.Control
+                  name="location"
                     placeholder="Location here"
                     value={editData?.location || ""}
+                    onChange={(e)=>handleChange(e)}
                   />
                 </Col>
                 <Col>
                   <Form.Label>Time Zone</Form.Label>
                   <Form.Control
+                  name="timeZone"
+                  onChange={(e)=>handleChange(e)}
                     placeholder="Time Zone here"
                     value={editData?.timeZone || ""}
                   />
@@ -822,8 +834,10 @@ const ScheduleInterview = () => {
                 <Col>
                   <Form.Label>Durations</Form.Label>
                   <Form.Control
+                  name="durations"
                     placeholder="Enter"
                     value={editData?.durations || ""}
+                    onChange={(e)=>handleChange(e)}
                   />
                 </Col>
                 {/* <Col>
@@ -836,8 +850,10 @@ const ScheduleInterview = () => {
                 <Col>
                   <Form.Label>Mode</Form.Label>
                   <Form.Control
+                  name="mode"
                     placeholder="enter"
                     value={editData?.mode || ""}
+                    onChange={(e)=>handleChange(e)}
                   />
                 </Col>
               </Row>
@@ -886,13 +902,13 @@ const ScheduleInterview = () => {
                         <Form.Control
                           type="date"
                           value={slot.date || ""}
-                          // // onChange={(e) =>
-                          // //   handleScheduleChange(
-                          // //     slotIndex,
-                          // //     "date",
-                          // //     e.target.value
-                          // //   )
-                          // }
+                          onChange={(e) =>
+                            handleScheduleChange(
+                              slotIndex,
+                              "date",
+                              e.target.value
+                            )
+                          }
                         />
                       </Col>
                       <Col>
