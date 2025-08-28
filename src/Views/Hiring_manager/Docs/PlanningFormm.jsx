@@ -36,7 +36,6 @@ const PlanninggForm = (handleNext) => {
   const { commonState } = useCommonState();
   const [openSection, setOpenSection] = useState(null);
   const [completedSections, setCompletedSections] = useState([]);
-  const [hasCitizenRequirement, setHasCitizenRequirement] = useState("");
   const [citizenCountries, setCitizenCountries] = useState([""]);
 
   const [jobdesc, setJobDesc] = useState("");
@@ -1537,7 +1536,7 @@ useEffect(() => {
                 className={`form-select ${
                   errors.citizen_requirement ? "is-invalid" : ""
                 }`}
-                onChange={(e) => setHasCitizenRequirement(e.target.value)}
+                // onChange={(e) => setHasCitizenRequirement(e.target.value)}
               >
                 <option value="">Select requirement</option>
                 <option value="Yes">Yes</option>
