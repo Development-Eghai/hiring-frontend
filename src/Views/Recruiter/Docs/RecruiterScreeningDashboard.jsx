@@ -194,6 +194,8 @@ const RecruiterScreeningDashboard = () => {
         <div className="row">
                 <div className="card rounded-3 border-0 shadow-sm p-2 mt-5">
           <div className="card-body p-0 card overflow-auto">
+                           <h5 className="fw-bold  p-3">Screening</h5>
+
             <table
               className="table mb-0 table-bordered table-striped"
               style={{ minWidth: "1200px" }}

@@ -211,7 +211,7 @@ export const InterviewerStages = () => {
       <Card className="p-4 home_data_table">
         <div className="row align-items-center mb-3">
           <div className="col-3">
-            <h4 className="fw-bold mb-0">Interview</h4>
+            <h4 className="fw-bold mb-0">Interview Stages</h4>
           </div>
           {/* <div className="col-6 d-flex justify-content-end gap-3">
             <button

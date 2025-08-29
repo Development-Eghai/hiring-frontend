@@ -160,7 +160,7 @@ const ApprovalScreen = () => {
         <div className="scroll-container bg-white rounded p-2">
           <div className="row align-items-center mb-3">
             <div className="col-md-2">
-              <h5 className="fw-bold mb-0">Approval</h5>
+              <h5 className="fw-bold mb-0 p-3">Approval</h5>
             </div>
             {/* <div className="col-9 text-end">
               <Button

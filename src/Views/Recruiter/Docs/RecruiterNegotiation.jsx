@@ -398,7 +398,8 @@ const RecruiterNegotiation = () => {
       <div className="bg-white rounded p-3">
         <div className="row align-items-center mt-3 mb-3">
           <div className="col-md-4">
-            <h4 className="mb-0">Recruiter Negotiation</h4>
+            <h5 className="fw-bold mb-0">Recruiter Negotiation</h5>
+
           </div>
           <div className="col-md-8 text-end d-flex justify-content-end gap-3">
             {/* <Button

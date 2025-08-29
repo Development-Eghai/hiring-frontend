@@ -69,6 +69,11 @@ const JsonData = () => {
           },
         ],
       },
+            {
+        name: "Report",
+        route: "report",
+        icon: Icons.Reporting,
+      },
       {
         name: "Configuration Screen",
         route: "https://api.pixeladvant.com/configuration/",

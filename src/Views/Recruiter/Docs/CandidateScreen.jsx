@@ -163,7 +163,9 @@ const [jdContent, setJdContent] = useState("");
             <div className="card-body p-0">
               {/* Filter Controls */}
               <div className="row mb-3 d-flex gap-4">
-                <div className="col-4"></div>
+                <div className="col-4">
+               <h5 className="fw-bold mb-0 p-3">Candidates</h5>
+                </div>
                 <div className="col-md-7 d-flex align-items-center justify-content-end gap-3 flex-wrap">
                   {/* Dropdown */}
                   <select className="form-select form-select-sm w-auto">

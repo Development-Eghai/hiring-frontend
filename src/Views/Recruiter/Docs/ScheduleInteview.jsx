@@ -672,7 +672,8 @@ const ScheduleInterview = () => {
 
       <div className="mt-5">
         <div className="mb-3 gap-2 d-flex justify-content-between">
-          <h4>Schedule Interview</h4>
+          <h5 className="fw-bold mb-0">Schedule Interview</h5>
+
           <Button onClick={() => setShowFormModal(true)}>
             Add Schedule Interview
           </Button>

@@ -204,7 +204,7 @@ const ScoreCard = () => {
         <div className=" bg-white rounded p-2">
           <div className="row justify-content-between align-items-center mb-3">
             <div className="col-md-2">
-              <h5 className="fw-bold mb-0">Screening Round</h5>
+              <h5 className="fw-bold mb-0">Scorecard/Debrief</h5>
             </div>
             <div className="col-2">
                           <Button variant="success" onClick={() => setShowModal(true)}>

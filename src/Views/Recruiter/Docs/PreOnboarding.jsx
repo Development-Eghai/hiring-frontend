@@ -124,6 +124,7 @@ const PreOnboarding = () => {
       <div className="h-100 mt-5">
         <div className="row">
           <div className="card rounded-3 border-0 shadow-sm p-2">
+                        <h5 className="fw-bold mb-0 p-3">Onboarding</h5>
             <div className="card-body p-0">
               {/* <div className="col-md-12 d-flex align-items-center justify-content-end gap-3 flex-wrap p-3">
                 <Button

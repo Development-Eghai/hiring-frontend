@@ -151,7 +151,7 @@ const HiringManagerApproval = () => {
         
       <div className="row align-items-center mb-3">
         <div className="col-md-2">
-          <h5 className="fw-bold mb-0">Hiring Manager Approval</h5>
+          <h5 className="fw-bold mb-0 p-3">Hiring Manager Approval</h5>
         </div>
         <div className="col-md-10 text-center">
           {renderButtons()}

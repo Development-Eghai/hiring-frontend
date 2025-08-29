@@ -46,6 +46,10 @@ import { VendorLayout } from "Views/Vendor/Recruiter_utils/layout";
 import { VendorDashboard } from "Views/Vendor/Docs/VendorDashboard";
 import PreOnboardingForm from "Views/Recruiter/Docs/PreOnboardingForm";
 import PreOnboarding from "Views/Recruiter/Docs/PreOnboarding";
+import SilvermedelistReport from "Views/Hiring_manager/Docs/SilvermedelistReport";
+import CompensationDetailsReport from "Views/Hiring_manager/Docs/CompensationDetailsReport";
+import DeclinedReport from "Views/Hiring_manager/Docs/DeclinedReport";
+import FutureStartDataReport from "Views/Hiring_manager/Docs/FutureStartDataReport";
 
 function App() {
   return (
@@ -98,9 +102,16 @@ function App() {
                 />
                 <Route path="upload_screen" element={<UploadScreen />} />
               </Route>
+              <Route path="report">
+                 <Route index element={<SilvermedelistReport />} />
+                  <Route path="compensation_report" element={<CompensationDetailsReport/>}/>
+                  <Route path="declined_report" element={<DeclinedReport/>}/>
+                  <Route path="future_start_data_report" element={<FutureStartDataReport/>}/>
+              </Route>
               <Route path="create_job_requisition" element={<Home />} />
               <Route path="job_requisition" element={<JobRequisition />} />
             </Route>
+
           </Route>
 
           <Route path="/recruiter">
@@ -174,3 +185,4 @@ function App() {
 }
 
 export default App;
+
