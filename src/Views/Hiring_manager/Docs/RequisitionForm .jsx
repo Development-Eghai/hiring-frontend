@@ -868,8 +868,8 @@ const locations = [
                 }`}
               >
                 <option value="">Select Internal title</option>
-                {jobTitle.map((row) => (
-                  <option value={row}>{row}</option>
+                {dropdownOptions["Internal Job Title"]?.map((row) => (
+                  <option value={row.value}>{row.label}</option>
                 ))}
               </select>
               {errors.internal_title && (
@@ -890,8 +890,8 @@ const locations = [
                 }`}
               >
                 <option value="">Select External title</option>
-                {jobTitle.map((row) => (
-                  <option value={row}>{row}</option>
+                {dropdownOptions["External Job Title"]?.map((row) => (
+                  <option value={row.value}>{row.label}</option>
                 ))}
               </select>
               {errors.external_title && (
@@ -966,8 +966,8 @@ const locations = [
                 }`}
               >
                 <option value="">Select Buisness Line</option>
-                {BuisnessLine.map((pos) => (
-                  <option value={pos}>{pos}</option>
+                {dropdownOptions["Business Line"]?.map((pos) => (
+                  <option value={pos.value}>{pos.label}</option>
                 ))}
               </select>
               {errors.business_line && (
@@ -987,8 +987,8 @@ const locations = [
                 }`}
               >
                 <option value="">Select Buisness Unit</option>
-                {BuisnessUnit.map((pos) => (
-                  <option value={pos}>{pos}</option>
+                {dropdownOptions["Business Unit"]?.map((pos) => (
+                  <option value={pos.value}>{pos.label}</option>
                 ))}
               </select>
               {errors.business_unit && (
@@ -1006,8 +1006,8 @@ const locations = [
                 className={`form-select ${errors.division ? "is-invalid" : ""}`}
               >
                 <option value="">Select Division</option>
-                {Division.map((pos) => (
-                  <option value={pos}>{pos}</option>
+                {dropdownOptions["Division"]?.map((pos) => (
+                  <option value={pos.value}>{pos.label}</option>
                 ))}
               </select>
               {errors.division && (
@@ -1027,8 +1027,8 @@ const locations = [
                 }`}
               >
                 <option value="">Select Department</option>
-                {Division.map((pos) => (
-                  <option value={pos}>{pos}</option>
+                {dropdownOptions["Department"]?.map((pos) => (
+                  <option value={pos.value}>{pos.label}</option>
                 ))}
               </select>
               {errors.department && (
@@ -1091,8 +1091,8 @@ const locations = [
                 className={`form-select ${errors.geo_zone ? "is-invalid" : ""}`}
               >
                 <option value="">Select Geo Zone</option>
-                {geoZones.map((zone) => (
-                  <option value={zone}>{zone}</option>
+                {dropdownOptions["Geo Zone"]?.map((zone) => (
+                  <option value={zone.value}>{zone.label}</option>
                 ))}
               </select>
               {errors.geo_zone && (
@@ -1116,15 +1116,15 @@ const locations = [
               <select
                 {...register("band", { required: "Band is required" })}
                 className={`form-select ${errors.band ? "is-invalid" : ""}`}
-                                onChange={(e) => {
-      setSelectedBand(e.target.value);
-      setSelectedSubBand("");
-    }}
+                onChange={(e) => {
+                  setSelectedBand(e.target.value);
+                  setSelectedSubBand("");
+                }}
               >
 
                 <option value="">Select Band</option>
-                {Band.map((band) => (
-                  <option value={band}>{band}</option>
+                {dropdownOptions["Band"]?.map((band) => (
+                  <option value={band.value}>{band.label}</option>
                 ))}
               </select>
               {errors.band && (
@@ -1140,12 +1140,12 @@ const locations = [
                 className={`form-select ${errors.sub_band ? "is-invalid" : ""}`}
               >
                 <option value="">Select Sub Band</option>
-                 {selectedBand &&
-      subBandMapping[selectedBand].map((sub) => (
-        <option key={sub} value={sub}>
-          {sub}
-        </option>
-      ))}
+                {selectedBand &&
+                  dropdownOptions["Sub Band"]?.filter(item => item?.value?.startsWith(selectedBand))?.map((sub) => (
+                    <option key={sub.value} value={sub.value}>
+                      {sub.label}
+                    </option>
+                  ))}
               </select>
               {errors.sub_band && (
                 <div className="invalid-feedback">
@@ -1222,9 +1222,9 @@ const locations = [
                 }`}
               >
                 <option value="">Select</option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-                <option value="TBD">TBD</option>
+                {dropdownOptions["Client Interview"]?.map((typ) => (
+                  <option value={typ.value}>{typ.label}</option>
+                ))}
               </select>
               {errors.client_interview && (
                 <div className="invalid-feedback">
@@ -1238,8 +1238,8 @@ const locations = [
               <label className="form-label">Requisition Type</label>
               <select {...register("requisition_type")} className="form-select">
                 <option value="">Select Requisition Type</option>
-                {requisitionTypes.map((typ) => (
-                  <option value={typ}>{typ}</option>
+                {dropdownOptions["Requisition Type"]?.map((typ) => (
+                  <option value={typ.value}>{typ.label}</option>
                 ))}
               </select>
             </div>
@@ -1271,7 +1271,7 @@ const locations = [
                   <CreatableSelect
                     {...field}
                     isMulti
-                    options={primarySkillsOptions}
+                    options={dropdownOptions["Primary Skills"]}
                     classNamePrefix="react-select"
                     placeholder="Select Primary skills"
                     onChange={(val) => field.onChange(val)}
@@ -1300,7 +1300,7 @@ const locations = [
                   <CreatableSelect
                     {...field}
                     isMulti
-                    options={secondarySkillsOptions}
+                    options={dropdownOptions["Secondary Skills"]}
                     classNamePrefix="react-select"
                     placeholder="Select Secondary skills"
                   />
@@ -1448,7 +1448,7 @@ const locations = [
                   <CreatableSelect
                     {...field}
                     isMulti
-                    options={experienceOptions}
+                    options={dropdownOptions["Experience"]}
                     classNamePrefix="react-select"
                     placeholder="Select experience"
                     onChange={(val) => field.onChange(val)}
@@ -1551,7 +1551,7 @@ const locations = [
                   <CreatableSelect
                     {...field}
                     isMulti
-                    options={regionOptions}
+                    options={dropdownOptions["Designation"]}
                     classNamePrefix="react-select"
                     placeholder="Select Job Region"
                     onChange={(val) => field.onChange(val)}

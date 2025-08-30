@@ -532,16 +532,16 @@ const InterviewForm = () => {
           <div className="interview-parameters">
             <div className="parameter-scroll-wrapper px-2">
               <div className="parameter-header fw-bold bg-secondary text-white p-2 rounded d-flex justify-content-between">
-                <span>S.no</span>
+                <span>Round</span>
                 <span style={{ minWidth: 150 }}>Score Card</span>
                 <span>Options</span>
-                <span>Guideline</span>
-                <span>Min Qs</span>
-                <span>Mode of Interview</span>
+                <span>Selection Guideline</span>
+                <span>Skills</span>
+                <span>Screening Type</span>
                 <span>Duration</span>
-                <span>Duration Metric</span> 
+                {/* <span>Duration Metric</span>  */}
                 <span>Weightage</span>
-                <span>Feedback</span>
+                <span>Feedback Guideline</span>
                 <span>Action</span>
               </div>
 
@@ -582,14 +582,22 @@ const InterviewForm = () => {
                           menu: base => ({ ...base, zIndex: 99999 }),
                         }}
                       />
-                      <Form.Control
+                      {/* <Form.Control
                         type="text"
                         value={param.options || ""}
                         onChange={(e) =>
                           handleChange(index, "options", e.target.value)
                         }
                         placeholder="Option"
-                      />
+                      /> */}
+                      <Form.Select
+                        value={param.options || ""}
+                        onChange={e => handleChange(index, "duration_metric", e.target.value)}
+                      >
+                        <option value="">Select</option>
+                        <option value="optionals">Optionals</option>
+                        <option value="manditory">Manditory</option>
+                      </Form.Select>
                       <Form.Control
                         type="text"
                         value={param.guideline || ""}
@@ -599,12 +607,12 @@ const InterviewForm = () => {
                         placeholder="Guideline"
                       />
                       <Form.Control
-                        type="number"
+                        type="text"
                         value={param.min_questions || ""}
                         onChange={(e) =>
                           handleChange(index, "min_questions", e.target.value)
                         }
-                        placeholder="Min Qs"
+                        placeholder="Skills"
                       />
                       <Form.Control
                         type="text"
@@ -622,7 +630,7 @@ const InterviewForm = () => {
                         }
                         placeholder="Duration"
                       />
-                      <Form.Select
+                      {/* <Form.Select
                         value={param.duration_metric || ""}
                         onChange={e => handleChange(index, "duration_metric", e.target.value)}
                       >
@@ -630,7 +638,7 @@ const InterviewForm = () => {
                         <option value="days">Days</option>
                         <option value="hours">Hours</option>
                         <option value="mins">Mins</option>
-                      </Form.Select>
+                      </Form.Select> */}
                       <Form.Control
                         type="number"
                         value={param.weightage || ""}

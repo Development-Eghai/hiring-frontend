@@ -372,19 +372,7 @@ const UploadScreen = () => {
           <form id="calenderForm">
             {/* Existing Fields */}
             <div className="row mb-2 d-flex gap-3">
-              <div className="col">
-                <label>Req ID</label>
-                <select
-                  className="form-select"
-                  name="req_id"
-                  onChange={(e) => setReqId(e.target.value)}
-                >
-                  <option value="">Select Req ID</option>
-                  {reqIdsList.map((id) => (
-                    <option value={id}>{id}</option>
-                  ))}
-                </select>
-              </div>
+
               <div className="col">
                 <label>Planning ID</label>
                 <select
@@ -394,6 +382,19 @@ const UploadScreen = () => {
                 >
                   <option value="">Select Planning ID</option>
                   {planIdsList.map((id) => (
+                    <option value={id}>{id}</option>
+                  ))}
+                </select>
+              </div>
+                            <div className="col">
+                <label>Req ID</label>
+                <select
+                  className="form-select"
+                  name="req_id"
+                  onChange={(e) => setReqId(e.target.value)}
+                >
+                  <option value="">Select Req ID</option>
+                  {reqIdsList.map((id) => (
                     <option value={id}>{id}</option>
                   ))}
                 </select>
@@ -581,21 +582,22 @@ const UploadScreen = () => {
         <Modal.Body>
           <form id="calenderForm">
             <div className="row mb-2 d-flex gap-3">
-              <div className="col">
-                <label>Req ID</label>
-                <input
-                  className="form-control"
-                  name="req_id"
-                  defaultValue={selectedEditDate?.req_id}
-                  readOnly
-                />
-              </div>
+
               <div className="col">
                 <label>Planning ID</label>
                 <input
                   className="form-control"
                   name="plan_id"
                   defaultValue={selectedEditDate?.plan_id}
+                  readOnly
+                />
+              </div>
+              <div className="col">
+                <label>Req ID</label>
+                <input
+                  className="form-control"
+                  name="req_id"
+                  defaultValue={selectedEditDate?.req_id}
                   readOnly
                 />
               </div>

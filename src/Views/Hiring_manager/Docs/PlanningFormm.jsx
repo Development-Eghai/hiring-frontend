@@ -129,6 +129,7 @@ const PlanninggForm = (handleNext) => {
             social_media: data?.social_media_data,
             citizen_describe:data?.citizen_describe,
             health_describe:data?.health_describe,
+            client_name:data?.client_name
           });
         }
       } catch (error) {
@@ -144,24 +145,7 @@ const PlanninggForm = (handleNext) => {
         const response = await axiosInstance.get(
           "https://api.pixeladvant.com/admin_configuration/mapped_admin_configurations/"
         );
-        const configData = response.data?.data || {};
-
-        const mappedOptions = {
-          job_position: configData["Position Role"] || [],
-          designation: configData["Designation"] || [],
-          tech_stacks: configData["Tech Stack"] || [],
-          target_companies: configData["Target Companies"] || [],
-          working_model: configData["Working Model"] || [],
-          role_type: configData["Role Type"] || [],
-          job_type: configData["Job Type"] || [],
-          shift_timings: configData["Shift Timings"] || [],
-          education_qualification: configData["Education Qualification"] || [],
-          communication_language: configData["Communication Language"] || [],
-          location: configData["Location"] || [],
-          planning_templates: configData["planning_templates"] || []
-        };
-
-        setDropdownOptions((prev) => ({ ...prev, ...mappedOptions }));
+        setDropdownOptions(response.data?.data);
       } catch (error) {
         console.error("Failed to fetch config data", error);
         toast.error("Failed to load dropdown options.");
@@ -589,7 +573,7 @@ useEffect(() => {
                   <CreatableSelect
                     {...field}
                     isMulti
-                    options={dropdownOptions?.job_position}
+                    options={dropdownOptions["Position Role"]}
                     classNamePrefix="react-select"
                     placeholder="Select Job Overview "
                     onChange={(val) => field.onChange(val)}
@@ -614,7 +598,7 @@ useEffect(() => {
               className={`form-select ${errors.planning_template ? "is-invalid" : ""}`}
             >
               <option value="">Select planning_template</option>
-              {dropdownOptions?.planning_templates?.map((val, ind) => (
+              {dropdownOptions["planning_templates"]?.map((val, ind) => (
                 <option value={val.value} key={ind}>
                   {val.label}
                 </option>
@@ -695,7 +679,7 @@ useEffect(() => {
                   <CreatableSelect
                     {...field}
                     isMulti
-                    options={dropdownOptions?.tech_stacks}
+                    options={dropdownOptions["Tech Stack"]}
                     classNamePrefix="react-select"
                     placeholder="Select tech stack"
                   />
@@ -742,7 +726,7 @@ useEffect(() => {
                   <CreatableSelect
                     {...field}
                     isMulti
-                    options={experienceOptions}
+                    options={dropdownOptions["Experience"]}
                     classNamePrefix="react-select"
                     placeholder="Select Experience range "
                     onChange={(val) => field.onChange(val)}
@@ -771,7 +755,7 @@ useEffect(() => {
                   <CreatableSelect
                     {...field}
                     isMulti
-                    options={dropdownOptions?.designation}
+                    options={dropdownOptions["Designation"]}
                     classNamePrefix="react-select"
                     placeholder="Select designation"
                   />
@@ -803,7 +787,7 @@ useEffect(() => {
                   <CreatableSelect
                     {...field}
                     isMulti
-                    options={dropdownOptions?.target_companies}
+                    options={dropdownOptions["Target Companies"]}
                     classNamePrefix="react-select"
                     placeholder="Select target companies"
                     onChange={(val) => field.onChange(val)}
@@ -887,7 +871,7 @@ useEffect(() => {
                   <CreatableSelect
                     {...field}
                     isMulti
-                    options={dropdownOptions?.location}
+                    options={dropdownOptions["Location"]}
                     classNamePrefix="react-select"
                     placeholder="Select location"
                   />
@@ -913,7 +897,7 @@ useEffect(() => {
                   <CreatableSelect
                     {...field}
                     isMulti
-                    options={dropdownOptions?.job_type}
+                    options={dropdownOptions["Job Type"]}
                     classNamePrefix="react-select"
                     placeholder="Select job type"
                   />
@@ -939,7 +923,7 @@ useEffect(() => {
                   <CreatableSelect
                     {...field}
                     isMulti
-                    options={dropdownOptions?.role_type}
+                    options={dropdownOptions["Role Type"]}
                     classNamePrefix="react-select"
                     placeholder="Select role type"
                   />
@@ -1142,7 +1126,7 @@ useEffect(() => {
                   <CreatableSelect
                     {...field}
                     isMulti
-                    options={dropdownOptions?.shift_timings}
+                    options={dropdownOptions["Shift Timings"]}
                     classNamePrefix="react-select"
                     placeholder="Select shift timing"
                   />
@@ -1167,7 +1151,7 @@ useEffect(() => {
                   <CreatableSelect
                     {...field}
                     isMulti
-                    options={dropdownOptions?.working_model}
+                    options={dropdownOptions["Working Model"]}
                     classNamePrefix="react-select"
                     placeholder="Select working modal"
                   />
@@ -1206,7 +1190,7 @@ useEffect(() => {
                   <CreatableSelect
                     {...field}
                     isMulti
-                    options={dropdownOptions?.education_qualification}
+                    options={dropdownOptions["Education Qualification"]}
                     classNamePrefix="react-select"
                     placeholder="Select education qualification"
                   />
@@ -1463,7 +1447,7 @@ useEffect(() => {
                         }),
                       }}
                       options={(
-                        dropdownOptions?.communication_language ?? []
+                        dropdownOptions["Communication Language"] ?? []
                       ).filter(
                         (opt) =>
                           // allow if not selected OR it's already the current row's value
