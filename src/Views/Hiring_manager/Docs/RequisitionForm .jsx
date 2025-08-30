@@ -402,6 +402,16 @@ const RequisitionForm = (handleNext) => {
           questions.map((q) => ({ ...q, isNew: true, id: Date.now() }))
         );
 
+        if(position_information?.band) {
+          const findKeyByValue = (obj, value) => {
+        return Object.keys(obj).find((key) => obj[key].includes(value));
+          };
+
+      const currentband = findKeyByValue(subBandMapping,position_information?.sub_band)
+       console.log(currentband,"fsdweda") 
+          setSelectedBand(currentband)
+         }
+        
         reset({
           plan_id: Planning_id,
           user_role,
@@ -487,6 +497,7 @@ const RequisitionForm = (handleNext) => {
     control,
     formState: { errors },
     reset,
+    watch,
   } = useForm();
 
 
