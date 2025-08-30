@@ -4,6 +4,8 @@ import { Container, Row, Col, Form, Table, Button } from "react-bootstrap";
 import axios from "axios";
 import RecruiterHeader from "../Recruiter_utils/Navbar";
 import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 // import "react-toastify/dist/ReactToastify.css";
 
 const RecruiterScreening = () => {
@@ -15,16 +17,16 @@ const RecruiterScreening = () => {
     posistion_applied: "",
     date_of_screening: "",
   });
-    const [newRow, setNewRow] = useState({
-      score_card: "",
-      guideline: "",
-      min_questions: "",
-      weightage: "",
-      feedback: "",
-      rating: 0,
-    });
+  const [newRow, setNewRow] = useState({
+    score_card: "",
+    guideline: "",
+    min_questions: "",
+    weightage: "",
+    feedback: "",
+    rating: 0,
+  });
 
-      const handleNewRatingChange = (rating) => {
+  const handleNewRatingChange = (rating) => {
     setNewRow((prev) => ({ ...prev, rating }));
   };
 
@@ -52,13 +54,16 @@ const RecruiterScreening = () => {
     setIsAdding(false);
   };
 
-      const handleInputChange = (e) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
 
     if ((name === "min_questions" || name === "weightage") && value < 1) return;
 
     setNewRow((prev) => ({ ...prev, [name]: value }));
   };
+
+  const navigate = useNavigate();
+  // const Navigate = useNavigate();
 
   const [ratings, setRatings] = useState([0, 0, 0]);
   const [feedbacks, setFeedbacks] = useState(["", "", ""]);
@@ -69,7 +74,6 @@ const RecruiterScreening = () => {
   const [candidate, setCandidate] = useState("");
   const [isAdding, setIsAdding] = useState(false);
 
-
   const currentDate = new Date();
   const day = String(currentDate.getDate()).padStart(2, "0");
   const month = String(currentDate.getMonth() + 1).padStart(2, "0");
@@ -78,10 +82,10 @@ const RecruiterScreening = () => {
   const formattedDate = `${day}/${month}/${year}`;
 
   const [rows, setRows] = useState([]);
-  console.log(rows,"csasc")
+  console.log(rows, "csasc");
 
   const location = useLocation();
-  const routeState = location?.state
+  const routeState = location?.state;
 
   function fetchCandidateData() {
     let pay_load = { candidate_id: routeState?.candidate_id };
@@ -105,7 +109,7 @@ const RecruiterScreening = () => {
         setCandidateDetails(response_data);
         interviewDesignScreenParams(interview_design_id);
       })
-      .catch((error) => { 
+      .catch((error) => {
         console.error("API call failed:", error);
       });
   }
@@ -165,6 +169,7 @@ const RecruiterScreening = () => {
         console.log("Response from API:", response.data);
         if (response.data.success) {
           alert("Submission successful!");
+          navigate("/recruiter/screening_dashboard"); 
         } else {
           alert(response.data.message);
         }
@@ -232,7 +237,7 @@ const RecruiterScreening = () => {
                   <Button size="sm" onClick={() => setIsAdding(true)}>
                     Add
                   </Button>
-                 )}
+                )}
               </th>
             </tr>
           </thead>
@@ -271,91 +276,95 @@ const RecruiterScreening = () => {
                 </td>
               </tr>
             ))}
-                      {isAdding && (
-                        <tr>
-                          <td>{rows.length + 1}</td>
-                          <td>
-                            <Form.Control
-                              name="score_card"
-                              value={newRow.score_card}
-                              onChange={handleInputChange}
-                              placeholder="Parameter"
-                            />
-                          </td>
-                          <td>
-                            <Form.Control
-                              name="guideline"
-                              value={newRow.guideline}
-                              onChange={handleInputChange}
-                              placeholder="Guideline"
-                            />
-                          </td>
-                          <td>
-                            <Form.Control
-                              type="number"
-                              name="min_questions"
-                              min="1"
-                              value={newRow.min_questions}
-                              onChange={handleInputChange}
-                              placeholder="Min Questions"
-                            />
-                          </td>
-                          <td>
-                            <Form.Control
-                              type="number"
-                              name="weightage"
-                              min="1"
-                              value={newRow.weightage}
-                              onChange={handleInputChange}
-                              placeholder="Weightage"
-                            />
-                          </td>
-                          <td>
-                            <div
-                              className="form-control d-flex align-items-center"
-                              style={{ height: "38px" }}
-                            >
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <span
-                                  key={star}
-                                  onClick={() => handleNewRatingChange(star)}
-                                  style={{
-                                    cursor: "pointer",
-                                    color: newRow.rating >= star ? "#ffc107" : "#ccc",
-                                    fontSize: "1.2rem",
-                                    marginRight: "4px",
-                                  }}
-                                >
-                                  ★
-                                </span>
-                              ))}
-                              <span className="ms-2">{newRow.rating}.0</span>
-                            </div>
-                          </td>
-                          <td>
-                            <Form.Control
-                              name="feedback"
-                              value={newRow.feedback}
-                              onChange={handleInputChange}
-                              placeholder="Feedback"
-                            />
-                          </td>
-                          <td>
-                            <div className="d-flex gap-2">
-                              <Button size="sm" variant="success" onClick={handleAddNewRow}>
-                                Save
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="secondary"
-                                onClick={() => setIsAdding(false)}
-                              >
-                                Cancel
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      )}
+            {isAdding && (
+              <tr>
+                <td>{rows.length + 1}</td>
+                <td>
+                  <Form.Control
+                    name="score_card"
+                    value={newRow.score_card}
+                    onChange={handleInputChange}
+                    placeholder="Parameter"
+                  />
+                </td>
+                <td>
+                  <Form.Control
+                    name="guideline"
+                    value={newRow.guideline}
+                    onChange={handleInputChange}
+                    placeholder="Guideline"
+                  />
+                </td>
+                <td>
+                  <Form.Control
+                    type="number"
+                    name="min_questions"
+                    min="1"
+                    value={newRow.min_questions}
+                    onChange={handleInputChange}
+                    placeholder="Min Questions"
+                  />
+                </td>
+                <td>
+                  <Form.Control
+                    type="number"
+                    name="weightage"
+                    min="1"
+                    value={newRow.weightage}
+                    onChange={handleInputChange}
+                    placeholder="Weightage"
+                  />
+                </td>
+                <td>
+                  <div
+                    className="form-control d-flex align-items-center"
+                    style={{ height: "38px" }}
+                  >
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <span
+                        key={star}
+                        onClick={() => handleNewRatingChange(star)}
+                        style={{
+                          cursor: "pointer",
+                          color: newRow.rating >= star ? "#ffc107" : "#ccc",
+                          fontSize: "1.2rem",
+                          marginRight: "4px",
+                        }}
+                      >
+                        ★
+                      </span>
+                    ))}
+                    <span className="ms-2">{newRow.rating}.0</span>
+                  </div>
+                </td>
+                <td>
+                  <Form.Control
+                    name="feedback"
+                    value={newRow.feedback}
+                    onChange={handleInputChange}
+                    placeholder="Feedback"
+                  />
+                </td>
+                <td>
+                  <div className="d-flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="success"
+                      onClick={handleAddNewRow}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => setIsAdding(false)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            )}
           </tbody>
         </Table>
 
@@ -390,12 +399,14 @@ const RecruiterScreening = () => {
           <Col md={3}>
             <Form.Group>
               <Form.Label>Result/Recommendations</Form.Label>
-              <Form.Select value={result} onChange={(e) => setResult(e.target.value)}>
+              <Form.Select
+                value={result}
+                onChange={(e) => setResult(e.target.value)}
+              >
                 <option value="">Select option</option>
                 <option value="Recommended">Recommended</option>
                 <option value="Not Recommended">Not Recommended</option>
               </Form.Select>
-
             </Form.Group>
           </Col>
         </Row>
