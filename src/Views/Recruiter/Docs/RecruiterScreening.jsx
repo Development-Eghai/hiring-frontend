@@ -5,7 +5,6 @@ import axios from "axios";
 import RecruiterHeader from "../Recruiter_utils/Navbar";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-
 // import "react-toastify/dist/ReactToastify.css";
 
 const RecruiterScreening = () => {

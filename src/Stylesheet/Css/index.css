@@ -406,3 +406,8 @@
 .parameter-body {
   min-width: 1200px; 
 }
+
+.react-dropdown-select{
+  border-radius: 6px !important;
+  padding: .3rem !important;
+}

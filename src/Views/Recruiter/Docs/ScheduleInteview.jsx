@@ -15,7 +15,6 @@ const ScheduleInterview = () => {
     { date: "", time: "", guests: [] },
   ]);
   const [editData, setEditData] = useState(null);
-  console.log(editData,"ccccsds")
   const [showConfirm, setShowConfirm] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
 
@@ -36,14 +35,14 @@ const ScheduleInterview = () => {
   const [selectedSlots, setSelectedSlots] = useState([]);
 
   const handleChange = (e) => {
-  const { name, value } = e.target;
-  setEditData((prev) => ({ ...prev, [name]: value }));
-};
+    const { name, value } = e.target;
+    setEditData((prev) => ({ ...prev, [name]: value }));
+  };
 
   //Get api calll
   useEffect(() => {
     fetchScheduleData();
-  }, [showFormModal,showConfirm,]);
+  }, [showFormModal, showConfirm]);
 
   const [data, setData] = useState([]);
 
@@ -111,7 +110,6 @@ const ScheduleInterview = () => {
       const response = await axiosInstance.post("/candidates/by-requisition/", {
         requisition_id: reqId,
       });
-      console.log(response.data);
       if (response.data.success) {
         setCandidateOptions(response.data.data);
       }
@@ -130,7 +128,7 @@ const ScheduleInterview = () => {
     setSelectedReqId(reqId);
     setSelectedCandidate("");
     await fetchCandidateName(reqId);
-    await fetchInterviewers(reqId); 
+    await fetchInterviewers(reqId);
 
     try {
       const response = await axiosInstance.post("/api/schedule/context/", {
@@ -184,6 +182,8 @@ const ScheduleInterview = () => {
         setGuests(data.guests || []);
         setInterviewRounds(data.no_of_rounds || 1);
         setScheduleSlots(data.schedule_slots || []);
+        setSelectedInterviewer(data.interviewer_id || "")
+
 
         setEditData({
           planningId: data.planning_id,
@@ -198,7 +198,9 @@ const ScheduleInterview = () => {
           schedule_id: data.schedule_id,
         });
 
-        await fetchCandidateName(data.req_id);
+        await fetchCandidateName(data.req_id || "");
+        await fetchInterviewers(data.req_id || "");
+        await handleInterviewerSelect(data.interviewer_id || "")
         setShowFormModal(true);
       } else {
         toast.error("Failed to fetch schedule details");
@@ -208,6 +210,7 @@ const ScheduleInterview = () => {
       toast.error("Something went wrong while fetching schedule details.");
     }
   };
+  
 
   const handleDelete = (row) => {
     setDeleteTarget(row);
@@ -481,6 +484,7 @@ const ScheduleInterview = () => {
       candidate_name: selectedCandidate,
       round_name: rounds[selectedRoundIndex]?.round_name || "",
       planning_id: editData?.planningId,
+      interviewers_id: selectedInterviewer,
       interviewer_name: (() => {
         const selectedObj = interviewers.find(
           (i) => String(i.id) === String(selectedInterviewer)
@@ -666,6 +670,15 @@ const ScheduleInterview = () => {
     );
   };
 
+  function openAddScheduleModal(){
+    setMode("")
+    setEditData(null)
+    setSelectedReqId("")
+    setSelectedCandidate("")
+    setSelectedInterviewer("")
+    setShowFormModal(true)
+  } 
+
   return (
     <>
       <RecruiterHeader />
@@ -674,7 +687,7 @@ const ScheduleInterview = () => {
         <div className="mb-3 gap-2 d-flex justify-content-between">
           <h5 className="fw-bold mb-0">Schedule Interview</h5>
 
-          <Button onClick={() => setShowFormModal(true)}>
+          <Button onClick={openAddScheduleModal}>
             Add Schedule Interview
           </Button>
         </div>
@@ -737,10 +750,10 @@ const ScheduleInterview = () => {
                 <Col>
                   <Form.Label>Position Name</Form.Label>
                   <Form.Control
-                  name="position"
+                    name="position"
                     placeholder="Position Name here"
                     value={editData?.position || ""}
-                    onChange={(e=>handleChange(e))}
+                    onChange={(e) => handleChange(e)}
                   />{" "}
                 </Col>
               </Row>
@@ -814,17 +827,17 @@ const ScheduleInterview = () => {
                 <Col>
                   <Form.Label>Location</Form.Label>
                   <Form.Control
-                  name="location"
+                    name="location"
                     placeholder="Location here"
                     value={editData?.location || ""}
-                    onChange={(e)=>handleChange(e)}
+                    onChange={(e) => handleChange(e)}
                   />
                 </Col>
                 <Col>
                   <Form.Label>Time Zone</Form.Label>
                   <Form.Control
-                  name="timeZone"
-                  onChange={(e)=>handleChange(e)}
+                    name="timeZone"
+                    onChange={(e) => handleChange(e)}
                     placeholder="Time Zone here"
                     value={editData?.timeZone || ""}
                   />
@@ -835,10 +848,10 @@ const ScheduleInterview = () => {
                 <Col>
                   <Form.Label>Durations</Form.Label>
                   <Form.Control
-                  name="durations"
+                    name="durations"
                     placeholder="Enter"
                     value={editData?.durations || ""}
-                    onChange={(e)=>handleChange(e)}
+                    onChange={(e) => handleChange(e)}
                   />
                 </Col>
                 {/* <Col>
@@ -851,10 +864,10 @@ const ScheduleInterview = () => {
                 <Col>
                   <Form.Label>Mode</Form.Label>
                   <Form.Control
-                  name="mode"
+                    name="mode"
                     placeholder="enter"
                     value={editData?.mode || ""}
-                    onChange={(e)=>handleChange(e)}
+                    onChange={(e) => handleChange(e)}
                   />
                 </Col>
               </Row>
@@ -898,32 +911,31 @@ const ScheduleInterview = () => {
                   >
                     <Row className="mb-2 gap-2 ">
                       <Form.Label>Schedule Date</Form.Label>
-
                       <Col>
-                        <Form.Control
-                          type="date"
-                          value={slot.date || ""}
-                          onChange={(e) =>
+                        <Form.Select
+                          value={`${slot.date}|${slot.time}`}
+                          onChange={(e) => {
+                            const [selectedDate, selectedTime] =
+                              e.target.value.split("|");
                             handleScheduleChange(
                               slotIndex,
                               "date",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </Col>
-                      <Col>
-                        <Form.Control
-                          placeholder="Time"
-                          value={slot.time}
-                          onChange={(e) =>
+                              selectedDate
+                            );
                             handleScheduleChange(
                               slotIndex,
                               "time",
-                              e.target.value
-                            )
-                          }
-                        />
+                              selectedTime
+                            );
+                          }}
+                        >
+                          <option value="">-- Select Slot --</option>
+                          {rounds[selectedRoundIndex]?.slots?.map((s, idx) => (
+                            <option key={idx} value={`${s.date}|${s.time}`}>
+                             Date: {s.date} | Time: {s.time}
+                            </option>
+                          ))}
+                        </Form.Select>
                       </Col>
                       <Col>
                         <Button
