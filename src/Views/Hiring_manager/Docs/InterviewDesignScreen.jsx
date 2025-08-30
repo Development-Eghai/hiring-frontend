@@ -89,6 +89,10 @@ const InterviewForm = () => {
   }, [interview_design_id]);
 
   useEffect(() => {
+    if(reqId === "") {
+                setClientId("");
+          setClientName("");
+    }
     if (reqId) {
       const getClientdetails = async () => {
         const getclientdetails = await axios.post(
