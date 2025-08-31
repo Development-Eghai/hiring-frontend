@@ -182,8 +182,7 @@ const ScheduleInterview = () => {
         setGuests(data.guests || []);
         setInterviewRounds(data.no_of_rounds || 1);
         setScheduleSlots(data.schedule_slots || []);
-        setSelectedInterviewer(data.interviewer_id || "")
-
+        setSelectedInterviewer(data.interviewers_id || "");
 
         setEditData({
           planningId: data.planning_id,
@@ -200,7 +199,7 @@ const ScheduleInterview = () => {
 
         await fetchCandidateName(data.req_id || "");
         await fetchInterviewers(data.req_id || "");
-        await handleInterviewerSelect(data.interviewer_id || "")
+        await handleInterviewerSelect(data.interviewer_id || "");
         setShowFormModal(true);
       } else {
         toast.error("Failed to fetch schedule details");
@@ -210,7 +209,6 @@ const ScheduleInterview = () => {
       toast.error("Something went wrong while fetching schedule details.");
     }
   };
-  
 
   const handleDelete = (row) => {
     setDeleteTarget(row);
@@ -670,14 +668,51 @@ const ScheduleInterview = () => {
     );
   };
 
-  function openAddScheduleModal(){
-    setMode("")
-    setEditData(null)
-    setSelectedReqId("")
-    setSelectedCandidate("")
-    setSelectedInterviewer("")
-    setShowFormModal(true)
-  } 
+  function openAddScheduleModal() {
+    setMode("");
+    setEditData(null);
+    setSelectedReqId("");
+    setSelectedRoundIndex("");
+    setSelectedCandidate("");
+    setSelectedInterviewer("");
+    setShowFormModal(true);
+  }
+
+  // --- Utility functions ---
+  const convertTo24Hour = (time12h) => {
+    if (!time12h) return "";
+    const [time, modifier] = time12h.split(" ");
+    let [hours, minutes] = time.split(":");
+
+    if (hours === "12") {
+      hours = "00";
+    }
+
+    if (modifier === "PM") {
+      hours = parseInt(hours, 10) + 12;
+    }
+
+    return `${hours.toString().padStart(2, "0")}:${minutes}`;
+  };
+
+  const convertTo12Hour = (time24) => {
+    if (!time24) return "";
+    let [hours, minutes] = time24.split(":");
+    let modifier = "AM";
+
+    hours = parseInt(hours, 10);
+
+    if (hours >= 12) {
+      modifier = "PM";
+      if (hours > 12) hours -= 12;
+    }
+
+    if (hours === 0) {
+      hours = 12;
+    }
+
+    return `${hours.toString().padStart(2, "0")}:${minutes} ${modifier}`;
+  };
 
   return (
     <>
@@ -687,9 +722,7 @@ const ScheduleInterview = () => {
         <div className="mb-3 gap-2 d-flex justify-content-between">
           <h5 className="fw-bold mb-0">Schedule Interview</h5>
 
-          <Button onClick={openAddScheduleModal}>
-            Add Schedule Interview
-          </Button>
+          <Button onClick={openAddScheduleModal}>Add Schedule Interview</Button>
         </div>
 
         <DataTable
@@ -909,11 +942,16 @@ const ScheduleInterview = () => {
                     key={slotIndex}
                     className="border rounded p-3 mt-3 bg-light"
                   >
-                    <Row className="mb-2 gap-2 ">
-                      <Form.Label>Schedule Date</Form.Label>
-                      <Col>
+                    {/* Dropdown for selecting a slot */}
+                    <Row className="mb-2 gap-2">
+                      <Col md={12}>
+                        <Form.Label>Select Slot</Form.Label>
                         <Form.Select
-                          value={`${slot.date}|${slot.time}`}
+                          value={
+                            slot.date && slot.time
+                              ? `${slot.date}|${slot.time}`
+                              : ""
+                          }
                           onChange={(e) => {
                             const [selectedDate, selectedTime] =
                               e.target.value.split("|");
@@ -926,30 +964,63 @@ const ScheduleInterview = () => {
                               slotIndex,
                               "time",
                               selectedTime
-                            );
+                            ); // stays "02:00 PM"
                           }}
                         >
                           <option value="">-- Select Slot --</option>
                           {rounds[selectedRoundIndex]?.slots?.map((s, idx) => (
                             <option key={idx} value={`${s.date}|${s.time}`}>
-                             Date: {s.date} | Time: {s.time}
+                              Date: {s.date} | Time: {s.time}
                             </option>
                           ))}
                         </Form.Select>
                       </Col>
+                    </Row>
+
+                    {/* Date & Time Pickers */}
+                    <Row className="mb-2 gap-2">
                       <Col>
-                        <Button
-                          size="sm"
-                          variant="outline-primary"
-                          onClick={() => handleAddScheduleGuest(slotIndex)}
-                        >
-                          + Add Guest
-                        </Button>
+                        <Form.Label>Schedule Date</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={slot.date}
+                          onChange={(e) =>
+                            handleScheduleChange(
+                              slotIndex,
+                              "date",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </Col>
+                      <Col >
+                        <Form.Label>Schedule Time</Form.Label>
+                        <Form.Control
+                          type="time"
+                          value={convertTo24Hour(slot.time)} // show "14:00" for "02:00 PM"
+                          onChange={(e) =>
+                            handleScheduleChange(
+                              slotIndex,
+                              "time",
+                              convertTo12Hour(e.target.value) // store back as "02:00 PM"
+                            )
+                          }
+                        />
                       </Col>
                     </Row>
 
+                    <Col className="mt-2">
+                      <Button
+                        size="sm"
+                        variant="outline-primary"
+                        onClick={() => handleAddScheduleGuest(slotIndex)}
+                      >
+                        + Add Guest
+                      </Button>
+                    </Col>
+
                     {slot.guests.map((guestEmail, guestIndex) => (
-                      <Row key={guestIndex} className="mb-2 gap-2 ">
+                      <Row key={guestIndex} className="mb-2 mt-2 gap-2 ">
                         <Col>
                           <Form.Control
                             placeholder="Guest email"
