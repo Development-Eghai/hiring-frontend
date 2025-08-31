@@ -68,3 +68,35 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+# Deployment SOP (Standard Operating Procedure)
+
+## 🔹 Server Access
+1. Open **PuTTY**.
+2. Enter the IP address
+3. Click **Open**.
+4. Login`
+
+---
+
+## 🔹 Frontend Deployment
+1. Navigate to the project folder:  
+   ```bash
+   cd project/hiring-frontend/
+   ```
+2. Pull the latest code:  
+   ```bash
+   git pull
+   ```
+3. Stop existing containers:  
+   ```bash
+   docker compose down
+   ```
+4. Build and start new containers in detached mode:  
+   ```bash
+   docker compose up -d --build
+   ```
+5. Exit the server:  
+   ```bash
+   exit
+   ```
