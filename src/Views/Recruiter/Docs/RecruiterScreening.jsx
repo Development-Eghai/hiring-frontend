@@ -19,7 +19,7 @@ const RecruiterScreening = () => {
   const [newRow, setNewRow] = useState({
     score_card: "",
     guideline: "",
-    min_questions: "",
+    skills: "",
     weightage: "",
     feedback: "",
     rating: 0,
@@ -33,7 +33,7 @@ const RecruiterScreening = () => {
     if (
       !newRow.score_card ||
       !newRow.guideline ||
-      !newRow.min_questions ||
+      !newRow.skills ||
       !newRow.weightage
     ) {
       alert("Fill all required fields");
@@ -56,7 +56,7 @@ const RecruiterScreening = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    if ((name === "min_questions" || name === "weightage") && value < 1) return;
+    if ((name === "weightage") && value < 1) return;
 
     setNewRow((prev) => ({ ...prev, [name]: value }));
   };
@@ -154,7 +154,7 @@ const RecruiterScreening = () => {
         sno: index + 1,
         parameterDefined: row.score_card,
         Guidelines: row.guideline,
-        MinimumQuestions: row.min_questions,
+        Skills: row.skills,
         weightage: row.weightage,
         ActualRating: ratings[index],
         Feedback: feedbacks[index],
@@ -227,7 +227,7 @@ const RecruiterScreening = () => {
               <th style={{ width: "5%" }}>S.No</th>
               <th style={{ width: "15%" }}>Parameter Defined</th>
               <th style={{ width: "15%" }}>Guideline</th>
-              <th style={{ width: "15%" }}>Minimum Questions</th>
+              <th style={{ width: "15%" }}>Skills</th>
               <th style={{ width: "10%" }}>Weightage</th>
               <th style={{ width: "20%" }}>Actual Rating</th>
               <th style={{ width: "20%" }}>Feedback</th>
@@ -246,7 +246,7 @@ const RecruiterScreening = () => {
                 <td>{index + 1}</td>
                 <td>{row.score_card}</td>
                 <td>{row.guideline}</td>
-                <td>{row.min_questions}</td>
+                <td>{row.skills}</td>
                 <td>{row.weightage}</td>
                 <td>
                   <div
@@ -295,13 +295,20 @@ const RecruiterScreening = () => {
                   />
                 </td>
                 <td>
-                  <Form.Control
+                  {/* <Form.Control
                     type="number"
                     name="min_questions"
                     min="1"
                     value={newRow.min_questions}
                     onChange={handleInputChange}
                     placeholder="Min Questions"
+                  /> */}
+                  <Form.Control
+                  name="skills"
+                    type="text"
+                    value={newRow.skills || ""}
+                    onChange={handleInputChange}
+                    placeholder="Skills"
                   />
                 </td>
                 <td>

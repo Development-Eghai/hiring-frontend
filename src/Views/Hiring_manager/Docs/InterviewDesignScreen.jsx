@@ -40,10 +40,10 @@ const InterviewForm = () => {
     score_card_name: "",
     options: "",
     guideline: "",
-    min_questions: "",
+    skills: "",
     screen_type: "",
     duration: "",
-    duration_metric: "", // Add duration_metric
+    duration_metric: "", 
     Weightage: "",
     feedback: "",
   };
@@ -221,15 +221,29 @@ const InterviewForm = () => {
     setParameters(updated);
   };
 
-  const handleFormSubmit = async (e) => {
-    if (e) e.preventDefault();
-    toast.dismiss();
+const handleFormSubmit = async (e) => {
+  if (e) e.preventDefault();
+  toast.dismiss();
 
-    if (!interview_design_id && !showConfirm) {
-      setShowConfirm(true);
-      return;
-    }
+  const totalWeight = parameters.reduce(
+    (sum, p) => sum + (Number(p.weightage) || 0),
+    0
+  );
 
+  if (totalWeight > 100) {
+    toast.error("❌ Total weightage cannot exceed 100%");
+    return;
+  }
+
+  if (totalWeight < 100) {
+    toast.error("⚠️ Total weightage must be exactly 100%");
+    return;
+  }
+
+  if (!interview_design_id && !showConfirm) {
+    setShowConfirm(true);
+    return;
+  }
     if (
       !reqId ||
       !techStacks ||
@@ -240,7 +254,7 @@ const InterviewForm = () => {
           param.options &&
           param.weightage &&
           param.guideline &&
-          param.min_questions &&
+          param.skills &&
           param.screen_type &&
           param.duration &&
           param.duration_metric 
@@ -345,7 +359,7 @@ const InterviewForm = () => {
           param.options &&
           param.weightage &&
           param.guideline &&
-          param.min_questions &&
+          param.skills &&
           param.screen_type &&
           param.duration
       )
@@ -539,7 +553,7 @@ const InterviewForm = () => {
                 <span>Skills</span>
                 <span>Screening Type</span>
                 <span>Duration</span>
-                {/* <span>Duration Metric</span>  */}
+                 <span>Duration Metric</span> 
                 <span>Weightage</span>
                 <span>Feedback Guideline</span>
                 <span>Action</span>
@@ -548,38 +562,49 @@ const InterviewForm = () => {
               {parameters.length > 0 ? (
                 parameters.map((param, index) => {
                   // Calculate max allowed for this parameter
+
                   const otherTotal = parameters.reduce(
                     (sum, p, i) => (i !== index ? sum + (Number(p.weightage) || 0) : sum),
                     0
                   );
                   const maxAllowed = 100 - otherTotal;
-
                   return (
-                    <div className="parameter-body d-flex gap-2 mt-2" key={index}>
-
-                     <p className="d-flex align-items-center justify-content-center pt-3 pe-3 ps-2">{index+1}</p>
+                    <div
+                      className="parameter-body d-flex gap-2 mt-2"
+                      key={index}
+                    >
+                      <p className="d-flex align-items-center justify-content-center pt-3 pe-3 ps-2">
+                        {index + 1}
+                      </p>
                       <CreatableSelect
                         isClearable
                         menuPortalTarget={document.body}
                         menuPosition="fixed"
-                        options={scoreCards.map(card => ({
+                        options={scoreCards.map((card) => ({
                           label: card.score_card_name,
                           value: card.score_card_name,
                         }))}
                         value={
                           param.score_card_name
-                            ? { label: param.score_card_name, value: param.score_card_name }
+                            ? {
+                                label: param.score_card_name,
+                                value: param.score_card_name,
+                              }
                             : null
                         }
-                        onChange={option =>
-                          handleChange(index, "score_card_name", option ? option.value : "")
+                        onChange={(option) =>
+                          handleChange(
+                            index,
+                            "score_card_name",
+                            option ? option.value : ""
+                          )
                         }
                         placeholder="Select or enter"
                         className="flex-grow-1"
                         styles={{
-                          container: base => ({ ...base, minWidth: 200 }),
-                          menuPortal: base => ({ ...base, zIndex: 99999 }),
-                          menu: base => ({ ...base, zIndex: 99999 }),
+                          container: (base) => ({ ...base, minWidth: 200 }),
+                          menuPortal: (base) => ({ ...base, zIndex: 99999 }),
+                          menu: (base) => ({ ...base, zIndex: 99999 }),
                         }}
                       />
                       {/* <Form.Control
@@ -592,7 +617,9 @@ const InterviewForm = () => {
                       /> */}
                       <Form.Select
                         value={param.options || ""}
-                        onChange={e => handleChange(index, "duration_metric", e.target.value)}
+                        onChange={(e) =>
+                          handleChange(index, "options", e.target.value)
+                        }
                       >
                         <option value="">Select</option>
                         <option value="optionals">Optionals</option>
@@ -608,9 +635,9 @@ const InterviewForm = () => {
                       />
                       <Form.Control
                         type="text"
-                        value={param.min_questions || ""}
+                        value={param.skills || ""}
                         onChange={(e) =>
-                          handleChange(index, "min_questions", e.target.value)
+                          handleChange(index, "skills", e.target.value)
                         }
                         placeholder="Skills"
                       />
@@ -630,32 +657,46 @@ const InterviewForm = () => {
                         }
                         placeholder="Duration"
                       />
-                      {/* <Form.Select
+                      <Form.Select
                         value={param.duration_metric || ""}
-                        onChange={e => handleChange(index, "duration_metric", e.target.value)}
+                        onChange={(e) =>
+                          handleChange(index, "duration_metric", e.target.value)
+                        }
                       >
                         <option value="">Select</option>
                         <option value="days">Days</option>
                         <option value="hours">Hours</option>
                         <option value="mins">Mins</option>
-                      </Form.Select> */}
+                      </Form.Select>
                       <Form.Control
                         type="number"
                         value={param.weightage || ""}
                         onChange={(e) => {
                           toast.dismiss();
                           let value = Number(e.target.value);
-                          if (value > maxAllowed) value = maxAllowed;
-                          if (value < 0) value = 0;
+
                           const updatedParameters = [...parameters];
                           updatedParameters[index].weightage = value;
                           updatedParameters[index].Weightage = value;
+
+                          const totalWeight = updatedParameters.reduce(
+                            (sum, p) => sum + (Number(p.weightage) || 0),
+                            0
+                          );
+
+                          if (totalWeight > 100) {
+                            toast.error(
+                              "⚠️ Total weightage cannot exceed 100%"
+                            );
+                            return;
+                          }
+
                           setParameters(updatedParameters);
                         }}
-                        placeholder="weightage"
+                        placeholder="Weightage"
                         min={0}
-                        max={maxAllowed}
                       />
+
                       <Form.Control
                         type="text"
                         value={param.feedback || ""}
