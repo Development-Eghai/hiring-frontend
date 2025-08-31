@@ -73,7 +73,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 ## 🔹 Server Access
 1. Open **PuTTY**.
-2. Enter the IP address: `178.16.139.167`
+2. Enter the IP address
 3. Click **Open**.
 4. Login`
 
