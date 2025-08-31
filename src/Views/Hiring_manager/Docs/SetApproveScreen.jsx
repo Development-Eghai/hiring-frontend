@@ -594,6 +594,156 @@ const SetApproveScreen = () => {
   </Modal.Footer>
 </Modal>
 
+{/* editmodal */}
+        <Modal show={showEditModal} onHide={()=>setShowEditModal(false)} centered size="xl">
+          <Modal.Header closeButton>
+            <Modal.Title>Set Approver</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+                <Row className="mb-3">
+                  <Col md={6}>
+                    <Form.Group>
+                      <Form.Label>Client Name</Form.Label>
+                      <Form.Control
+                        name="client_name"
+                        placeholder="Enter client name"
+                        value={formState.client_name}
+                        onChange={handleMainChange}
+                        disabled
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group>
+                      <Form.Label>Client ID</Form.Label>
+                      <Form.Control
+                        name="client_id"
+                        placeholder="Enter client ID"
+                        value={formState.client_id}
+                        onChange={handleMainChange}
+                        disabled
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+
+        <Table bordered hover responsive>
+          <thead className="table-light">
+            <tr>
+              <th>Role</th>
+              <th>Job Title</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Email</th>
+              <th>Contact Number</th>
+              {/* <th>Set as Approver</th> */}
+              <th style={{ width: "150px" }}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {formState.approvers.map((approver, index) => (
+              <tr key={index}>
+                <td>
+                  <Form.Select
+                    name="role"
+                    value={approver.role}
+                    onChange={(e) => handleApproverChange(index, e)}
+                  >
+                    <option value="">-- Select Role --</option>
+                    <option value="Manager">Manager</option>
+                    <option value="HR">HR</option>
+                    <option value="HM">HM</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Reviewer">Reviewer</option>
+                  </Form.Select>
+                </td>
+                <td>
+                  <Form.Control
+                    name="job_title"
+                    placeholder="Enter job title"
+                    value={approver.job_title}
+                    onChange={(e) => handleApproverChange(index, e)}
+                  />
+                </td>
+                <td>
+                  <Form.Control
+                    name="first_name"
+                    placeholder="Enter first name"
+                    value={approver.first_name}
+                    onChange={(e) => handleApproverChange(index, e)}
+                  />
+                </td>
+                <td>
+                  <Form.Control
+                    name="last_name"
+                    placeholder="Enter last name"
+                    value={approver.last_name}
+                    onChange={(e) => handleApproverChange(index, e)}
+                  />
+                </td>
+                <td>
+                  <Form.Control
+                    type="email"
+                    name="email"
+                    placeholder="Enter email"
+                    value={approver.email}
+                    onChange={(e) => handleApproverChange(index, e)}
+                  />
+                </td>
+                <td>
+                  <Form.Control
+                    name="contact_number"
+                    placeholder="Enter contact number"
+                    value={approver.contact_number}
+                    onChange={(e) => handleApproverChange(index, e)}
+                  />
+                </td>
+                {/* <td>
+                  <Form.Select
+                    name="set_as_approver"
+                    value={approver.set_as_approver}
+                    onChange={(e) => handleApproverChange(index, e)}
+                  >
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </Form.Select>
+                </td> */}
+                <td className="text-center">
+                  {formState.approvers.length > 1 && (
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
+                      className="me-2"
+                      onClick={() => removeApproverRow(index)}
+                    >
+                      Remove
+                    </Button>
+                  )}
+                  {index === formState.approvers.length - 1 && (
+                    <Button
+                      variant="outline-success"
+                      size="sm"
+                      onClick={addApproverRow}
+                    >
+                      Add
+                    </Button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+      Cancel
+    </Button>
+    
+      <Button variant="success" onClick={handleUpdate}>
+        update
+      </Button>
+  </Modal.Footer>
+</Modal>
 
         <Modal
           show={showViewModal}
@@ -647,7 +797,7 @@ const SetApproveScreen = () => {
 
         {/* edit */}
 
-        <Modal
+        {/* <Modal
           show={showEditModal}
           onHide={() => setShowEditModal(false)}
           centered
@@ -799,7 +949,8 @@ const SetApproveScreen = () => {
               Update
             </Button>
           </Modal.Footer>
-        </Modal>
+        </Modal> */}
+        
         <ToastContainer position="top-right" autoClose={3000} />
       </Container>
     </div>
