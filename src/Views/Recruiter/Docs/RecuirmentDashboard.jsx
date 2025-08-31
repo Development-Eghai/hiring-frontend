@@ -9,13 +9,13 @@ export const RecruiterDashboard = () => {
   const [tableData, setTableData] = useState([]);
   const [candidateData, setCandidateData] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  
-  console.log(candidateData,"hv")
+
+  console.log(candidateData, "hv");
   console.log(tableData, "uyi");
 
-  const {commonState} = useCommonState();
-  
-  console.log(commonState,"asdasd")
+  const { commonState } = useCommonState();
+
+  console.log(commonState, "asdasd");
   const RecuiterTableHeadings = [
     "S.no",
     "Planning ID",
@@ -61,8 +61,8 @@ export const RecruiterDashboard = () => {
         const formatted = response.data.data.map((item) => ({
           "Req ID": item.Req_ID,
           "Candidate Id": item.Candidate_Id,
-          "Candidate First Name":item?.Candidate_First_Name,
-          "Candidate Second Name":item?.Candidate_Last_Name,
+          "Candidate First Name": item?.Candidate_First_Name,
+          "Candidate Second Name": item?.Candidate_Last_Name,
           "Applied Postion": item.Applied_Position,
           "Time in Stage": item.Time_in_Stage,
           "JD From applied Position": item.JD_From_applied_Position,
@@ -91,9 +91,7 @@ export const RecruiterDashboard = () => {
         const userInfo = JSON.parse(localStorage.getItem("userInfo"));
         const response = await axios.post(
           "https://api.pixeladvant.com/api/jobrequisition/list-requisitions/",
-          { user_role: userInfo?.user_id,
-          username: userInfo?.Name,
-           }
+          { user_role: userInfo?.user_id, username: userInfo?.Name }
         );
 
         if (response?.data?.success && Array.isArray(response.data.data)) {
@@ -120,12 +118,11 @@ export const RecruiterDashboard = () => {
     fetchData();
   }, [showModal]);
 
- 
   const [selectedRow, setSelectedRow] = useState(null);
   const [modalSourceinput, setModalSourceinput] = useState("");
   const [cvFiles, setCvFiles] = useState([]);
   const [showJdViewModal, setJdViewModal] = useState(false);
-const [jdContent, setJdContent] = useState("");
+  const [jdContent, setJdContent] = useState("");
   const handleFileChange = (e) => {
     const newFiles = Array.from(e.target.files);
     setCvFiles((prev) => [...prev, ...newFiles]);
@@ -181,9 +178,13 @@ const [jdContent, setJdContent] = useState("");
   return (
     <div className="h-100">
       <RecruiterHeader />
-      <div className="row">
-        <div className="card rounded-3 border-0 shadow-sm p-2 mt-5">
+      <div className="row px-3 mt-0">
+        <div className="card rounded-3 border-0 shadow-sm p-2 ">
+          <div className="mb-3 gap-2 p-2 mt-2 d-flex justify-content-between">
+              <h5 className="fw-bold mb-0">Recruiter Dashboard</h5>
+            </div>
           <div className="card-body p-0 card overflow-auto">
+            
             <table
               className="table mb-0 table-bordered table-striped"
               style={{ minWidth: "1200px" }}
@@ -317,78 +318,83 @@ const [jdContent, setJdContent] = useState("");
           </Modal.Footer>
         </Modal>
 
-       {
-        candidateData?.length > 0 && (
-           <div className="card rounded-3 border-0 shadow-sm p-2 mt-5">
-          <div className="card-body p-0 card overflow-auto">
-            <h5 className="p-3">Candidate List</h5>
+        {candidateData?.length > 0 && (
+          <div className="card rounded-3 border-0 shadow-sm p-2 mt-5">
+            <div className="card-body p-0 card overflow-auto">
+              <h5 className="p-3">Candidate List</h5>
 
-            <table
-              className="table mb-0 table-bordered table-striped"
-              style={{ minWidth: "1200px" }}
-            >
-              <thead className="table-light p-2">
-                <tr>
-                  {CandidateTableHeading.map((heading, idx) => (
-                    <th key={idx}>{heading}</th>
-                  ))}
-                </tr>
-              </thead>
-<tbody className="p-2">
-  {candidateData.length > 0 ? (
-    candidateData.map((data, idx) => (
-      <tr key={idx}>
-        {CandidateTableHeading.map((col, i) => (
-          <td key={i}>
-            {col === "JD From applied Position" && data["JD From applied Position"]? (
-              <Button
-                variant="outline-success"
-                size="sm"
-                onClick={() => {
-                  setJdContent(data["JD From applied Position"]);
-                  setJdViewModal(true);
-                }}
+              <table
+                className="table mb-0 table-bordered table-striped"
+                style={{ minWidth: "1200px" }}
               >
-                View JD
-              </Button>
-            ) : (
-              data[col] // fallback for normal fields
-            )}
-          </td>
-        ))}
-      </tr>
-    ))
-  ) : (
-    <tr>
-      <td
-        colSpan={CandidateTableHeading.length}
-        className="text-center"
-      >
-        No data found
-      </td>
-    </tr>
-  )}
-</tbody>
-
-            </table>
+                <thead className="table-light p-2">
+                  <tr>
+                    {CandidateTableHeading.map((heading, idx) => (
+                      <th key={idx}>{heading}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="p-2">
+                  {candidateData.length > 0 ? (
+                    candidateData.map((data, idx) => (
+                      <tr key={idx}>
+                        {CandidateTableHeading.map((col, i) => (
+                          <td key={i}>
+                            {col === "JD From applied Position" &&
+                            data["JD From applied Position"] ? (
+                              <Button
+                                variant="outline-success"
+                                size="sm"
+                                onClick={() => {
+                                  setJdContent(
+                                    data["JD From applied Position"]
+                                  );
+                                  setJdViewModal(true);
+                                }}
+                              >
+                                View JD
+                              </Button>
+                            ) : (
+                              data[col] 
+                            )}
+                          </td>
+                        ))}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={CandidateTableHeading.length}
+                        className="text-center"
+                      >
+                        No data found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-        )
-       }
+        )}
       </div>
 
       {/* <div className="row">
         <PaginationWithLimit totalItems={50} options={[10, 25, 50]} />
       </div> */}
 
-                  <Modal show={showJdViewModal} onHide={() => setJdViewModal(false)} size="lg" centered>
+      <Modal
+        show={showJdViewModal}
+        onHide={() => setJdViewModal(false)}
+        size="lg"
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Job Description</Modal.Title>
         </Modal.Header>
         <Modal.Body className="d-flex flex-wrap">
-        <div style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
-        {jdContent || "No JD available"}
-      </div>
+          <div style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+            {jdContent || "No JD available"}
+          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setJdViewModal(false)}>
