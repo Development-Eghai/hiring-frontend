@@ -46,14 +46,14 @@ const RequisitionForm = (handleNext) => {
 
   const routelocation = useLocation();
 
-  const createreqformData = routelocation?.state
+  const createreqformData = routelocation?.state;
 
-  useEffect(()=>{
-    if(createreqformData?.reqid){
-      setreqtempid(createreqformData?.reqid)
+  useEffect(() => {
+    if (createreqformData?.reqid) {
+      setreqtempid(createreqformData?.reqid);
     }
-  },[createreqformData])
-  
+  }, [createreqformData]);
+
   const { user_role, user_id } = commonState?.app_data;
 
   const [Competencies, setCompetencies] = useState([
@@ -276,8 +276,8 @@ const RequisitionForm = (handleNext) => {
     reset({
       plan_id: createreqformData?.hiring_plan_id || "",
       company_client_name: createreqformData?.client_name || "",
-      date_of_requisition:createreqformData?.requisition_date || "",
-      due_date_of_requisition:createreqformData?.due_requisition_date|| "",
+      date_of_requisition: createreqformData?.requisition_date || "",
+      due_date_of_requisition: createreqformData?.due_requisition_date || "",
     });
   }, []);
 
@@ -344,7 +344,7 @@ const RequisitionForm = (handleNext) => {
 
         const { primary_skills, secondary_skills } = skills_required;
 
-        setPlanId(Planning_id)
+        setPlanId(Planning_id);
         let formattedPrimarySkills;
         if (primary_skills) {
           formattedPrimarySkills = primary_skills.map((item) => ({
@@ -402,16 +402,19 @@ const RequisitionForm = (handleNext) => {
           questions.map((q) => ({ ...q, isNew: true, id: Date.now() }))
         );
 
-        if(position_information?.band) {
+        if (position_information?.band) {
           const findKeyByValue = (obj, value) => {
-        return Object.keys(obj).find((key) => obj[key].includes(value));
+            return Object.keys(obj).find((key) => obj[key].includes(value));
           };
 
-      const currentband = findKeyByValue(subBandMapping,position_information?.sub_band)
-       console.log(currentband,"fsdweda") 
-          setSelectedBand(currentband)
-         }
-        
+          const currentband = findKeyByValue(
+            subBandMapping,
+            position_information?.sub_band
+          );
+          console.log(currentband, "fsdweda");
+          setSelectedBand(currentband);
+        }
+
         reset({
           plan_id: Planning_id,
           user_role,
@@ -499,8 +502,6 @@ const RequisitionForm = (handleNext) => {
     reset,
     watch,
   } = useForm();
-
-
 
   const onError = (errors) => {
     if (Object.keys(errors).length > 0) {
@@ -651,178 +652,59 @@ const RequisitionForm = (handleNext) => {
     );
   };
 
-
   const jobPositions = ["Software Engineer", "Designer", "Product Manager"];
 
   const BuisnessLine = ["Finance", "SWE", "Products"];
   const BuisnessUnit = ["Banking", "Insurance", "Healthcare"];
   const [selectedBand, setSelectedBand] = useState("");
-const [selectedSubBand, setSelectedSubBand] = useState("");
+  console.log(selectedBand, "CDsdcas");
+  const [selectedSubBand, setSelectedSubBand] = useState("");
 
-console.log(selectedBand,"adasas")
-
-  const Division = ["Banking", "Insurance", "Healthcare"];
-
-  const Department = ["Finance", "SWE", "Products"];
-
-  const jobTitle = [
-  "Software Engineer I",
-  "Software Engineer II",
-  "Software Engineer III",
-  "Sr Software Engineer",
-  "Staff Software Engineer",
-  "Principal Software Engineer",
-  "Distinguished Engineer",
-  "Fellow Engineer",
-  "Sr Fellow Engineer",
-  "Engineering Manager",
-  "Sr Engineering Manager",
-  "Director, Engineering",
-  "Sr Director, Engineering",
-  "VP, Engineering",
-  "SVP, CTO Engineering",
-  "Product Owner I",
-  "Product Owner II",
-  "Product Owner III",
-  "Product Manager I",
-  "Product Manager II",
-  "Sr Product Manager",
-  "Group Product Manager",
-  "Director, Product Manager",
-  "Sr Director, Product Manager"
-];
-
-
-const locations = [
-  { label: "New York", value: "New York" },
-  { label: "San Francisco", value: "San Francisco" },
-  { label: "London", value: "London" },
-  { label: "Berlin", value: "Berlin" },
-  { label: "Tokyo", value: "Tokyo" },
-  { label: "Toronto", value: "Toronto" },
-  { label: "Bangalore", value: "Bangalore" },
-  { label: "Sydney", value: "Sydney" },
-  { label: "Dubai", value: "Dubai" },
-  { label: "Singapore", value: "Singapore" }
-]
-
-
-  const geoZones = [
-    "NAM",
-    "LATAM",
-    "EMEA",
-    "MENA",
-    "APAC",
-    "ANZ",
-    "EAST",
-    "ASIA",
-  ];
-
-  const Band = ["P3", "P4", "P5", "M1", "M2", "M3"];
-
- const subBandMapping = {
-  P3: ["P3.1", "P3.2", "P3.3"],
-  P4: ["P4.1", "P4.2", "P4.3"],
-  P5: ["P5.1", "P5.2", "P5.3"],
-  M1: ["M1.1", "M1.2"],
-  M2: ["M2.1", "M2.2"],
-  M3: ["M3.1", "M3.2"]
-};
-
-  const ModeOfWorking = ["Remote", "Onsite", "hybrid", "client site"];
-
-  const requisitionTypes = [
-    "Part Time",
-    "Full Time",
-    "Contractor",
-    "Internship",
-  ];
-
+  const subBandMapping = {
+    P3: ["P3.1", "P3.2", "P3.3"],
+    P4: ["P4.1", "P4.2", "P4.3"],
+    P5: ["P5.1", "P5.2", "P5.3"],
+    M1: ["M1.1", "M1.2"],
+    M2: ["M2.1", "M2.2"],
+    M3: ["M3.1", "M3.2"],
+  };
 
   const BillingTypes = ["Recrruing", "Onetime", "SOW"];
 
-  const experienceOptions = [
-    { value: "0-2", label: "0-2" },
-    { value: "2-5 years", label: "2-5 years" },
-    { value: "5-10 years", label: "5-10 years" },
-    { value: "10+ years", label: "10+ years" },
-  ];
-
-  const qualificationOptions = [
-    { value: "btech", label: "btech" },
-    { value: "mtech", label: "mtech" },
-    { value: "B.Sc", label: "B.Sc" },
-    { value: "M.Sc", label: "M.Sc" },
-    { value: "MBA", label: "MBA" },
-  ];
-
-  const designationOptions = [
-    { value: "software_engineer", label: "software_engineer" },
-    { value: "senior_developer", label: "senior_developer" },
-    { value: "team_lead", label: "team_lead" },
-    { value: "project_manager", label: "project_manager" },
-    { value: "technical_architect", label: "technical_architect" },
-  ];
-
-  const regionOptions = [
-    { value: "north_america", label: "north_america" },
-    { value: "Europe", label: "Europe" },
-    { value: "Asia", label: "Asia" },
-    { value: "middle_east", label: "middle_east" },
-    { value: "australia", label: "australia" },
-  ];
-
-  const primarySkillsOptions = [
-    { value: "Golang", label: "Golang" },
-    { value: "Design", label: "Design" },
-    { value: "UI", label: "UI" },
-    { value: "java", label: "Java" },
-    { value: "QA", label: "QA" },
-    { value: "Automation", label: "Automation" },
-  ];
-
-  const secondarySkillsOptions = [
-    { value: "docker", label: "Docker" },
-    { value: "aws", label: "AWS" },
-    { value: "graphql", label: "GraphQL" },
-    { value: "jenkins", label: "Jenkins" },
-    { value: "kubernetes", label: "Kubernetes" },
-  ];
-
-    //   useeffects
-    useEffect(() => {
-      const fetchConfigOptions = async () => {
-        try {
-          const response = await axiosInstance.get(
-            "https://api.pixeladvant.com/admin_configuration/mapped_admin_configurations/"
-          );
-          const configData = response.data?.data || [];
-          // const mappedOptions = {
-          //   job_position: configData["Position Role"] || [],
-          //   designation: configData["Designation"] || [],
-          //   tech_stacks: configData["Tech Stack"] || [],
-          //   target_companies: configData["Target Companies"] || [],
-          //   working_model: configData["Working Model"] || [],
-          //   role_type: configData["Role Type"] || [],
-          //   job_type: configData["Job Type"] || [],
-          //   shift_timings: configData["Shift Timings"] || [],
-          //   education_qualification: configData["Education Qualification"] || [],
-          //   communication_language: configData["Communication Language"] || [],
-          //   location: configData["Location"] || [],
-          // };
-          const {data,success} = response?.data
-          if(success){
-            setDropdownOptions(data);
-          }
-          console.log(dropdownOptions,"dsdewdw")
-        } catch (error) {
-          console.error("Failed to fetch config data", error);
-          toast.error("Failed to load dropdown options.");
+  //   useeffects
+  useEffect(() => {
+    const fetchConfigOptions = async () => {
+      try {
+        const response = await axiosInstance.get(
+          "https://api.pixeladvant.com/admin_configuration/mapped_admin_configurations/"
+        );
+        const configData = response.data?.data || [];
+        // const mappedOptions = {
+        //   job_position: configData["Position Role"] || [],
+        //   designation: configData["Designation"] || [],
+        //   tech_stacks: configData["Tech Stack"] || [],
+        //   target_companies: configData["Target Companies"] || [],
+        //   working_model: configData["Working Model"] || [],
+        //   role_type: configData["Role Type"] || [],
+        //   job_type: configData["Job Type"] || [],
+        //   shift_timings: configData["Shift Timings"] || [],
+        //   education_qualification: configData["Education Qualification"] || [],
+        //   communication_language: configData["Communication Language"] || [],
+        //   location: configData["Location"] || [],
+        // };
+        const { data, success } = response?.data;
+        if (success) {
+          setDropdownOptions(data);
         }
-      };
-  
-      fetchConfigOptions();
-    }, []);
+        console.log(dropdownOptions, "dsdewdw");
+      } catch (error) {
+        console.error("Failed to fetch config data", error);
+        toast.error("Failed to load dropdown options.");
+      }
+    };
+
+    fetchConfigOptions();
+  }, []);
 
   return (
     <div style={{ maxHeight: "1000px", overflowY: "auto" }}>
@@ -834,13 +716,10 @@ const locations = [
       >
         <div className="row">
           <div className="mb-3 col-md-3">
-            <p>
-              Requisition Id:{" "}
-              {reqtempid || createreqformData?.reqid}
-            </p>
+            <p>Requisition Id: {reqtempid || createreqformData?.reqid}</p>
           </div>
           <div className="mb-3 col-md-3">
-            <p>Planning ID: { planid || createreqformData?.hiring_plan_id}</p>
+            <p>Planning ID: {planid || createreqformData?.hiring_plan_id}</p>
           </div>
         </div>
         <AccordionItem
@@ -859,7 +738,7 @@ const locations = [
               <label className="form-label">
                 Internal Job Title<span className="text-danger">*</span>
               </label>
-              <select
+              {/* <select
                 {...register("internal_title", {
                   required: "Internal Job required",
                 })}
@@ -871,7 +750,23 @@ const locations = [
                 {dropdownOptions["Internal Job Title"]?.map((row) => (
                   <option value={row.value}>{row.label}</option>
                 ))}
-              </select>
+              </select> */}
+              <Controller
+                className={`form-select ${
+                  errors.internal_title ? "is-invalid" : ""
+                }`}
+                name="internal_title"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    isMulti
+                    options={dropdownOptions["Internal Job Title"]}
+                    classNamePrefix="react-select"
+                    placeholder="Select Internal Job Title"
+                  />
+                )}
+              />
               {errors.internal_title && (
                 <div className="invalid-feedback">
                   {errors.internal_title.message}
@@ -883,7 +778,7 @@ const locations = [
             <div className="col-md-3">
               <label className="form-label">External Job Title</label>
 
-                <select
+              {/* <select
                 {...register("external_title")}
                 className={`form-select ${
                   errors.external_title ? "is-invalid" : ""
@@ -893,7 +788,23 @@ const locations = [
                 {dropdownOptions["External Job Title"]?.map((row) => (
                   <option value={row.value}>{row.label}</option>
                 ))}
-              </select>
+              </select> */}
+              <Controller
+                className={`form-select ${
+                  errors.external_title ? "is-invalid" : ""
+                }`}
+                name="external_title"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    isMulti
+                    options={dropdownOptions["External Job Title"]}
+                    classNamePrefix="react-select"
+                    placeholder="Select External Job Title"
+                  />
+                )}
+              />
               {errors.external_title && (
                 <div className="invalid-feedback">
                   {errors.external_title.message}
@@ -906,7 +817,7 @@ const locations = [
               <label className="form-label">
                 Position<span className="text-danger">*</span>
               </label>
-              <select
+              {/* <select
                 {...register("job_position", {
                   required: "Job position required",
                 })}
@@ -918,7 +829,23 @@ const locations = [
                 {dropdownOptions["Position Role"]?.map((pos) => (
                   <option value={pos.value}>{pos.label}</option>
                 ))}
-              </select>
+              </select> */}
+              <Controller
+                className={`form-select ${
+                  errors.job_position ? "is-invalid" : ""
+                }`}
+                name="job_position"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    isMulti
+                    options={dropdownOptions["Position Role"]}
+                    classNamePrefix="react-select"
+                    placeholder="Select Job Position"
+                  />
+                )}
+              />
               {errors.job_position && (
                 <div className="invalid-feedback">
                   {errors.job_position.message}
@@ -935,31 +862,30 @@ const locations = [
               />
             </div>
 
-                        <div className="col-md-3">
+            <div className="col-md-3">
               <label className="form-label">Date of Requisition</label>
               <input
-              type="date"
+                type="date"
                 {...register("date_of_requisition")}
                 className="form-control"
-                               min={new Date().toISOString().split("T")[0]}
+                min={new Date().toISOString().split("T")[0]}
               />
             </div>
 
-                        <div className="col-md-3">
+            <div className="col-md-3">
               <label className="form-label">Due Date of Requisition </label>
               <input
                 {...register("due_date_of_requisition")}
                 type="date"
                 className="form-control"
-               min={new Date().toISOString().split("T")[0]}
-
+                min={new Date().toISOString().split("T")[0]}
               />
             </div>
 
             {/* Business Line */}
             <div className="col-md-3">
               <label className="form-label">Business Line</label>
-              <select
+              {/* <select
                 {...register("business_line")}
                 className={`form-select ${
                   errors.business_line ? "is-invalid" : ""
@@ -969,7 +895,23 @@ const locations = [
                 {dropdownOptions["Business Line"]?.map((pos) => (
                   <option value={pos.value}>{pos.label}</option>
                 ))}
-              </select>
+              </select> */}
+              <Controller
+                className={`form-select ${
+                  errors.business_line ? "is-invalid" : ""
+                }`}
+                name="business_line"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    isMulti
+                    options={dropdownOptions["Business Line"]}
+                    classNamePrefix="react-select"
+                    placeholder="Select Busness Line"
+                  />
+                )}
+              />
               {errors.business_line && (
                 <div className="invalid-feedback">
                   {errors.business_line.message}
@@ -980,7 +922,7 @@ const locations = [
             {/* Business Unit */}
             <div className="col-md-3">
               <label className="form-label">Business Unit</label>
-              <select
+              {/* <select
                 {...register("business_unit")}
                 className={`form-select ${
                   errors.business_unit ? "is-invalid" : ""
@@ -990,7 +932,23 @@ const locations = [
                 {dropdownOptions["Business Unit"]?.map((pos) => (
                   <option value={pos.value}>{pos.label}</option>
                 ))}
-              </select>
+              </select> */}
+              <Controller
+                className={`form-select ${
+                  errors.business_unit ? "is-invalid" : ""
+                }`}
+                name="business_unit"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    isMulti
+                    options={dropdownOptions["Business Unit"]}
+                    classNamePrefix="react-select"
+                    placeholder="Select Busness Unit"
+                  />
+                )}
+              />
               {errors.business_unit && (
                 <div className="invalid-feedback">
                   {errors.business_unit.message}
@@ -1001,7 +959,7 @@ const locations = [
             {/* Division */}
             <div className="col-md-3">
               <label className="form-label">Division</label>
-              <select
+              {/* <select
                 {...register("division")}
                 className={`form-select ${errors.division ? "is-invalid" : ""}`}
               >
@@ -1009,7 +967,21 @@ const locations = [
                 {dropdownOptions["Division"]?.map((pos) => (
                   <option value={pos.value}>{pos.label}</option>
                 ))}
-              </select>
+              </select> */}
+              <Controller
+                className={`form-select ${errors.division ? "is-invalid" : ""}`}
+                name="division"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    isMulti
+                    options={dropdownOptions["Division"]}
+                    classNamePrefix="react-select"
+                    placeholder="Select Division"
+                  />
+                )}
+              />
               {errors.division && (
                 <div className="invalid-feedback">
                   {errors.division.message}
@@ -1020,7 +992,7 @@ const locations = [
             {/* Department */}
             <div className="col-md-3">
               <label className="form-label">Department</label>
-              <select
+              {/* <select
                 {...register("department")}
                 className={`form-select ${
                   errors.department ? "is-invalid" : ""
@@ -1030,7 +1002,23 @@ const locations = [
                 {dropdownOptions["Department"]?.map((pos) => (
                   <option value={pos.value}>{pos.label}</option>
                 ))}
-              </select>
+              </select> */}
+              <Controller
+                className={`form-select ${
+                  errors.department ? "is-invalid" : ""
+                }`}
+                name="department"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    isMulti
+                    options={dropdownOptions["Department"]}
+                    classNamePrefix="react-select"
+                    placeholder="Select Department"
+                  />
+                )}
+              />
               {errors.department && (
                 <div className="invalid-feedback">
                   {errors.department.message}
@@ -1086,7 +1074,7 @@ const locations = [
               <label className="form-label">
                 Geo Zone<span className="text-danger">*</span>
               </label>
-              <select
+              {/* <select
                 {...register("geo_zone", { required: "Geo zone is required" })}
                 className={`form-select ${errors.geo_zone ? "is-invalid" : ""}`}
               >
@@ -1094,7 +1082,21 @@ const locations = [
                 {dropdownOptions["Geo Zone"]?.map((zone) => (
                   <option value={zone.value}>{zone.label}</option>
                 ))}
-              </select>
+              </select> */}
+              <Controller
+                className={`form-select ${errors.geo_zone ? "is-invalid" : ""}`}
+                name="geo_zone"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    isMulti
+                    options={dropdownOptions["Geo Zone"]}
+                    classNamePrefix="react-select"
+                    placeholder="Select Geo Zone"
+                  />
+                )}
+              />
               {errors.geo_zone && (
                 <div className="invalid-feedback">
                   {errors.geo_zone.message}
@@ -1113,7 +1115,7 @@ const locations = [
               <label className="form-label">
                 Band <span className="text-danger">*</span>
               </label>
-              <select
+              {/* <select
                 {...register("band", { required: "Band is required" })}
                 className={`form-select ${errors.band ? "is-invalid" : ""}`}
                 onChange={(e) => {
@@ -1121,12 +1123,35 @@ const locations = [
                   setSelectedSubBand("");
                 }}
               >
-
                 <option value="">Select Band</option>
                 {dropdownOptions["Band"]?.map((band) => (
                   <option value={band.value}>{band.label}</option>
                 ))}
-              </select>
+              </select> */}
+              {/* Band */}
+              <Controller
+                name="band"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    isClearable
+                    isMulti // allow multiple bands
+                    value={field.value}
+                    onChange={(selected) => {
+                      field.onChange(selected); // update RHF state
+                      setSelectedBand(
+                        selected ? selected.map((s) => s.value) : []
+                      );
+                      setSelectedSubBand(""); // reset sub band
+                    }}
+                    options={dropdownOptions["Band"]} // [{value:"P1",label:"P1"}]
+                    classNamePrefix="react-select"
+                    placeholder="Select Band(s)"
+                  />
+                )}
+              />
+
               {errors.band && (
                 <div className="invalid-feedback">{errors.band.message}</div>
               )}
@@ -1135,18 +1160,49 @@ const locations = [
             {/* Sub Band */}
             <div className="col-md-3">
               <label className="form-label">Sub Band</label>
-              <select
+              {/* <select
                 {...register("sub_band")}
                 className={`form-select ${errors.sub_band ? "is-invalid" : ""}`}
               >
                 <option value="">Select Sub Band</option>
                 {selectedBand &&
-                  dropdownOptions["Sub Band"]?.filter(item => item?.value?.startsWith(selectedBand))?.map((sub) => (
-                    <option key={sub.value} value={sub.value}>
-                      {sub.label}
-                    </option>
-                  ))}
-              </select>
+                  dropdownOptions["Sub Band"]
+                    ?.filter((item) => item?.value?.startsWith(selectedBand))
+                    ?.map((sub) => (
+                      <option key={sub.value} value={sub.value}>
+                        {sub.label}
+                      </option>
+                    ))}
+              </select> */}
+
+              <Controller
+                name="sub_band"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    isClearable
+                    isMulti
+                    value={field.value}
+                    onChange={(selected) => field.onChange(selected)}
+                    options={dropdownOptions["Sub Band"]?.filter(
+                      (item) =>
+                        selectedBand.length > 0 &&
+                        selectedBand.some((band) =>
+                          item.value?.startsWith(band)
+                        )
+                    )}
+                    classNamePrefix="react-select"
+                    placeholder={
+                      selectedBand.length > 0
+                        ? `Select Sub Bands for ${selectedBand.join(", ")}`
+                        : "Select a Band first"
+                    }
+                    isDisabled={selectedBand.length === 0}
+                  />
+                )}
+              />
+
               {errors.sub_band && (
                 <div className="invalid-feedback">
                   {errors.sub_band.message}
@@ -1190,7 +1246,7 @@ const locations = [
             {/* Mode of Working */}
             <div className="col-md-3">
               <label className="form-label">Mode of Working</label>
-              <select
+              {/* <select
                 {...register("working_model")}
                 className={`form-select ${
                   errors.working_model ? "is-invalid" : ""
@@ -1200,7 +1256,23 @@ const locations = [
                 {dropdownOptions["Working Model"]?.map((row) => (
                   <option value={row.value}>{row.label}</option>
                 ))}
-              </select>
+              </select> */}
+              <Controller
+                className={`form-select ${
+                  errors.working_model ? "is-invalid" : ""
+                }`}
+                name="working_model"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    options={dropdownOptions["Working Model"]}
+                    classNamePrefix="react-select"
+                    placeholder="Select Working Model"
+                  />
+                )}
+              />
+
               {errors.working_model && (
                 <div className="invalid-feedback">
                   {errors.working_model.message}
@@ -1213,7 +1285,7 @@ const locations = [
               <label className="form-label">
                 Client Interview<span className="text-danger">*</span>
               </label>
-              <select
+              {/* <select
                 {...register("client_interview", {
                   required: "Please select a Client interview",
                 })}
@@ -1225,7 +1297,22 @@ const locations = [
                 {dropdownOptions["Client Interview"]?.map((typ) => (
                   <option value={typ.value}>{typ.label}</option>
                 ))}
-              </select>
+              </select> */}
+              <Controller
+                className={`form-select ${
+                  errors.client_interview ? "is-invalid" : ""
+                }`}
+                name="client_interview"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    options={dropdownOptions["Client Interview"]}
+                    classNamePrefix="react-select"
+                    placeholder="Select Client Interview"
+                  />
+                )}
+              />
               {errors.client_interview && (
                 <div className="invalid-feedback">
                   {errors.client_interview.message}
@@ -1236,12 +1323,27 @@ const locations = [
             {/* Requisition Type */}
             <div className="col-md-3">
               <label className="form-label">Requisition Type</label>
-              <select {...register("requisition_type")} className="form-select">
+              {/* <select {...register("requisition_type")} className="form-select">
                 <option value="">Select Requisition Type</option>
                 {dropdownOptions["Requisition Type"]?.map((typ) => (
                   <option value={typ.value}>{typ.label}</option>
                 ))}
-              </select>
+              </select> */}
+              <Controller
+                className={`form-select ${
+                  errors.requisition_type ? "is-invalid" : ""
+                }`}
+                name="requisition_type"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect
+                    {...field}
+                    options={dropdownOptions["Requisition Type"]}
+                    classNamePrefix="react-select"
+                    placeholder="Select Requisition Type"
+                  />
+                )}
+              />
             </div>
           </div>
         </AccordionItem>
@@ -1323,9 +1425,7 @@ const locations = [
           <div className="row d-flex gap-3">
             {/* billing type */}
             <div className="col-md-3">
-              <label className="form-label">
-                Billing Type
-              </label>
+              <label className="form-label">Billing Type</label>
               <select
                 {...register("billing_type")}
                 className={`form-select ${
@@ -1771,11 +1871,9 @@ const locations = [
         >
           <div className="row mt-3 d-flex gap-3">
             <div className="col-md-3">
-              <label className="form-label">
-                Laptop Needed: 
-              </label>
+              <label className="form-label">Laptop Needed:</label>
               <select
-                {...register("laptop_needed",)}
+                {...register("laptop_needed")}
                 className={`form-select ${
                   errors.laptop_needed ? "is-invalid" : ""
                 }`}
@@ -1792,9 +1890,7 @@ const locations = [
             </div>
 
             <div className="col-md-3">
-              <label className="form-label">
-                Laptop Type:
-              </label>
+              <label className="form-label">Laptop Type:</label>
               <select
                 {...register("laptop_type")}
                 className={`form-select ${
@@ -1814,9 +1910,7 @@ const locations = [
             </div>
 
             <div className="col-md-3">
-              <label className="form-label">
-                Comments:
-              </label>
+              <label className="form-label">Comments:</label>
               <input
                 type="text"
                 {...register("comments")}
@@ -1834,17 +1928,15 @@ const locations = [
           </div>
         </AccordionItem>
 
-
-<div className="row">
-  {/* back button */}
-        {/* Submit Button */}
-        <div className="col text-end">
-          <button className="btn btn-primary mt-3" type="submit">
-            {reqtempid ? "update" : "Submit"}
-          </button>
+        <div className="row">
+          {/* back button */}
+          {/* Submit Button */}
+          <div className="col text-end">
+            <button className="btn btn-primary mt-3" type="submit">
+              {reqtempid ? "update" : "Submit"}
+            </button>
+          </div>
         </div>
-</div>
-
       </form>
     </div>
   );
