@@ -158,7 +158,7 @@ const LaunchInterview = () => {
         <thead>
           <tr>
             <th>S.No</th>
-            <th>Parameter Defined</th>
+            <th>Skills</th>
             <th>Guideline</th>
             <th>Minimum Questions</th>
             <th>Weightage</th>
@@ -167,7 +167,7 @@ const LaunchInterview = () => {
             <th>
               {!isAdding && (
                 <Button size="sm" onClick={() => setIsAdding(true)}>
-                  Add
+                  Add skill
                 </Button>
               )}
             </th>
@@ -205,7 +205,7 @@ const LaunchInterview = () => {
                   name="score_card"
                   value={newRow.score_card}
                   onChange={handleInputChange}
-                  placeholder="Parameter"
+                  placeholder="skill"
                 />
               </td>
               <td>

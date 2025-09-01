@@ -411,3 +411,38 @@
   border-radius: 6px !important;
   padding: .3rem !important;
 }
+.parameter-header {
+  position: sticky;
+  top: 0;
+  background: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  padding: 10px;
+  font-weight: 600;
+  z-index: 2;
+}
+
+.parameter-grid {
+  display: grid;
+  grid-template-columns: 50px 150px 120px 180px 150px 160px 100px 140px 120px 180px 100px;
+  align-items: center;
+  gap: 10px;
+}
+
+.parameter-body {
+  padding: 8px 10px;
+  border-bottom: 1px solid #e9ecef;
+  background: #fff;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  transition: background 0.2s ease-in-out;
+}
+
+.parameter-body:hover {
+  background: #fdfdfd;
+}
+
+.cell-center {
+  text-align: center;
+  font-weight: 500;
+}
+

@@ -313,7 +313,7 @@ const SetApproveScreen = () => {
 
   return (
     <div>
-      <Container fluid className="py-4 px-md-5 bg-light min-vh-100">
+      <Container fluid className="py-4 px-md-5 bg-light">
         <Card className="shadow-sm p-4">
           <div>
             <div className="d-flex justify-content-between align-items-center mb-3">

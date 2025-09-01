@@ -334,44 +334,51 @@ export const RecruiterDashboard = () => {
                     ))}
                   </tr>
                 </thead>
-                <tbody className="p-2">
-                  {candidateData.length > 0 ? (
-                    candidateData.map((data, idx) => (
-                      <tr key={idx}>
-                        {CandidateTableHeading.map((col, i) => (
-                          <td key={i}>
-                            {col === "JD From applied Position" &&
-                            data["JD From applied Position"] ? (
-                              <Button
-                                variant="outline-success"
-                                size="sm"
-                                onClick={() => {
-                                  setJdContent(
-                                    data["JD From applied Position"]
-                                  );
-                                  setJdViewModal(true);
-                                }}
-                              >
-                                View JD
-                              </Button>
-                            ) : (
-                              data[col] 
-                            )}
-                          </td>
-                        ))}
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td
-                        colSpan={CandidateTableHeading.length}
-                        className="text-center"
-                      >
-                        No data found
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
+              <tbody className="p-2">
+  {candidateData.length > 0 ? (
+    candidateData.map((data, idx) => (
+      <tr key={idx}>
+        {CandidateTableHeading.map((col, i) => (
+          <td key={i}>
+            {col === "JD From applied Position" &&
+            data["JD From applied Position"] ? (
+              <Button
+                variant="outline-success"
+                size="sm"
+                onClick={() => {
+                  setJdContent(data["JD From applied Position"]);
+                  setJdViewModal(true);
+                }}
+              >
+                View JD
+              </Button>
+            ) : col === "CV/Resume" && data["CV/Resume"] ? (
+              <a
+                href={data["CV/Resume"]}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View CV
+              </a>
+            ) : (
+              data[col]
+            )}
+          </td>
+        ))}
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td
+        colSpan={CandidateTableHeading.length}
+        className="text-center"
+      >
+        No data found
+      </td>
+    </tr>
+  )}
+</tbody>
+
               </table>
             </div>
           </div>

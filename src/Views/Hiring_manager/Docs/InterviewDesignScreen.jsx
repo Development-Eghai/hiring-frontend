@@ -543,191 +543,170 @@ const handleFormSubmit = async (e) => {
             </Row>
           </div>
 
-          <div className="interview-parameters">
-            <div className="parameter-scroll-wrapper px-2">
-              <div className="parameter-header fw-bold bg-secondary text-white p-2 rounded d-flex justify-content-between">
-                <span>Round</span>
-                <span style={{ minWidth: 150 }}>Score Card</span>
-                <span>Options</span>
-                <span>Selection Guideline</span>
-                <span>Skills</span>
-                <span>Screening Type</span>
-                <span>Duration</span>
-                 <span>Duration Metric</span> 
-                <span>Weightage</span>
-                <span>Feedback Guideline</span>
-                <span>Action</span>
-              </div>
+<div className="interview-parameters">
+  <div className="parameter-scroll-wrapper px-2">
+    {/* Header */}
+    <div className="parameter-header">
+      <div className="parameter-grid">
+        <div>Round</div>
+        <div>Score Card</div>
+        <div>Options</div>
+        <div>Selection Guideline</div>
+        <div>Skills</div>
+        <div>Screening Type</div>
+        <div>Duration</div>
+        <div>Duration Metric</div>
+        <div>Weightage</div>
+        <div>Feedback Guideline</div>
+        <div>Action</div>
+      </div>
+    </div>
 
-              {parameters.length > 0 ? (
-                parameters.map((param, index) => {
-                  // Calculate max allowed for this parameter
+    {/* Body */}
+    {parameters.length > 0 ? (
+      parameters.map((param, index) => (
+        <div className="parameter-body" key={index}>
+          <div className="parameter-grid">
+            {/* Round Number */}
+            <p className="cell-center">{index + 1}</p>
 
-                  const otherTotal = parameters.reduce(
-                    (sum, p, i) => (i !== index ? sum + (Number(p.weightage) || 0) : sum),
-                    0
-                  );
-                  const maxAllowed = 100 - otherTotal;
-                  return (
-                    <div
-                      className="parameter-body d-flex gap-2 mt-2"
-                      key={index}
-                    >
-                      <p className="d-flex align-items-center justify-content-center pt-3 pe-3 ps-2">
-                        {index + 1}
-                      </p>
-                      <CreatableSelect
-                        isClearable
-                        menuPortalTarget={document.body}
-                        menuPosition="fixed"
-                        options={scoreCards.map((card) => ({
-                          label: card.score_card_name,
-                          value: card.score_card_name,
-                        }))}
-                        value={
-                          param.score_card_name
-                            ? {
-                                label: param.score_card_name,
-                                value: param.score_card_name,
-                              }
-                            : null
-                        }
-                        onChange={(option) =>
-                          handleChange(
-                            index,
-                            "score_card_name",
-                            option ? option.value : ""
-                          )
-                        }
-                        placeholder="Select or enter"
-                        className="flex-grow-1"
-                        styles={{
-                          container: (base) => ({ ...base, minWidth: 200 }),
-                          menuPortal: (base) => ({ ...base, zIndex: 99999 }),
-                          menu: (base) => ({ ...base, zIndex: 99999 }),
-                        }}
-                      />
-                      {/* <Form.Control
-                        type="text"
-                        value={param.options || ""}
-                        onChange={(e) =>
-                          handleChange(index, "options", e.target.value)
-                        }
-                        placeholder="Option"
-                      /> */}
-                      <Form.Select
-                        value={param.options || ""}
-                        onChange={(e) =>
-                          handleChange(index, "options", e.target.value)
-                        }
-                      >
-                        <option value="">Select</option>
-                        <option value="optionals">Optionals</option>
-                        <option value="manditory">Manditory</option>
-                      </Form.Select>
-                      <Form.Control
-                        type="text"
-                        value={param.guideline || ""}
-                        onChange={(e) =>
-                          handleChange(index, "guideline", e.target.value)
-                        }
-                        placeholder="Guideline"
-                      />
-                      <Form.Control
-                        type="text"
-                        value={param.skills || ""}
-                        onChange={(e) =>
-                          handleChange(index, "skills", e.target.value)
-                        }
-                        placeholder="Skills"
-                      />
-                      <Form.Control
-                        type="text"
-                        value={param.screen_type || ""}
-                        onChange={(e) =>
-                          handleChange(index, "screen_type", e.target.value)
-                        }
-                        placeholder="Screen Type"
-                      />
-                      <Form.Control
-                        type="number"
-                        value={param.duration || ""}
-                        onChange={(e) =>
-                          handleChange(index, "duration", e.target.value)
-                        }
-                        placeholder="Duration"
-                      />
-                      <Form.Select
-                        value={param.duration_metric || ""}
-                        onChange={(e) =>
-                          handleChange(index, "duration_metric", e.target.value)
-                        }
-                      >
-                        <option value="">Select</option>
-                        <option value="days">Days</option>
-                        <option value="hours">Hours</option>
-                        <option value="mins">Mins</option>
-                      </Form.Select>
-                      <Form.Control
-                        type="number"
-                        value={param.weightage || ""}
-                        onChange={(e) => {
-                          toast.dismiss();
-                          let value = Number(e.target.value);
+            {/* Score Card */}
+            <CreatableSelect
+              isClearable
+              menuPortalTarget={document.body}
+              menuPosition="fixed"
+              options={scoreCards.map((card) => ({
+                label: card.score_card_name,
+                value: card.score_card_name,
+              }))}
+              value={
+                param.score_card_name
+                  ? { label: param.score_card_name, value: param.score_card_name }
+                  : null
+              }
+              onChange={(option) =>
+                handleChange(index, "score_card_name", option ? option.value : "")
+              }
+              placeholder="Select or enter"
+            />
 
-                          const updatedParameters = [...parameters];
-                          updatedParameters[index].weightage = value;
-                          updatedParameters[index].Weightage = value;
+            {/* Options */}
+            <Form.Select
+              value={param.options || ""}
+              onChange={(e) => handleChange(index, "options", e.target.value)}
+            >
+              <option value="">Select</option>
+              <option value="optionals">Optional</option>
+              <option value="mandatory">Mandatory</option>
+            </Form.Select>
 
-                          const totalWeight = updatedParameters.reduce(
-                            (sum, p) => sum + (Number(p.weightage) || 0),
-                            0
-                          );
+            {/* Guideline */}
+            <Form.Control
+              type="text"
+              value={param.guideline || ""}
+              onChange={(e) => handleChange(index, "guideline", e.target.value)}
+              placeholder="Guideline"
+            />
 
-                          if (totalWeight > 100) {
-                            toast.error(
-                              "⚠️ Total weightage cannot exceed 100%"
-                            );
-                            return;
-                          }
+            {/* Skills */}
+            <Form.Control
+              type="text"
+              value={param.skills || ""}
+              onChange={(e) => handleChange(index, "skills", e.target.value)}
+              placeholder="Skills"
+            />
 
-                          setParameters(updatedParameters);
-                        }}
-                        placeholder="Weightage"
-                        min={0}
-                      />
+            {/* Screen Type */}
+            <Form.Select
+              value={param.screen_type || ""}
+              onChange={(e) => handleChange(index, "screen_type", e.target.value)}
+            >
+              <option value="">Select</option>
+              <option value="telephonic_interview">Telephonic Interview</option>
+              <option value="video_interview">Video Interview</option>
+              <option value="offline_review">Offline Review</option>
+              <option value="face_to_face">Face to face</option>
+              <option value="written_test">Written Test</option>
+              <option value="assessment">Assessment</option>
+            </Form.Select>
 
-                      <Form.Control
-                        type="text"
-                        value={param.feedback || ""}
-                        onChange={(e) => {
-                          toast.dismiss();
-                          handleChange(index, "feedback", e.target.value);
-                        }}
-                        placeholder="Feedback"
-                      />
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => {
-                          toast.dismiss();
-                          const updated = [...parameters];
-                          updated.splice(index, 1);
-                          setParameters(updated);
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  );
-                })
-              ) : (
-                <p className="text-muted text-center">
-                  Please enter the number of interview rounds.
-                </p>
-              )}
-            </div>
+            {/* Duration */}
+            <Form.Control
+              type="number"
+              value={param.duration || ""}
+              onChange={(e) => handleChange(index, "duration", e.target.value)}
+              placeholder="Duration"
+            />
+
+            {/* Duration Metric */}
+            <Form.Select
+              value={param.duration_metric || ""}
+              onChange={(e) => handleChange(index, "duration_metric", e.target.value)}
+            >
+              <option value="">Select</option>
+              <option value="hours">Hours</option>
+              <option value="mins">Mins</option>
+            </Form.Select>
+
+            {/* Weightage */}
+            <Form.Control
+              type="number"
+              value={param.weightage || ""}
+              onChange={(e) => {
+                toast.dismiss();
+                let value = Number(e.target.value);
+
+                const updatedParameters = [...parameters];
+                updatedParameters[index].weightage = value;
+
+                const totalWeight = updatedParameters.reduce(
+                  (sum, p) => sum + (Number(p.weightage) || 0),
+                  0
+                );
+
+                if (totalWeight > 100) {
+                  toast.error("⚠️ Total weightage cannot exceed 100%");
+                  return;
+                }
+
+                setParameters(updatedParameters);
+              }}
+              placeholder="Weightage"
+              min={0}
+            />
+
+            {/* Feedback */}
+            <Form.Control
+              type="text"
+              value={param.feedback || ""}
+              onChange={(e) => handleChange(index, "feedback", e.target.value)}
+              placeholder="Feedback"
+            />
+
+            {/* Delete */}
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={() => {
+                const updated = [...parameters];
+                updated.splice(index, 1);
+                setParameters(updated);
+              }}
+            >
+              Delete
+            </Button>
           </div>
+        </div>
+      ))
+    ) : (
+      <p className="text-muted text-center">
+        Please enter the number of interview rounds.
+      </p>
+    )}
+  </div>
+</div>
+
+
 
           <div className="text-end mt-4">
             <Button variant="primary" type="submit" disabled={isSubmitting}>

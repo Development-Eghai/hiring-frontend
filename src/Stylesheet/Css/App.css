@@ -13,7 +13,7 @@
 
 /* Root variables */
 :root {
-  --root-height: 100vh;
+  --root-height: 100vh !important;
 
   --sidebar-y-padding: 1rem;
   --sidebar-width: 21rem;

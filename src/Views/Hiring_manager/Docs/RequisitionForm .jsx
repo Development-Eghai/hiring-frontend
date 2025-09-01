@@ -855,7 +855,7 @@ const RequisitionForm = (handleNext) => {
 
             {/* company/client name */}
             <div className="col-md-3">
-              <label className="form-label">company/client name</label>
+              <label className="form-label">Company/Client name</label>
               <input
                 {...register("company_client_name")}
                 className="form-control"

@@ -212,7 +212,7 @@ const Configure_bg_packages = () => {
 
   return (
     <div>
-      <Container fluid className="py-4 px-md-5 bg-light min-vh-100">
+<Container fluid className="py-4 px-md-5 bg-light">
         <Card className="shadow-sm p-4">
           <div>
             <div className="d-flex justify-content-between align-items-center mb-3">
@@ -235,7 +235,7 @@ const Configure_bg_packages = () => {
 
             {/* <CandidateApprovalStatus /> */}
           </div>
-          <div className="table-responsive">
+          <div className="table-responsive" style={{ maxHeight: "60vh", overflowY: "auto" }}>
             <Table
               striped
               bordered
