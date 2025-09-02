@@ -1158,57 +1158,47 @@ const RequisitionForm = (handleNext) => {
             </div>
 
             {/* Sub Band */}
-            <div className="col-md-3">
-              <label className="form-label">Sub Band</label>
-              {/* <select
-                {...register("sub_band")}
-                className={`form-select ${errors.sub_band ? "is-invalid" : ""}`}
-              >
-                <option value="">Select Sub Band</option>
-                {selectedBand &&
-                  dropdownOptions["Sub Band"]
-                    ?.filter((item) => item?.value?.startsWith(selectedBand))
-                    ?.map((sub) => (
-                      <option key={sub.value} value={sub.value}>
-                        {sub.label}
-                      </option>
-                    ))}
-              </select> */}
+<div className="col-md-3">
+  <label className="form-label">Sub Band</label>
 
-              <Controller
-                name="sub_band"
-                control={control}
-                render={({ field }) => (
-                  <CreatableSelect
-                    {...field}
-                    isClearable
-                    isMulti
-                    value={field.value}
-                    onChange={(selected) => field.onChange(selected)}
-                    options={dropdownOptions["Sub Band"]?.filter(
-                      (item) =>
-                        selectedBand.length > 0 &&
-                        selectedBand.some((band) =>
-                          item.value?.startsWith(band)
-                        )
-                    )}
-                    classNamePrefix="react-select"
-                    placeholder={
-                      selectedBand.length > 0
-                        ? `Select Sub Bands for ${selectedBand.join(", ")}`
-                        : "Select a Band first"
-                    }
-                    isDisabled={selectedBand.length === 0}
-                  />
-                )}
-              />
+  <Controller
+  name="sub_band"
+  control={control}
+  render={({ field }) => {
+    const isBandSelected = Array.isArray(selectedBand) && selectedBand.length > 0;
 
-              {errors.sub_band && (
-                <div className="invalid-feedback">
-                  {errors.sub_band.message}
-                </div>
-              )}
-            </div>
+    const filteredOptions = isBandSelected
+      ? dropdownOptions["Sub Band"]?.filter((item) =>
+          selectedBand.some((band) => item.value?.startsWith(band))
+        )
+      : [];
+
+    return (
+      <CreatableSelect
+        {...field}
+        isClearable
+        isMulti
+        value={field.value}
+        onChange={(selected) => field.onChange(selected)}
+        options={filteredOptions}
+        classNamePrefix="react-select"
+        placeholder={
+          isBandSelected
+            ? `Select Sub Bands for ${selectedBand.join(", ")}`
+            : "Select a Band first"
+        }
+        isDisabled={!isBandSelected}
+      />
+    );
+  }}
+/>
+
+
+  {errors.sub_band && (
+    <div className="invalid-feedback">{errors.sub_band.message}</div>
+  )}
+</div>
+
 
             {/* Primary Skills */}
             {/* <div className="col-md-3">
