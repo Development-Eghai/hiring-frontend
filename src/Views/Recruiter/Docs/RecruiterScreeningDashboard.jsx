@@ -192,43 +192,43 @@ const RecruiterScreeningDashboard = () => {
       <RecruiterHeader />
       <div className="h-100 mt-5">
         <div className="row">
-                <div className="card rounded-3 border-0 shadow-sm p-2 mt-5">
-          <div className="card-body p-0 card overflow-auto">
-                           <h5 className="fw-bold  p-3">Screening</h5>
+          <div className="card rounded-3 border-0 shadow-sm p-2 mt-5">
+            <div className="card-body p-0 card overflow-auto">
+              <h5 className="fw-bold  p-3">Screening</h5>
 
-            <table
-              className="table mb-0 table-bordered table-striped"
-              style={{ minWidth: "1200px" }}
-            >
-              <thead className="table-light p-2">
-                <tr>
-                  {RecuiterTableHeadings.map((heading, idx) => (
-                    <th key={idx}>{heading}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="p-2">
-                {tableData.length > 0 ? (
-                  tableData.map((data, idx) => (
-                    <tr
-                      key={idx}
-                      onClick={() => fetchCandidateData(data?.reqId)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <th scope="row">{data?.sno}</th>
-                      <td>{data?.planningId}</td>
-                      <td>{data?.reqId}</td>
-                      <td>{data?.clientName}</td>
-                      <td>
-                        <a href="#!">{data?.jobTitle}</a>
-                      </td>
-                      <td>{data?.hiringManager}</td>
-                      <td>{data?.jobPosting}</td>
-                      <td>{data?.startDate}</td>
-                      <td>{data?.dueDate}</td>
-                      <td>{data?.hiringStatus}</td>
-                      <td>{data?.ageDays}</td>
-                      {/* <td>
+              <table
+                className="table mb-0 table-bordered table-striped"
+                style={{ minWidth: "1200px" }}
+              >
+                <thead className="table-light p-2">
+                  <tr>
+                    {RecuiterTableHeadings.map((heading, idx) => (
+                      <th key={idx}>{heading}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="p-2">
+                  {tableData.length > 0 ? (
+                    tableData.map((data, idx) => (
+                      <tr
+                        key={idx}
+                        onClick={() => fetchCandidateData(data?.reqId)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        <th scope="row">{data?.sno}</th>
+                        <td>{data?.planningId}</td>
+                        <td>{data?.reqId}</td>
+                        <td>{data?.clientName}</td>
+                        <td>
+                          <a href="#!">{data?.jobTitle}</a>
+                        </td>
+                        <td>{data?.hiringManager}</td>
+                        <td>{data?.jobPosting}</td>
+                        <td>{data?.startDate}</td>
+                        <td>{data?.dueDate}</td>
+                        <td>{data?.hiringStatus}</td>
+                        <td>{data?.ageDays}</td>
+                        {/* <td>
                         <button
                           className="btn btn-sm btn-success"
                           onClick={() => handleUploadClick(data)}
@@ -236,118 +236,128 @@ const RecruiterScreeningDashboard = () => {
                           Upload CV
                         </button>
                       </td> */}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={RecuiterTableHeadings.length}
+                        className="text-center"
+                      >
+                        No data found
+                      </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td
-                      colSpan={RecuiterTableHeadings.length}
-                      className="text-center"
-                    >
-                      No data found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>    
 
           {/* Screening deailst */}
-          {Screeningdetails?.length > 0 && <div className="card rounded-3 border-0 shadow-sm p-2">
-            <div className="card-body p-0">
-              {/* Filter Controls */}
-              <div className="row mb-3 d-flex gap-4">
-                <div className="col-4"></div>
-                <div className="col-md-7 d-flex align-items-center justify-content-end gap-3 flex-wrap"> 
-
-                  {/* Search Bar */}
-                  <div className="input-group input-group-sm w-50">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Search .."
-                    />
-                    <span className="input-group-text bg-white border-start-0">
-                      <FaSearch />
-                    </span>
+          {Screeningdetails?.length > 0 && (
+            <div className="card rounded-3 border-0 shadow-sm p-2">
+              <div className="card-body p-0">
+                {/* Filter Controls */}
+                <div className="row mb-3 d-flex gap-4">
+                  <div className="col-4"></div>
+                  <div className="col-md-7 d-flex align-items-center justify-content-end gap-3 flex-wrap">
+                    {/* Search Bar */}
+                    <div className="input-group input-group-sm w-50">
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Search .."
+                      />
+                      <span className="input-group-text bg-white border-start-0">
+                        <FaSearch />
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Table Section */}
-              <div className="row">
-                <div className="table-responsive">
-                  <table className="table table-bordered mb-0">
-                    <thead className="table-light">
-                      <tr>
-                        {CandidateTableHeading &&
-                          CandidateTableHeading.map((heading, idx) => (
-                            <th key={idx}>{heading}</th>
-                          ))}
-                      </tr>
-                    </thead>
-                    <tbody className="p-2">
-                      {Screeningdetails.length > 0 ? (
-                        Screeningdetails.map((data, idx) => (
-                          <tr key={idx}>
-                            <th>{data?.req_id}</th>
-                            <td>{data?.candidate_id}</td>
-                            <td>{data?.client_name}</td>
-                            <td>{data?.candidate_first_name}</td>
-                            <td>{data?.candidate_last_name}</td>
-                            <td>{data?.applied_position}</td>
-                            <td>{data?.time_in_stage}</td>
-                            {/* <td>{data?.JD_From_applied_Position}</td> */}
-                            <td>
-                              {data?.resume_url && (
-                                <>
-                                  <a
-                                    href={data?.resume_url}
-                                  >
-                                   JD,
-                                  </a>
-                                </>
-                              )}
-                              {data?.cover_letter_url && (
-                                <>
-                                  <a
-                                    href={data?.cover_letter_url}
-                                  >
-                                    CV,
-                                  </a>
-                                </>
-                              )}
-                              {data?.Cover_Letter && (
-                                <>
-                                  <a
-                                    href="#!"
-                                    // onClick={(e) =>
-                                    //   handleShow(e, data?.Candidate_Id, "cl")
-                                    // }
-                                  >
-                                   CL
-                                  </a>
-                                </>
-                              )}
-                            </td>
-                            <td>{data?.score}</td>
-                            <td>{data?.result}</td>
-                            <td>{data?.final_feedback}</td>
-                            {/* <td>{data?.Final_stage}</td>
+                {/* Table Section */}
+                <div className="row">
+                  <div className="table-responsive">
+                    <table className="table table-bordered mb-0">
+                      <thead className="table-light">
+                        <tr>
+                          {CandidateTableHeading &&
+                            CandidateTableHeading.map((heading, idx) => (
+                              <th key={idx}>{heading}</th>
+                            ))}
+                        </tr>
+                      </thead>
+                      <tbody className="p-2">
+                        {Screeningdetails.length > 0 ? (
+                          Screeningdetails.map((data, idx) => (
+                            <tr key={idx}>
+                              <th>{data?.req_id}</th>
+                              <td>{data?.candidate_id}</td>
+                              <td>{data?.client_name}</td>
+                              <td>{data?.candidate_first_name}</td>
+                              <td>{data?.candidate_last_name}</td>
+                              <td>{data?.applied_position}</td>
+                              <td>{data?.time_in_stage}</td>
+                              {/* <td>{data?.JD_From_applied_Position}</td> */}
+                              <td>
+                                {data?.resume_url && (
+                                  <>
+                                    <a href={data?.resume_url}>JD,</a>
+                                  </>
+                                )}
+                                {data?.cover_letter_url && (
+                                  <>
+                                    <a href={data?.cover_letter_url}>CV,</a>
+                                  </>
+                                )}
+                                {data?.Cover_Letter && (
+                                  <>
+                                    <a
+                                      href="#!"
+                                      // onClick={(e) =>
+                                      //   handleShow(e, data?.Candidate_Id, "cl")
+                                      // }
+                                    >
+                                      CL
+                                    </a>
+                                  </>
+                                )}
+                              </td>
+                              <td>{data?.score}</td>
+                              <td>{data?.result}</td>
+                              <td>{data?.final_feedback}</td>
+                              {/* <td>{data?.Final_stage}</td>
                             <td>{data?.Source}</td>
                             <td>{data?.Score}</td> */}
 
-                            <td>
-                              <div className="d-flex gap-2">
-                            <Button
-                                  size="sm"
-                                  variant="success"
-                                  onClick={()=>navigate("/recruiter/recruiter_screening",{state:data})}
-                                >
-                                  Approve
-                                </Button>
-                                {/* <Button
+                              <td>
+                                <div className="d-flex gap-2">
+                                  <Button
+                                    size="sm"
+                                    variant="secondary"
+                                    onClick={() =>
+                                      navigate(
+                                        "/recruiter/recruiter_screening_edit",
+                                        { state: data }
+                                      )
+                                    }
+                                    title="Edit"
+                                  >
+                                    <FaEdit />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="success"
+                                    onClick={() =>
+                                      navigate(
+                                        "/recruiter/recruiter_screening",
+                                        { state: data }
+                                      )
+                                    }
+                                  >
+                                    Approve
+                                  </Button>
+                                  {/* <Button
                                   size="sm"
                                   variant="secondary"
                                   onClick={() => handleEdit(data)}
@@ -361,21 +371,27 @@ const RecruiterScreeningDashboard = () => {
                                 >
                                   <FaTrash />
                                 </Button> */}
-                              </div>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td
+                              colSpan={15}
+                              className="text-center text-muted py-3"
+                            >
+                              No data found
                             </td>
                           </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan={15} className="text-center text-muted py-3">No data found</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>}
+          )}
         </div>
       </div>
 
@@ -395,21 +411,21 @@ const RecruiterScreeningDashboard = () => {
             <div className="row mb-2 d-flex gap-3">
               <div className="col">
                 <label>Req ID</label>
-                      <input
+                <input
                   className="form-control"
                   name="req_id"
                   defaultValue={selectedCandidate?.req_id || ""}
                   disabled
-                /> 
+                />
               </div>
               <div className="col">
                 <label>Candidate ID</label>
-                    <input
+                <input
                   className="form-control"
                   name="req_id"
                   defaultValue={selectedCandidate?.candidate_id || ""}
                   disabled
-                /> 
+                />
               </div>
             </div>
 
@@ -469,7 +485,7 @@ const RecruiterScreeningDashboard = () => {
                     selectedCandidate?.Candidate_current_stage || ""
                   }
                 /> */}
-              {/* </div>
+            {/* </div>
               <div className="col">
                 <label>Next Stage</label>
                 <input
@@ -519,7 +535,7 @@ const RecruiterScreeningDashboard = () => {
             onClick={() => {
               const form = document.getElementById("candidateForm");
               const formData = new FormData(form);
-            //   handleSubmitModal(formData);
+              //   handleSubmitModal(formData);
             }}
           >
             Save Changes

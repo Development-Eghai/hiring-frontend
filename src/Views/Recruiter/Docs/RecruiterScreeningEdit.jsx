@@ -3,9 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Form, Table, Button } from "react-bootstrap";
 import axios from "axios";
 import RecruiterHeader from "../Recruiter_utils/Navbar";
-import { useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-// import "react-toastify/dist/ReactToastify.css";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const RecruiterScreening = () => {
   const [candidateData, setCandidateDetails] = useState({
@@ -16,6 +14,7 @@ const RecruiterScreening = () => {
     posistion_applied: "",
     date_of_screening: "",
   });
+
   const [newRow, setNewRow] = useState({
     score_card: "",
     guideline: "",
@@ -25,17 +24,48 @@ const RecruiterScreening = () => {
     rating: 0,
   });
 
-  const handleNewRatingChange = (rating) => {
-    setNewRow((prev) => ({ ...prev, rating }));
+  const [rows, setRows] = useState([]);
+  const [ratings, setRatings] = useState([]);
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [finalRating, setFinalRating] = useState(0);
+  const [result, setResult] = useState("");
+  const [finalFeedback, setFinalFeedback] = useState("");
+  const [isAdding, setIsAdding] = useState(false);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const routeState = location?.state;
+
+  const currentDate = new Date();
+  const day = String(currentDate.getDate()).padStart(2, "0");
+  const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+  const year = currentDate.getFullYear();
+  const formattedDate = `${day}/${month}/${year}`;
+
+  // ⭐ Handle row input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "weightage" && value < 1) return;
+    setNewRow((prev) => ({ ...prev, [name]: value }));
   };
 
+  // ⭐ Handle rating change per row
+  const handleRatingChange = (rowIndex, newRating) => {
+    const updated = [...ratings];
+    updated[rowIndex] = newRating;
+    setRatings(updated);
+  };
+
+  // ⭐ Handle feedback change per row
+  const handleFeedbackChange = (rowIndex, value) => {
+    const updated = [...feedbacks];
+    updated[rowIndex] = value;
+    setFeedbacks(updated);
+  };
+
+  // ⭐ Add new row
   const handleAddNewRow = () => {
-    if (
-      !newRow.score_card ||
-      !newRow.guideline ||
-      !newRow.skills ||
-      !newRow.weightage
-    ) {
+    if (!newRow.score_card || !newRow.guideline || !newRow.skills || !newRow.weightage) {
       alert("Fill all required fields");
       return;
     }
@@ -45,7 +75,7 @@ const RecruiterScreening = () => {
     setNewRow({
       score_card: "",
       guideline: "",
-      min_questions: "",
+      skills: "",
       weightage: "",
       feedback: "",
       rating: 0,
@@ -53,38 +83,7 @@ const RecruiterScreening = () => {
     setIsAdding(false);
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-
-    if ((name === "weightage") && value < 1) return;
-
-    setNewRow((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const navigate = useNavigate();
-  // const Navigate = useNavigate();
-
-  const [ratings, setRatings] = useState([0, 0, 0]);
-  const [feedbacks, setFeedbacks] = useState(["", "", ""]);
-  const [finalRating, setFinalRating] = useState(0);
-  const [result, setResult] = useState("");
-  const [finalFeedback, setFinalFeedback] = useState("");
-  const [reqId, setReqId] = useState("");
-  const [candidate, setCandidate] = useState("");
-  const [isAdding, setIsAdding] = useState(false);
-
-  const currentDate = new Date();
-  const day = String(currentDate.getDate()).padStart(2, "0");
-  const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-  const year = currentDate.getFullYear();
-
-  const formattedDate = `${day}/${month}/${year}`;
-
-  const [rows, setRows] = useState([]);
-
-  const location = useLocation();
-  const routeState = location?.state;
-
+  // ⭐ Fetch candidate details
   function fetchCandidateData() {
     let pay_load = { candidate_id: routeState?.candidate_id };
     axios
@@ -93,7 +92,6 @@ const RecruiterScreening = () => {
         const obj_candidate = response.data.data;
         const interview_design_id = obj_candidate.interview_design_id;
 
-        console.log(obj_candidate);
         let response_data = {
           req_id: obj_candidate.Req_id_fk,
           candidate_name: obj_candidate.candidate_first_name,
@@ -112,35 +110,29 @@ const RecruiterScreening = () => {
       });
   }
 
-  useEffect(() => {
-    fetchCandidateData();
-    interviewDesignScreenParams();
-  }, []);
-
+  // ⭐ Fetch interview design + reviews
   function interviewDesignScreenParams(id) {
-    let params = { interview_design_id: id };
+    let params = { candidate_id: routeState?.candidate_id };
     axios
-      .get("https://api.pixeladvant.com/interview_design_screen/", { params })
+      .post("https://api.pixeladvant.com/get-reviews-by-candidate/", params)
       .then((response) => {
-        setRows(response.data.data);
+        const rowsData = response?.data?.data || [];
+        setRows(rowsData);
+
+        // Initialize ratings + feedbacks from API
+        setRatings(rowsData.map((row) => row.actual_rating || 0));
+        setFeedbacks(rowsData.map((row) => row.feedback || ""));
       })
       .catch((error) => {
         console.error("API call failed:", error);
       });
   }
 
-  const handleRatingChange = (rowIndex, newRating) => {
-    const updated = [...ratings];
-    updated[rowIndex] = newRating;
-    setRatings(updated);
-  };
+  useEffect(() => {
+    fetchCandidateData();
+  }, []);
 
-  const handleFeedbackChange = (rowIndex, value) => {
-    const updated = [...feedbacks];
-    updated[rowIndex] = value;
-    setFeedbacks(updated);
-  };
-
+  // ⭐ Submit final payload
   const handleSubmit = async () => {
     const payload = {
       reqId: candidateData.req_id,
@@ -164,10 +156,9 @@ const RecruiterScreening = () => {
     axios
       .post("https://api.pixeladvant.com/candidates/screening/", payload)
       .then((response) => {
-        console.log("Response from API:", response.data);
         if (response.data.success) {
           alert("Submission successful!");
-          navigate("/recruiter/screening_dashboard"); 
+          navigate("/recruiter/screening_dashboard");
         } else {
           alert(response.data.message);
         }
@@ -185,37 +176,28 @@ const RecruiterScreening = () => {
       <RecruiterHeader />
 
       <div className="p-4 bg-white mt-2 rounded">
-        <Row
-          className="small text-muted text-nowrap border-bottom py-2"
-          style={{ fontSize: "0.9rem" }}
-        >
+        {/* Candidate Info */}
+        <Row className="small text-muted text-nowrap border-bottom py-2" style={{ fontSize: "0.9rem" }}>
           <Col className="border-end">
             <strong>Req ID:</strong>
             <strong> {candidateData.req_id}</strong> {space}
           </Col>
           <Col className="border-end">
-            <strong>Candidate Name:</strong> {candidateData.candidate_name}
-            {space}
+            <strong>Candidate Name:</strong> {candidateData.candidate_name}{space}
           </Col>
           <Col className="border-end">
             <strong>Candidate ID:</strong> {candidateData.candidate_id}
           </Col>
         </Row>
-        <Row
-          className="small text-muted text-nowrap border-bottom py-2"
-          style={{ fontSize: "0.9rem" }}
-        >
+        <Row className="small text-muted text-nowrap border-bottom py-2" style={{ fontSize: "0.9rem" }}>
           <Col className="border-end">
-            <strong>Hiring Manager:</strong> {candidateData.hiring_manager}
-            {space}
+            <strong>Hiring Manager:</strong> {candidateData.hiring_manager}{space}
           </Col>
           <Col className="border-end">
-            <strong>Position Applied:</strong> {candidateData.posistion_applied}
-            {space}
+            <strong>Position Applied:</strong> {candidateData.posistion_applied}{space}
           </Col>
           <Col>
-            <strong>Date of Screening:</strong>{" "}
-            {candidateData.date_of_screening}
+            <strong>Date of Screening:</strong> {candidateData.date_of_screening}
           </Col>
         </Row>
 
@@ -248,10 +230,7 @@ const RecruiterScreening = () => {
                 <td>{row.skills}</td>
                 <td>{row.weightage}</td>
                 <td>
-                  <div
-                    className="form-control d-flex align-items-center"
-                    style={{ height: "38px" }}
-                  >
+                  <div className="form-control d-flex align-items-center" style={{ height: "38px" }}>
                     {[1, 2, 3, 4, 5].map((star) => (
                       <span
                         key={star}
@@ -270,7 +249,12 @@ const RecruiterScreening = () => {
                   </div>
                 </td>
                 <td>
-                  <Form.Control type="text" placeholder="Feedback" />
+                  <Form.Control
+                    type="text"
+                    placeholder="Feedback"
+                    value={feedbacks[index] || ""}
+                    onChange={(e) => handleFeedbackChange(index, e.target.value)}
+                  />
                 </td>
               </tr>
             ))}
@@ -294,18 +278,9 @@ const RecruiterScreening = () => {
                   />
                 </td>
                 <td>
-                  {/* <Form.Control
-                    type="number"
-                    name="min_questions"
-                    min="1"
-                    value={newRow.min_questions}
-                    onChange={handleInputChange}
-                    placeholder="Min Questions"
-                  /> */}
                   <Form.Control
-                  name="skills"
-                    type="text"
-                    value={newRow.skills || ""}
+                    name="skills"
+                    value={newRow.skills}
                     onChange={handleInputChange}
                     placeholder="Skills"
                   />
@@ -321,14 +296,11 @@ const RecruiterScreening = () => {
                   />
                 </td>
                 <td>
-                  <div
-                    className="form-control d-flex align-items-center"
-                    style={{ height: "38px" }}
-                  >
+                  <div className="form-control d-flex align-items-center" style={{ height: "38px" }}>
                     {[1, 2, 3, 4, 5].map((star) => (
                       <span
                         key={star}
-                        onClick={() => handleNewRatingChange(star)}
+                        onClick={() => setNewRow((prev) => ({ ...prev, rating: star }))}
                         style={{
                           cursor: "pointer",
                           color: newRow.rating >= star ? "#ffc107" : "#ccc",
@@ -352,18 +324,10 @@ const RecruiterScreening = () => {
                 </td>
                 <td>
                   <div className="d-flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="success"
-                      onClick={handleAddNewRow}
-                    >
+                    <Button size="sm" variant="success" onClick={handleAddNewRow}>
                       Save
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => setIsAdding(false)}
-                    >
+                    <Button size="sm" variant="secondary" onClick={() => setIsAdding(false)}>
                       Cancel
                     </Button>
                   </div>
@@ -379,10 +343,7 @@ const RecruiterScreening = () => {
           <Col md={3}>
             <Form.Group>
               <Form.Label>Final Rating</Form.Label>
-              <div
-                className="form-control d-flex align-items-center"
-                style={{ height: "38px" }}
-              >
+              <div className="form-control d-flex align-items-center" style={{ height: "38px" }}>
                 {[1, 2, 3, 4, 5].map((star) => (
                   <span
                     key={star}
@@ -404,10 +365,7 @@ const RecruiterScreening = () => {
           <Col md={3}>
             <Form.Group>
               <Form.Label>Result/Recommendations</Form.Label>
-              <Form.Select
-                value={result}
-                onChange={(e) => setResult(e.target.value)}
-              >
+              <Form.Select value={result} onChange={(e) => setResult(e.target.value)}>
                 <option value="">Select option</option>
                 <option value="Recommended">Recommended</option>
                 <option value="Not Recommended">Not Recommended</option>
@@ -430,6 +388,8 @@ const RecruiterScreening = () => {
             </Form.Group>
           </Col>
         </Row>
+
+        {/* Submit */}
         <Row>
           <Col className="text-center">
             <Button variant="primary" onClick={handleSubmit}>

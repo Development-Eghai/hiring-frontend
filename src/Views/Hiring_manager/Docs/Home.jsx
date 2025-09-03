@@ -21,6 +21,7 @@ import Creatmodel from "./Creatmodel";
 import { BsPencilSquare, BsTrash } from "react-icons/bs";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Select from "react-select";
 
 const DEFAULT_FIELDS = [
   "id",
@@ -302,18 +303,39 @@ const [show, setShow] = useState(false);
     }));
 
   const [recruiterDropDown,setrecruiterDropDown] = useState([]);
-  const [formData, setFormData] = useState({
-    type: "",
-    recruiter: "",
-    vendor: "",
-  });
+const [formData, setFormData] = useState({
+  type: "",
+  recruiter: [],  // now array
+  vendor: [],     // now array
+});
+
 
   async function fetchAssignRecDropdown() {
     try {
       const response = await axios.get("https://api.pixeladvant.com/api/jobrequisition/recruiter-vendor-dropdown/")
       const {success,data} = response?.data;
       if(success){
-        setrecruiterDropDown(data)
+        setrecruiterDropDown({
+        "Recruiter": [
+            {
+                "label": "PixelREQ",
+                "value": "PixelREQ",
+                "email": "pixelreq@gmail.com"
+            },
+                        {
+                "label": "csdcsd",
+                "value": "cdwcw",
+                "email": "pixelreq@gmail.com"
+            }
+        ],
+        "Vendor": [
+            {
+                "label": "Pixelvendor",
+                "value": "Pixelvendor",
+                "email": "pixelven@gmail.com"
+            }
+        ]
+    })
       }
     } catch (error) {
       console.log(error,"dasda")
@@ -332,22 +354,29 @@ const [show, setShow] = useState(false);
     });
   };
 
-  const handleAssign = async() => {
-    try {
-      const payload = {
-         requisition_id:selectedReqId,
-         recruiter_name:formData?.vendor ? formData?.recruiter+ "," +formData?.vendor : formData?.recruiter
-     }
-      const response = await axios.post("https://api.pixeladvant.com/api/requisition/assign-recruiter/",payload)
-      const {success,data,message} = response?.data;
-      if(success){
-        setShow(false);
-        toast.success(message)
-      }
-    } catch (error) {
-      console.log(error)
+ const handleAssign = async () => {
+  try {
+    const payload = {
+      requisition_id: selectedReqId,
+      recruiter_name: formData.vendor.length
+        ? [...formData.recruiter, ...formData.vendor].join(",")
+        : formData.recruiter.join(","),
+    };
+
+    const response = await axios.post(
+      "https://api.pixeladvant.com/api/requisition/assign-recruiter/",
+      payload
+    );
+
+    const { success, data, message } = response?.data;
+    if (success) {
+      // handle success
     }
-  };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 
   return (
     <div className="h-100">
@@ -442,7 +471,7 @@ const [show, setShow] = useState(false);
       </Modal.Header>
       <Modal.Body>
         <Form>
-          {/* Dropdown 1 */}
+            {/* Dropdown 1 */}
           <Form.Group className="mb-3">
             <Form.Label>Select Type</Form.Label>
             <Form.Select
@@ -455,34 +484,46 @@ const [show, setShow] = useState(false);
               <option value="external">External</option>
             </Form.Select>
           </Form.Group>
+{formData?.type && (
+  <Form.Group className="mb-3">
+    <Form.Label>Select Recruiter</Form.Label>
+    <Select
+      isMulti
+      name="recruiter"
+      value={recruiterDropDown?.Recruiter?.filter(option =>
+        formData.recruiter.includes(option.value)
+      )}
+      options={recruiterDropDown?.Recruiter || []}
+      onChange={(selected) => {
+        setFormData({
+          ...formData,
+          recruiter: selected ? selected.map((s) => s.value) : [],
+        });
+      }}
+    />
+  </Form.Group>
+)}
 
-          {/* Dropdown 2 */}
-{ formData?.type && <Form.Group className="mb-3">
-            <Form.Label>Select Recruiter</Form.Label>
-            <Form.Select
-              name="recruiter"
-              value={formData.recruiter}
-              onChange={handleChange}
-            >
-              <option value="">Select</option>
-
-              {recruiterDropDown && recruiterDropDown?.Recruiter?.map((val,ind)=><option value={val.value} key={ind}>{val.label}</option>)}
-            </Form.Select>
-          </Form.Group>}
-
-          {/* Dropdown 3 */}
-{  formData?.type === "external" && <Form.Group className="mb-3">
-            <Form.Label>Select Vendor</Form.Label>
-            <Form.Select
-              name="vendor"
-              value={formData.vendor}
-              onChange={handleChange}
-            >
-              <option value="">Select</option>
-              {recruiterDropDown && recruiterDropDown?.Vendor?.map((val,ind)=><option value={val.value} key={ind}>{val.label}</option>)}
-
-            </Form.Select>
-          </Form.Group>}
+{/* Dropdown 3 - Vendor */}
+{formData?.type === "external" && (
+  <Form.Group className="mb-3">
+    <Form.Label>Select Vendor</Form.Label>
+    <Select
+      isMulti
+      name="vendor"
+      value={recruiterDropDown?.Vendor?.filter(option =>
+        formData.vendor.includes(option.value)
+      )}
+      options={recruiterDropDown?.Vendor || []}
+      onChange={(selected) => {
+        setFormData({
+          ...formData,
+          vendor: selected ? selected.map((s) => s.value) : [],
+        });
+      }}
+    />
+  </Form.Group>
+)}
         </Form>
       </Modal.Body>
       <Modal.Footer>

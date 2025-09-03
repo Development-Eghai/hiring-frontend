@@ -8,6 +8,7 @@ import JobBuisnessReview from "Views/Business_ops/Docs/JobBuisnessReview";
 import Error from "Views/Common/Docs/error";
 import { InitializeProjectSetup } from "Views/Common/Docs/InitializeProjectSetup";
 import Login from "Views/Common/Docs/Login";
+import "react-quill/dist/quill.snow.css";
 import CustomizeFieldLabels from "Views/Hiring_manager/Docs/CustomisedColoum";
 import CustomisedColoum from "Views/Hiring_manager/Docs/CustomisedColoum";
 import { Home } from "Views/Hiring_manager/Docs/Home";
@@ -50,6 +51,7 @@ import SilvermedelistReport from "Views/Hiring_manager/Docs/SilvermedelistReport
 import CompensationDetailsReport from "Views/Hiring_manager/Docs/CompensationDetailsReport";
 import DeclinedReport from "Views/Hiring_manager/Docs/DeclinedReport";
 import FutureStartDataReport from "Views/Hiring_manager/Docs/FutureStartDataReport";
+import RecruiterScreeningEdit from "Views/Recruiter/Docs/RecruiterScreeningEdit";
 
 function App() {
   return (
@@ -124,6 +126,10 @@ function App() {
               <Route
                 path="recruiter_screening"
                 element={<RecruiterScreening />}
+              />
+                            <Route
+                path="recruiter_screening_edit"
+                element={<RecruiterScreeningEdit />}
               />
               <Route
                 path="screening_dashboard"

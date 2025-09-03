@@ -125,7 +125,7 @@ const CompensationDetailsReport = () => {
           </div>
         </Card.Header>
 
-        <Card.Body style={{ overflowX: "auto" }}>
+        <Card.Body style={{ overflow: "auto" }}>
           <Table striped hover bordered responsive className="align-middle">
             <thead className="table-secondary">
               <tr>

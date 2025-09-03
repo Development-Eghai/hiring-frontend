@@ -446,3 +446,34 @@
   font-weight: 500;
 }
 
+/* Ensure Quill styles apply correctly */
+.ql-editor h1 {
+  font-size: 2em !important;
+  font-weight: bold !important;
+}
+
+.ql-editor h2 {
+  font-size: 1.5em !important;
+  font-weight: bold !important;
+}
+
+.ql-editor h3 {
+  font-size: 1.2em !important;
+  font-weight: bold !important;
+}
+
+.ql-editor strong {
+  font-weight: bold !important;
+}
+
+.ql-editor em {
+  font-style: italic !important;
+}
+
+.ql-editor u {
+  text-decoration: underline !important;
+}
+
+.ql-editor s {
+  text-decoration: line-through !important;
+}
