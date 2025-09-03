@@ -116,10 +116,15 @@ const RecruiterScreening = () => {
     axios
       .post("https://api.pixeladvant.com/get-reviews-by-candidate/", params)
       .then((response) => {
-        const rowsData = response?.data?.data || [];
+        const rowsData = response?.data?.data?.reviews || [];
+        const candidateDetails = response?.data?.data?.candidate_summary;
+        console.log(candidateDetails,"dqedewf23e12")
         setRows(rowsData);
 
         // Initialize ratings + feedbacks from API
+        setFinalRating(candidateDetails?.final_rating)
+        setFinalFeedback(candidateDetails?.final_feedback)
+        setResult(candidateDetails?.result)
         setRatings(rowsData.map((row) => row.actual_rating || 0));
         setFeedbacks(rowsData.map((row) => row.feedback || ""));
       })
@@ -383,6 +388,7 @@ const RecruiterScreening = () => {
               <Form.Control
                 type="text"
                 placeholder="Final feedback"
+                value={finalFeedback}
                 onChange={(e) => setFinalFeedback(e.target.value)}
               />
             </Form.Group>

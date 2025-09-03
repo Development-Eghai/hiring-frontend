@@ -23,6 +23,10 @@ const UploadScreen = () => {
   const [planIds, setPlanIds] = useState();
   const [reqId, setReqId] = useState();
 
+  const [selectedStage, setSelectedStage] = useState("");
+const [selectedMode, setSelectedMode] = useState("");
+
+
   const [clientid, setClientId] = useState("");
   const [clientname, setClientName] = useState("");
   const [deletee, setdelete] = useState(false);
@@ -84,6 +88,7 @@ const UploadScreen = () => {
     try {
       const dataObject = Object.fromEntries(formData.entries());
       dataObject.slots = slots;
+      console.log(dataObject,"frwerqawda")
       const response = await axios.post(
         "https://api.pixeladvant.com/api/interviewers/",
         dataObject
@@ -263,6 +268,29 @@ const UploadScreen = () => {
     }
   };
 
+const handleStageChange = (stage) => {
+  setSelectedStage(stage);
+
+  const found = getinterviewdetails?.interview_design?.find(
+    (d) => d.interviewer_stage === stage
+  );
+  if (found) {
+    setSelectedMode(found.interview_mode);
+  }
+};
+
+const handleModeChange = (mode) => {
+  setSelectedMode(mode);
+
+  const found = getinterviewdetails?.interview_design?.find(
+    (d) => d.interview_mode === mode
+  );
+  if (found) {
+    setSelectedStage(found.interviewer_stage);
+  }
+};
+
+
   return (
     <Container fluid className="p-4 bg-light rounded">
       <div className="row d-flex justify-content-between">
@@ -432,15 +460,22 @@ const UploadScreen = () => {
                   defaultValue={getinterviewdetails?.job_position}
                 />
               </div>
-              <div className="col">
-                <label>Interview Mode</label>
-                <input
-                  className="form-control"
-                  name="interview_mode"
-                  defaultValue={getinterviewdetails?.interview_mode?.[0] || ""}
-                  readOnly
-                />
-              </div>
+             <div className="col">
+    <label>Interview Mode</label>
+    <select
+      className="form-control"
+      name="interview_mode"
+      value={selectedMode}
+      onChange={(e) => handleModeChange(e.target.value)}
+    >
+      <option value="">Select Mode</option>
+      {getinterviewdetails?.interview_design?.map((row, idx) => (
+        <option key={idx} value={row.interview_mode}>
+          {row.interview_mode}
+        </option>
+      ))}
+    </select>
+  </div>
             </div>
 
             <div className="row mb-2 d-flex gap-3">
@@ -455,19 +490,22 @@ const UploadScreen = () => {
             </div>
 
             <div className="row mb-2 d-flex gap-3">
-              <div className="col">
-                <label>Interview Stage</label>
-                <select className="form-control" name="interviewer_stage">
-                  <option value={""}>Select Stage</option>
-                  {Array.isArray(getinterviewdetails?.interviewer_stage) &&
-                    getinterviewdetails.interviewer_stage.length > 0 &&
-                    getinterviewdetails.interviewer_stage.map((row, index) => (
-                      <option key={index} value={row}>
-                        {row}
-                      </option>
-                    ))}
-                </select>
-              </div>
+             <div className="col">
+    <label>Interview Stage</label>
+    <select
+      className="form-control"
+      name="interviewer_stage"
+      value={selectedStage}
+      onChange={(e) => handleStageChange(e.target.value)}
+    >
+      <option value="">Select Stage</option>
+      {getinterviewdetails?.interview_design?.map((row, idx) => (
+        <option key={idx} value={row.interviewer_stage}>
+          {row.interviewer_stage}
+        </option>
+      ))}
+    </select>
+  </div>
               <div className="col">
                 <label>Email</label>
                 <input className="form-control" name="email" />
