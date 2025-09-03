@@ -154,7 +154,7 @@ const RecruiterScreening = () => {
 
     console.log(payload);
     axios
-      .post("https://api.pixeladvant.com/candidates/screening/", payload)
+      .put("https://api.pixeladvant.com/candidates/screening/", payload)
       .then((response) => {
         if (response.data.success) {
           alert("Submission successful!");
