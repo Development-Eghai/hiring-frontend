@@ -209,21 +209,25 @@ const [selectedMode, setSelectedMode] = useState("");
   };
 
   const handleEdit = async (item) => {
-    setShowEditModal(true);
+  setShowEditModal(true);
 
-    const response = await axiosInstance.post(
-      "https://api.pixeladvant.com/api/job/metadata/",
-      {
-        plan_id: item?.plan_id,
-        req_id: item?.req_id,
-      }
-    );
+  const metadata = await axiosInstance.post(
+    "https://api.pixeladvant.com/api/job/metadata/",
+    {
+      plan_id: item?.plan_id,
+      req_id: item?.req_id,
+    }
+  );
 
-    item.interview_stage = response?.data?.data?.interviewer_stage || [];
-
-    setSelectedEditData(item);
-    setEditSlots(item?.slots);
+  const enrichedItem = {
+    ...item,
+    interview_design: metadata?.data?.data?.interview_design || [],
   };
+
+  setSelectedEditData(enrichedItem);
+  setEditSlots(item?.slots || []);
+};
+
 
 
   const handleupload = async (e)=>{
@@ -674,14 +678,20 @@ const handleModeChange = (mode) => {
               </div>
               <div className="col">
                 <label>Interview Mode</label>
-                <input
-                  className="form-control"
-                  name="interview_mode"
-                  defaultValue={selectedEditDate?.interview_mode}
-                  readOnly
-                />
+                 <select
+    className="form-control"
+    name="interview_mode"
+    defaultValue={selectedEditDate?.interview_mode || ""}
+  >
+    <option value="">Select Mode</option>
+    {[...new Set(selectedEditDate?.interview_design?.map(row => row.interview_mode))].map((mode, idx) => (
+      <option key={idx} value={mode}>
+        {mode}
+      </option>
+    ))}
+  </select>
+
               </div>
-            </div>
 
             <div className="row mb-2 d-flex gap-3">
               <div className="col">
@@ -702,23 +712,22 @@ const handleModeChange = (mode) => {
               </div>
             </div>
 
-            <div className="row mb-2 d-flex gap-3">
-              <div className="col">
-                <label>Interview Stage</label>
-                <select
-                  className="form-control"
-                  name="interviewer_stage"
-                  defaultValue={selectedEditDate?.interviewer_stage || ""}
-                >
-                  <option value={""}>Select Stage</option>
-                  {Array.isArray(selectedEditDate?.interview_stage) &&
-                    selectedEditDate.interview_stage.length > 0 &&
-                    selectedEditDate.interview_stage.map((row, index) => (
-                      <option key={index} value={row}>
-                        {row}
-                      </option>
-                    ))}
-                </select>
+            <div className="col">
+                  <label>Interview Stage</label>
+                  <select
+    className="form-control"
+    name="interviewer_stage"
+    defaultValue={selectedEditDate?.interviewer_stage || ""}
+  >
+    <option value="">Select Stage</option>
+    {[...new Set(selectedEditDate?.interview_design?.map(row => row.interviewer_stage))].map((stage, idx) => (
+      <option key={idx} value={stage}>
+        {stage}
+      </option>
+    ))}
+  </select>
+
+
               </div>
               <div className="col">
                 <label>Email</label>
