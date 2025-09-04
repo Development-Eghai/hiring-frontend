@@ -347,6 +347,7 @@ const {
               <option value="">Select option</option>
               <option value="Selected">Selected</option>
               <option value="Rejected">Rejected</option>
+              <option value="hold_on">Hold On</option>
             </Form.Select>
           </Form.Group>
         </Col>

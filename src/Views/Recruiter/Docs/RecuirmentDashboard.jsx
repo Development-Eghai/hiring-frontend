@@ -4,11 +4,61 @@ import { Modal, Button, Form } from "react-bootstrap";
 // import PaginationWithLimit from "../Recruiter_utils/PaginationRecruiter";
 import RecruiterHeader from "../Recruiter_utils/Navbar";
 import { useCommonState } from "Components/CustomHooks";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 export const RecruiterDashboard = () => {
   const [tableData, setTableData] = useState([]);
   const [candidateData, setCandidateData] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showModalEdit, setShowModalEdit] = useState(false);
+
+  const [selectedCandidate, setSelectedCandidate] = useState({});
+  
+
+  const handleEdit = (candidate) => {
+    console.log(candidate,"ASddqwDQW")
+    setSelectedCandidate(candidate);
+    setShowModalEdit(true);
+};
+
+  const handleDelete = async(candidate_id) => {
+
+    try {
+      const response = await axios.delete(
+        "https://api.pixeladvant.com/candidates/delete/", {
+        data: {
+          candidate_id: candidate_id,
+        },
+      }
+      );
+      if (response?.data?.success) {
+        window.location.reload()
+      }
+    } catch (err) {
+      console.error("Error fetching recruiter table data", err);
+    }
+  };
+
+  const handleSubmitModal = async (formData) => {
+    try {
+      const dataObject = Object.fromEntries(formData.entries());
+      const response = await axios.put(
+        "https://api.pixeladvant.com/api/candidates/update-details/",
+        dataObject,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      if (response?.data?.success) {
+         window.location.reload()
+        setShowModalEdit(false);
+      }
+    } catch (err) {
+      console.error("Error fetching recruiter table data", err);
+    }
+  };
 
   console.log(candidateData, "hv");
   console.log(tableData, "uyi");
@@ -181,10 +231,9 @@ export const RecruiterDashboard = () => {
       <div className="row px-3 mt-0">
         <div className="card rounded-3 border-0 shadow-sm p-2 ">
           <div className="mb-3 gap-2 p-2 mt-2 d-flex justify-content-between">
-              <h5 className="fw-bold mb-0">Recruiter Dashboard</h5>
-            </div>
+            <h5 className="fw-bold mb-0">Recruiter Dashboard</h5>
+          </div>
           <div className="card-body p-0 card overflow-auto">
-            
             <table
               className="table mb-0 table-bordered table-striped"
               style={{ minWidth: "1200px" }}
@@ -334,51 +383,72 @@ export const RecruiterDashboard = () => {
                     ))}
                   </tr>
                 </thead>
-              <tbody className="p-2">
-  {candidateData.length > 0 ? (
-    candidateData.map((data, idx) => (
-      <tr key={idx}>
-        {CandidateTableHeading.map((col, i) => (
-          <td key={i}>
-            {col === "JD From applied Position" &&
-            data["JD From applied Position"] ? (
-              <Button
-                variant="outline-success"
-                size="sm"
-                onClick={() => {
-                  setJdContent(data["JD From applied Position"]);
-                  setJdViewModal(true);
-                }}
-              >
-                View JD
-              </Button>
-            ) : col === "CV/Resume" && data["CV/Resume"] ? (
-              <a
-                href={data["CV/Resume"]}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View CV
-              </a>
-            ) : (
-              data[col]
-            )}
-          </td>
-        ))}
-      </tr>
-    ))
-  ) : (
-    <tr>
-      <td
-        colSpan={CandidateTableHeading.length}
-        className="text-center"
-      >
-        No data found
-      </td>
-    </tr>
-  )}
-</tbody>
 
+                <tbody className="p-2">
+                  {candidateData.length > 0 ? (
+                    candidateData.map((data, idx) => (
+                      <tr key={idx}>
+                        {CandidateTableHeading.map((col, i) => (
+                          <td key={i}>
+                            {col === "JD From applied Position" &&
+                            data["JD From applied Position"] ? (
+                              <Button
+                                variant="outline-success"
+                                size="sm"
+                                onClick={() => {
+                                  setJdContent(
+                                    data["JD From applied Position"]
+                                  );
+                                  setJdViewModal(true);
+                                }}
+                              >
+                                View JD
+                              </Button>
+                            ) : col === "CV/Resume" && data["CV/Resume"] ? (
+                              <a
+                                href={data["CV/Resume"]}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                View CV
+                              </a>
+                            ) : col === "action" ? (
+                              <div className="d-flex gap-2">
+                               <Button
+                                      size="sm"
+                                      variant="success"
+                                      onClick={() => handleEdit(data)}
+                                    >
+                                      <FaEdit />
+                                    </Button>
+                                <Button
+                                  size="sm"
+                                  variant="danger"
+                                  onClick={() =>
+                                    handleDelete(data?.["Candidate Id"])
+                                  }
+                                >
+                                  <FaTrash />
+                                </Button>
+                              </div>
+                            ) : (
+                              data[col]
+                            )}
+                          </td>
+                        ))}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={CandidateTableHeading.length}
+                        className="text-center"
+                      >
+                        No data found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
               </table>
             </div>
           </div>
@@ -388,6 +458,151 @@ export const RecruiterDashboard = () => {
       {/* <div className="row">
         <PaginationWithLimit totalItems={50} options={[10, 25, 50]} />
       </div> */}
+
+      <Modal
+        show={showModalEdit}
+        onHide={() => setShowModalEdit(false)}
+        size="lg"
+        backdrop="static"
+        keyboard={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Candidate Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <form id="candidateForm">
+            <div className="row mb-2 d-flex gap-3">
+              <div className="col">
+                <label>Req ID</label>
+                <input
+                  className="form-select"
+                  name="reqId"
+                  defaultValue={selectedCandidate?.["Req ID"] || ""}
+                  readOnly
+                />
+              </div>
+              <div className="col">
+                <label>Candidate ID</label>
+                <input
+                  className="form-select"
+                  name="candidate_id "
+                  defaultValue={selectedCandidate?.["Candidate Id"] || ""}
+                  readOnly
+                />
+              </div>
+            </div>
+
+            <div className="row mb-2 d-flex gap-3">
+              <div className="col">
+                <label>Candidate First Name</label>
+                <input
+                  className="form-control"
+                  name="Candidate_First_Name"
+                  defaultValue={
+                    selectedCandidate?.["Candidate First Name"] || ""
+                  }
+                />
+              </div>
+              <div className="col">
+                <label>Candidate Second Name</label>
+                <input
+                  className="form-control"
+                  name="Candidate_Last_Name"
+                  defaultValue={
+                    selectedCandidate?.["Candidate Second Name"] || ""
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="row mb-2 d-flex gap-3">
+              <div className="col">
+                <label>Time in Stage</label>
+                <input
+                  className="form-control"
+                  name="timeInStage"
+                  defaultValue={selectedCandidate?.["Time in Stage"] || ""}
+                />
+              </div>
+              <div className="col">
+                <label>Applied Position</label>
+                <input
+                  className="form-control"
+                  name="appliedPosition"
+                  defaultValue={selectedCandidate?.["Applied Postion"] || ""}
+                />
+              </div>
+            </div>
+
+            <div className="row mb-2 d-flex gap-3">
+              <div className="col">
+                <label>Current Stage</label>
+                <input
+                  className="form-control"
+                  name="currentStage"
+                  defaultValue={
+                    selectedCandidate?.["Candidate current stage"] || ""
+                  }
+                />
+              </div>
+              <div className="col">
+                <label>Next Stage</label>
+                <input
+                  className="form-control"
+                  name="nextStage"
+                  defaultValue={
+                    selectedCandidate?.["Candidate Next Stage"] || ""
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="mb-3">
+              <label>Source</label>
+              <input
+                className="form-control"
+                name="source"
+                defaultValue={selectedCandidate?.Source || ""}
+              />
+            </div>
+
+            <div className="row mb-2 d-flex gap-3">
+              <div className="col">
+                <label>Upload Resume</label>
+                <input type="file" name="resume" className="form-control" />
+              </div>
+              <div className="col">
+                <label>Upload Cover Letter</label>
+                <input
+                  type="file"
+                  name="CoverLetter"
+                  className="form-control"
+                />
+              </div>
+            </div>
+          </form>
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => setShowModalEdit(false)}
+          >
+            Close
+          </button>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => {
+              const form = document.getElementById("candidateForm");
+              const formData = new FormData(form);
+              handleSubmitModal(formData);
+            }}
+          >
+            Save Changes
+          </button>
+        </Modal.Footer>
+      </Modal>
 
       <Modal
         show={showJdViewModal}

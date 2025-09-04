@@ -49,8 +49,8 @@ const RequisitionForm = (handleNext) => {
   const createreqformData = routelocation?.state;
 
   useEffect(() => {
-    if (createreqformData?.reqid) {
-      setreqtempid(createreqformData?.reqid);
+    if (createreqformData?.requisition_template) {
+      setreqtempid(createreqformData?.requisition_template);
     }
   }, [createreqformData]);
 
