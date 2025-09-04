@@ -5,7 +5,7 @@ import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const LaunchInterview = () => {
-  const [interviewDetails, setInterviewDetails] = useState({});
+  const [interviewDetails, setInterviewDetails] = useState([]);
   const [ratings, setRatings] = useState([]);
   const [feedbacks, setFeedbacks] = useState([]);
   const [finalRating, setFinalRating] = useState(0);
@@ -13,6 +13,9 @@ const LaunchInterview = () => {
   const [finalFeedback, setFinalFeedback] = useState("");
   const [rows, setRows] = useState([]);
   const [isAdding, setIsAdding] = useState(false);
+  
+
+  
   const [newRow, setNewRow] = useState({
     score_card: "",
     guideline: "",
@@ -24,6 +27,9 @@ const LaunchInterview = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const routeState = location?.state;
+  const candidate_id1 = routeState?.[0]?.candidate_id;
+  const normalizedState = Array.isArray(routeState) ? routeState : [routeState];
+
 
   useEffect(() => {
     setInterviewDetails(routeState);
@@ -119,171 +125,191 @@ const LaunchInterview = () => {
     }
   };
 
+
+
+  const fetchCandidateData = async (candidate_id) => {
+  if (!candidate_id) return;
+
+  try {
+    const response = await axios.post(
+      "https://api.pixeladvant.com/get-reviews-by-candidate/",
+      { candidate_id }
+    );
+
+    const { candidate_summary, reviews } = response?.data?.data || {};
+
+    // Defensive fallback
+    const rowsData = Array.isArray(reviews) ? reviews : [];
+
+    setRows(rowsData);
+    // setFinalRating(candidate_summary?.final_rating || 0);
+    // setFinalFeedback(candidate_summary?.final_feedback || "");
+    // setResult(candidate_summary?.result || "");
+
+    // Ratings and feedbacks for each row
+    setRatings(rowsData.map((row) => row.actual_rating || 0));
+    setFeedbacks(rowsData.map((row) => row.feedback || ""));
+  } catch (error) {
+    console.error("Error fetching candidate data:", error);
+  }
+};
+
+
+useEffect(() => {
+  const normalized = Array.isArray(routeState) ? routeState : [routeState];
+  if (normalized[0]?.candidate_id) {
+    setInterviewDetails(normalized);
+    fetchCandidateData(normalized[0]?.candidate_id);
+  }
+}, [routeState]);
+
+
+const {
+  req_id,
+  candidate_first_name,
+  candidate_last_name,
+  candidate_id,
+  job_title,
+  interviewer_stage,
+  interview_date,
+} = interviewDetails[0] || {};
+
+
+
   return (
-    <div className="p-4 bg-white mt-2 rounded">
-      <Row
-        className="small text-muted border-bottom py-2"
-        style={{ fontSize: "0.9rem" }}
-      >
-        <Col className="border-end">
-          <strong>Req ID:</strong> {interviewDetails[0]?.req_id}
-        </Col>
-        <Col className="border-end">
-          <strong>Candidate Name:</strong>{" "}
-          {interviewDetails[0]?.candidate_first_name +
-            " " +
-            interviewDetails[0]?.candidate_last_name}
-        </Col>
-        <Col>
-          <strong>Candidate ID:</strong> {interviewDetails[0]?.candidate_id}
-        </Col>
-      </Row>
-      <Row
-        className="small text-muted border-bottom py-2"
-        style={{ fontSize: "0.9rem" }}
-      >
-        <Col className="border-end">
-          <strong>Job Title:</strong> {interviewDetails[0]?.job_title}
-        </Col>
-        <Col className="border-end">
-          <strong>Interviewer Stage:</strong>{" "}
-          {interviewDetails[0]?.interviewer_stage}
-        </Col>
-        <Col>
-          <strong>Interview date:</strong> {interviewDetails[0]?.interview_date}
-        </Col>
-      </Row>
+  <div className="p-4 bg-white mt-2 rounded">
+    <Row className="small text-muted border-bottom py-2" style={{ fontSize: "0.9rem" }}>
+      <Col className="border-end"><strong>Req ID:</strong> {req_id}</Col>
+      <Col className="border-end"><strong>Candidate Name:</strong> {candidate_first_name} {candidate_last_name}</Col>
+      <Col><strong>Candidate ID:</strong> {candidate_id}</Col>
+    </Row>
 
-      <Table hover className="mt-4">
-        <thead>
+    <Row className="small text-muted border-bottom py-2" style={{ fontSize: "0.9rem" }}>
+      <Col className="border-end"><strong>Job Title:</strong> {job_title}</Col>
+      <Col className="border-end"><strong>Interviewer Stage:</strong> {interviewer_stage}</Col>
+      <Col><strong>Interview Date:</strong> {interview_date}</Col>
+    </Row>
+
+    <Table hover className="mt-4">
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th>Score Card</th>
+          <th>Guideline</th>
+          <th>Skills</th>
+          <th>Weightage</th>
+          <th>Actual Rating</th>
+          <th>Feedback</th>
+          <th>
+            {!isAdding && (
+              <Button size="sm" onClick={() => setIsAdding(true)}>
+                Add Skill
+              </Button>
+            )}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row, index) => (
+  <tr key={index}>
+    <td>{index + 1}</td>
+    <td>{row.score_card}</td>
+    <td>{row.guideline}</td>
+    <td>{row.min_questions}</td>
+    <td>{row.weightage}</td>
+    <td><span>{ratings[index]}.0</span></td>
+    <td>{feedbacks[index]}</td>
+    <td>
+      <Button size="sm" variant="danger" onClick={() => handleRemoveRow(index)}>
+        Remove
+      </Button>
+    </td>
+  </tr>
+))}
+
+
+
+        {isAdding && (
           <tr>
-            <th>S.No</th>
-            <th>Skills</th>
-            <th>Guideline</th>
-            <th>Minimum Questions</th>
-            <th>Weightage</th>
-            <th>Actual Rating</th>
-            <th>Feedback</th>
-            <th>
-              {!isAdding && (
-                <Button size="sm" onClick={() => setIsAdding(true)}>
-                  Add skill
-                </Button>
-              )}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, index) => (
-            <tr key={index}>
-              <td>{index + 1}</td>
-              <td>{row.score_card}</td>
-              <td>{row.guideline}</td>
-              <td>{row.min_questions}</td>
-              <td>{row.weightage}</td>
-              <td>
-                <span>{ratings[index]}.0</span>
-              </td>
-              <td>{feedbacks[index]}</td>
-              <td>
-                <Button
-                  size="sm"
-                  variant="danger"
-                  onClick={() => handleRemoveRow(index)}
-                >
-                  Remove
-                </Button>
-              </td>
-            </tr>
-          ))}
-
-          {isAdding && (
-            <tr>
-              <td>{rows.length + 1}</td>
-              <td>
-                <Form.Control
-                  name="score_card"
-                  value={newRow.score_card}
-                  onChange={handleInputChange}
-                  placeholder="skill"
-                />
-              </td>
-              <td>
-                <Form.Control
-                  name="guideline"
-                  value={newRow.guideline}
-                  onChange={handleInputChange}
-                  placeholder="Guideline"
-                />
-              </td>
-              <td>
-                <Form.Control
-                  type="number"
-                  name="min_questions"
-                  min="1"
-                  value={newRow.min_questions}
-                  onChange={handleInputChange}
-                  placeholder="Min Questions"
-                />
-              </td>
-              <td>
-                <Form.Control
-                  type="number"
-                  name="weightage"
-                  min="1"
-                  value={newRow.weightage}
-                  onChange={handleInputChange}
-                  placeholder="Weightage"
-                />
-              </td>
-              <td>
-                <div
-                  className="form-control d-flex align-items-center"
-                  style={{ height: "38px" }}
-                >
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <span
-                      key={star}
-                      onClick={() => handleNewRatingChange(star)}
-                      style={{
-                        cursor: "pointer",
-                        color: newRow.rating >= star ? "#ffc107" : "#ccc",
-                        fontSize: "1.2rem",
-                        marginRight: "4px",
-                      }}
-                    >
-                      ★
-                    </span>
-                  ))}
-                  <span className="ms-2">{newRow.rating}.0</span>
-                </div>
-              </td>
-              <td>
-                <Form.Control
-                  name="feedback"
-                  value={newRow.feedback}
-                  onChange={handleInputChange}
-                  placeholder="Feedback"
-                />
-              </td>
-              <td>
-                <div className="d-flex gap-2">
-                  <Button size="sm" variant="success" onClick={handleAddNewRow}>
-                    Save
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => setIsAdding(false)}
+            <td>{rows.length + 1}</td>
+            <td>
+              <Form.Control
+                name="score_card"
+                value={newRow.score_card}
+                onChange={handleInputChange}
+                placeholder="Skill"
+              />
+            </td>
+            <td>
+              <Form.Control
+                name="guideline"
+                value={newRow.guideline}
+                onChange={handleInputChange}
+                placeholder="Guideline"
+              />
+            </td>
+            <td>
+              <Form.Control
+                type="text"
+                name="min_questions"
+                min="1"
+                value={newRow.min_questions}
+                onChange={handleInputChange}
+                placeholder="Skills"
+              />
+            </td>
+            <td>
+              <Form.Control
+                type="number"
+                name="weightage"
+                min="1"
+                value={newRow.weightage}
+                onChange={handleInputChange}
+                placeholder="Weightage"
+              />
+            </td>
+            <td>
+              <div className="form-control d-flex align-items-center" style={{ height: "38px" }}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span
+                    key={star}
+                    onClick={() => handleNewRatingChange(star)}
+                    style={{
+                      cursor: "pointer",
+                      color: newRow.rating >= star ? "#ffc107" : "#ccc",
+                      fontSize: "1.2rem",
+                      marginRight: "4px",
+                    }}
                   >
-                    Cancel
-                  </Button>
-                </div>
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </Table>
+                    ★
+                  </span>
+                ))}
+                <span className="ms-2">{newRow.rating}.0</span>
+              </div>
+            </td>
+            <td>
+              <Form.Control
+                name="feedback"
+                value={newRow.feedback}
+                onChange={handleInputChange}
+                placeholder="Feedback"
+              />
+            </td>
+            <td>
+              <div className="d-flex gap-2">
+                <Button size="sm" variant="success" onClick={handleAddNewRow}>
+                  Save
+                </Button>
+                <Button size="sm" variant="secondary" onClick={() => setIsAdding(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </Table>
+
 
       <Row className="justify-content-center mb-4">
         <Col md={3}>
