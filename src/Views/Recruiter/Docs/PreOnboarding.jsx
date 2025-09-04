@@ -121,10 +121,10 @@ const PreOnboarding = () => {
   return (
     <>
       <RecruiterHeader />
-      <div className="h-100 mt-5">
+      <div className="h-100 px-2">
         <div className="row">
           <div className="card rounded-3 border-0 shadow-sm p-2">
-                        <h5 className="fw-bold mb-0 p-3">Onboarding</h5>
+            <h5 className="fw-bold mb-0 p-3">Onboarding</h5>
             <div className="card-body p-0">
               {/* <div className="col-md-12 d-flex align-items-center justify-content-end gap-3 flex-wrap p-3">
                 <Button
@@ -151,10 +151,11 @@ const PreOnboarding = () => {
                 customStyles={{
                   headCells: {
                     style: {
-                      backgroundColor: "#e8edff",
+                      backgroundColor:
+                        "linear-gradient(135deg, #0A3C38 0%, #0F4F4A 100%) !important",
                       fontWeight: "600",
                       fontSize: "14px",
-                      color: "#1d1d1f",
+                      color: "#ffffffff",
                       paddingTop: "20px",
                       paddingBottom: "20px",
                     },
@@ -204,7 +205,11 @@ const PreOnboarding = () => {
       </Modal>
 
       {/* Toast Container */}
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+      />
     </>
   );
 };

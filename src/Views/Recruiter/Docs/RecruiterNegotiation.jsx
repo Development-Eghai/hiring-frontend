@@ -396,7 +396,7 @@ const RecruiterNegotiation = () => {
     <div>
       <RecruiterHeader />
       <div className="bg-white rounded p-3">
-        <div className="row align-items-center mt-3 mb-3">
+        <div className="row align-items-center  mb-3">
           <div className="col-md-4">
             <h5 className="fw-bold mb-0">Recruiter Negotiation</h5>
 
@@ -451,10 +451,11 @@ const RecruiterNegotiation = () => {
             customStyles={{
               headCells: {
                 style: {
-                  backgroundColor: "#e8edff",
-                  fontWeight: "600",
-                  fontSize: "14px",
-                  color: "#1d1d1f",
+                   backgroundColor:
+                  "linear-gradient(135deg, #0A3C38 0%, #0F4F4A 100%) !important",
+                fontWeight: "600",
+                fontSize: "14px",
+                color: "#ffffffff",
                   paddingTop: "20px",
                   paddingBottom: "20px",
                 },

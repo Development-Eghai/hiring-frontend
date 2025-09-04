@@ -196,8 +196,8 @@ const InitiateBG = () => {
 
   return (
     <>
-      <Container fluid className="py-4 px-md-5 bg-light min-vh-100">
-        <Card className="shadow-sm p-4">
+      <Container fluid className="py-4 px-2 bg-light min-vh-100">
+        <Card className="shadow-sm p-3">
           <div>
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h5 className="fw-bold m-0 text-start">Initate BG Dashboard</h5>
@@ -215,17 +215,17 @@ const InitiateBG = () => {
             >
               <thead className="bg-primary text-white">
                 <tr>
-                  <th className="p-1">Req ID</th>
-                  <th>Candidate ID</th>
-                  <th>First Name</th>
-                  <th>Last Name</th>
-                  <th>Email ID</th>
-                  <th>Location</th>
-                  <th>Vendor Name</th>
-                  <th>VendorPackage</th>
-                  <th>Add on Check</th>
-                  <th>Status</th>
-                  <th>Decision</th>
+                  <th className="table-header">Req ID</th>
+                  <th  className="table-header">Candidate ID</th>
+                  <th  className="table-header">First Name</th>
+                  <th  className="table-header">Last Name</th>
+                  <th  className="table-header">Email ID</th>
+                  <th  className="table-header">Location</th>
+                  <th  className="table-header">Vendor Name</th>
+                  <th  className="table-header">VendorPackage</th>
+                  <th  className="table-header">Add on Check</th>
+                  <th  className="table-header">Status</th>
+                  <th  className="table-header">Decision</th>
                 </tr>
               </thead>
               <tbody>

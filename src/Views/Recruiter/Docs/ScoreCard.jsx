@@ -200,20 +200,20 @@ const ScoreCard = () => {
   return (
     <>
       <RecruiterHeader />
-      <div className="interview-table-wrapper pt-3">
-        <div className=" bg-white rounded p-2">
+      <div className="interview-table-wrapper ">
+        <div className=" bg-white rounded p-3">
           <div className="row justify-content-between align-items-center mb-3">
             <div className="col-md-2">
               <h5 className="fw-bold mb-0">Scorecard/Debrief</h5>
             </div>
             <div className="col-2">
-                          <Button variant="success" onClick={() => setShowModal(true)}>
-                            Schedule Meeting
-                          </Button>
-                          <ScheduleMeetModal
-              show={showModal}
-              handleClose={() => setShowModal(false)}
-            />
+              <Button variant="success" onClick={() => setShowModal(true)}>
+                Schedule Meeting
+              </Button>
+              <ScheduleMeetModal
+                show={showModal}
+                handleClose={() => setShowModal(false)}
+              />
               {/* <Button
                 variant="primary"
                 onClick={() => {
@@ -252,10 +252,12 @@ const ScoreCard = () => {
               customStyles={{
                 headCells: {
                   style: {
-                    backgroundColor: "#e8edff",
+                    backgroundColor:
+                      "linear-gradient(135deg, #0A3C38 0%, #0F4F4A 100%) !important",
                     fontWeight: "600",
                     fontSize: "14px",
-                    color: "#1d1d1f",
+                    color: "#ffffff",
+
                     paddingTop: "20px",
                     paddingBottom: "20px",
                   },
@@ -280,14 +282,14 @@ const ScoreCard = () => {
               </h5>
               <div className="table-responsive">
                 <table className="table table-bordered">
-                  <thead className="table-primary">
-                    <tr>
-                      <th>Interview Stage</th>
-                      <th>Interview Date</th>
-                      <th>Mode of Interview</th>
-                      <th>Who</th>
-                      <th>Feedback</th>
-                      <th>Status</th>
+                  <thead className=" .table-header table-primary">
+                    <tr className="table-header">
+                      <th className="table-header">Interview Stage</th>
+                      <th className="table-header">Interview Date</th>
+                      <th className="table-header">Mode of Interview</th>
+                      <th className="table-header">Who</th>
+                      <th className="table-header">Feedback</th>
+                      <th className="table-header">Status</th>
                     </tr>
                   </thead>
                   <tbody>
