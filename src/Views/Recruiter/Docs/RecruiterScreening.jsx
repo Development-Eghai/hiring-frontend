@@ -156,7 +156,7 @@ const RecruiterScreening = () => {
         Skills: row.skills,
         weightage: row.weightage,
         ActualRating: ratings[index],
-        Feedback: feedbacks[index],
+        Feedback: row.feedback,
       })),
     };
 
