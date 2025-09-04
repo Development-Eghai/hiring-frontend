@@ -187,12 +187,12 @@ export const RecruiterDashboard = () => {
             
             <table
               className="table mb-0 table-bordered table-striped"
-              style={{ minWidth: "1200px" }}
+              // style={{ minWidth: "1200px" }}
             >
-              <thead className="table-light p-2">
-                <tr>
+              <thead className="  p-2">
+                <tr >
                   {RecuiterTableHeadings.map((heading, idx) => (
-                    <th key={idx}>{heading}</th>
+                    <th className="table-header" key={idx}>{heading}</th>
                   ))}
                 </tr>
               </thead>

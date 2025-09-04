@@ -6,76 +6,42 @@ const RecruiterHeader = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
-  const currentScreen = currentPath.split("/")[2];
 
-  const handleNavigate = () => {
-    navigate("candidate");
-  };
+  // Define all steps with path & label
+  const steps = [
+    { label: "1. Candidates", path: "/recruiter/candidate" },
+    { label: "2. Screening", path: "/recruiter/screening_dashboard" },
+    { label: "3. Hiring Manager Approval", path: "/recruiter/hiring_manager_approval" },
+    { label: "4. Schedule interview", path: "/recruiter/schedule_interview" },
+    { label: "5. Interview Stages", path: "/recruiter/interview_stages" },
+    { label: "6. Scorecard / Debrief", path: "/recruiter/score_card" },
+    { label: "7. Recruiter Negotiation", path: "/recruiter/recruiter_negotiation" },
+    { label: "8. Approval", path: "/recruiter/final_approval" },
+    { label: "9. Offer & BGV", path: "/recruiter/offer&bgv" },
+    { label: "10. Onboarding", path: "/recruiter/onboarding" },
+  ];
 
   return (
-    <>
-      <div className="card rounded-3 shadow-sm p-2 mb-5">
-        <div className="card-body p-0 card ">
-          <div className="row mt-2 p-2">
-            <div className="col d-flex flex-wrap gap-2">
-              <ButtonComponent
-                buttonName="1. Candidates"
-                className="btn-primary"
-                clickFunction={() => navigate("/recruiter/candidate")}
-              />
+    <div className="card rounded-3 shadow-sm p-2 mb-2">
+      <div className="card-body p-2 card">
+        <div className="row mt-2">
+          <div className="col d-flex flex-wrap gap-2">
+            {steps.map((step, index) => {
+              const isActive = currentPath === step.path;
+              return (
                 <ButtonComponent
-                 buttonName="2. Screening" 
-                 className="btn-primary" 
-                  clickFunction={() => navigate("/recruiter/screening_dashboard")}
-                 />
-                <ButtonComponent
-                  buttonName="3. Hiring Manager Approval"
-                  className="btn-primary"
-                   clickFunction={() => navigate("/recruiter/hiring_manager_approval")}
+                  key={index}
+                  buttonName={step.label}
+                  className={isActive ? "btn-primary" : "btn-outline-primary"} // active vs stroke
+                  clickFunction={() => navigate(step.path)}
                 />
-              <ButtonComponent
-                buttonName="4. Schedule interview"
-                className="btn-primary"
-                clickFunction={() => navigate("/recruiter/schedule_interview")}
-              />
-              
-
-              <ButtonComponent
-                buttonName="5. Interview Stages"
-                className="btn-primary"
-                                clickFunction={() => navigate("/recruiter/interview_stages")}
-
-              />
-              <ButtonComponent
-                buttonName="6. Scorecard / Debrief"
-                className="btn-primary"
-                clickFunction={() => navigate("/recruiter/score_card")}
-              />
-              <ButtonComponent
-                buttonName="7. Recruiter Negotiation"
-                className="btn-primary"
-                clickFunction={() => navigate("/recruiter/recruiter_negotiation")} 
-              />
-              <ButtonComponent buttonName="8. Approval" className="btn-primary"
-              clickFunction={() => navigate("/recruiter/final_approval")}
-              />
-              <ButtonComponent buttonName="9. Offer & BGV" className="btn-primary"
-              clickFunction={() => navigate("/recruiter/offer&bgv")}
-
-              />
-              
-              <ButtonComponent
-                buttonName="10. Onboarding"
-                className="btn-primary"
-                
-              clickFunction={() => navigate("/recruiter/onboarding")}
-
-              />
-            </div>
+              );
+            })}
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
+
 export default RecruiterHeader;

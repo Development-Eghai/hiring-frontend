@@ -178,10 +178,10 @@ const HiringManagerApproval = () => {
             },
             headCells: {
               style: {
-                backgroundColor: "#e8edff",
+                backgroundColor: "linear-gradient(135deg, #0A3C38 0%, #0F4F4A 100%) !important",
                 fontWeight: "600",
                 fontSize: "14px",
-                color: "#1d1d1f",
+                color: "#ffffffff",
                 paddingTop: "20px",
                 paddingBottom: "20px",
                 whiteSpace: "nowrap",

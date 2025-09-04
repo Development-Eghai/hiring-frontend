@@ -208,9 +208,9 @@ export const InterviewerStages = () => {
   return (
     <div className="h-100">
       <RecruiterHeader />
-      <Card className="p-4 home_data_table">
-        <div className="row align-items-center mb-3">
-          <div className="col-3">
+      <Card className="p-2 px-3">
+        <div className="row pt-2 align-items-center mb-3">
+          <div className="col-3 ">
             <h4 className="fw-bold mb-0">Interview Stages</h4>
           </div>
           {/* <div className="col-6 d-flex justify-content-end gap-3">
@@ -282,11 +282,41 @@ export const InterviewerStages = () => {
         <DataTable
           columns={columns}
           data={tableData}
-          customStyles={tableStyles}
+          
           fixedHeader
           striped
           highlightOnHover
           pagination
+          customStyles={{
+            tableWrapper: {
+              style: {
+                display: "block",
+                maxWidth: "100%",
+                overflowY: "auto",
+                overflowX: "auto",
+              },
+            },
+            headCells: {
+              style: {
+                backgroundColor:
+                  "linear-gradient(135deg, #0A3C38 0%, #0F4F4A 100%) !important",
+                fontWeight: "600",
+                fontSize: "14px",
+                color: "#ffffffff",
+                paddingTop: "20px",
+                paddingBottom: "20px",
+                whiteSpace: "nowrap",
+              },
+            },
+            cells: {
+              style: {
+                fontSize: "14px",
+                paddingTop: "15px",
+                paddingBottom: "15px",
+                whiteSpace: "nowrap",
+              },
+            },
+          }}
           progressPending={hiringManagerState?.isLoading}
           onRowClicked={(row) => handleRowClick(row)}
         />

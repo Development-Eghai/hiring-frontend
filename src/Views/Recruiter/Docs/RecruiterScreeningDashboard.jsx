@@ -190,9 +190,9 @@ const RecruiterScreeningDashboard = () => {
   return (
     <>
       <RecruiterHeader />
-      <div className="h-100 mt-5">
+      <div className="h-100  px-3 mt-2">
         <div className="row">
-          <div className="card rounded-3 border-0 shadow-sm p-2 mt-5">
+          <div className="card rounded-3 border-0 shadow-sm py-3 ">
             <div className="card-body p-0 card overflow-auto">
               <h5 className="fw-bold  p-3">Screening</h5>
 
@@ -201,9 +201,9 @@ const RecruiterScreeningDashboard = () => {
                 style={{ minWidth: "1200px" }}
               >
                 <thead className="table-light p-2">
-                  <tr>
+                  <tr >
                     {RecuiterTableHeadings.map((heading, idx) => (
-                      <th key={idx}>{heading}</th>
+                      <th className="table-header" key={idx}>{heading}</th>
                     ))}
                   </tr>
                 </thead>

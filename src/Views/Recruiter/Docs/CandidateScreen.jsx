@@ -157,7 +157,7 @@ const [jdContent, setJdContent] = useState("");
   return (
     <>
       <RecruiterHeader />
-      <div className="h-100 mt-5">
+      <div className="h-100">
         <div className="row">
           <div className="card rounded-3 border-0 shadow-sm p-2">
             <div className="card-body p-0">
@@ -206,14 +206,15 @@ const [jdContent, setJdContent] = useState("");
               </div>
 
               {/* Table Section */}
-              <div className="row">
+              <div className="overflow-hidden">
+                <div className="row p-2 overflow-hidden">
                 <div className="table-responsive">
                   <table className="table table-bordered mb-0">
                     <thead className="table-light">
                       <tr>
                         {CandidateTableHeading &&
                           CandidateTableHeading.map((heading, idx) => (
-                            <th key={idx}>{heading}</th>
+                            <th className="table-header" key={idx}>{heading}</th>
                           ))}
                       </tr>
                     </thead>
@@ -310,6 +311,7 @@ const [jdContent, setJdContent] = useState("");
                     </tbody>
                   </table>
                 </div>
+              </div>
               </div>
             </div>
           </div>

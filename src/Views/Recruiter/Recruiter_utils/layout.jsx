@@ -15,7 +15,7 @@ export const RecruiterLayout = () => {
             <Sidebar responsiveOn="xl" menuOptions={jsonOnly?.sidebar_data} />
 
             <main className="layout_main_content">
-                <div className="container-fluid ">
+                <div class="container-fluid overflow-y-auto p-2 vh-100 ">
                     <header className="py-2">
                         <Header />
                     </header>

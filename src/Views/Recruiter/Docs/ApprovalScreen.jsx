@@ -158,7 +158,7 @@ const ApprovalScreen = () => {
       <RecruiterHeader />
       <div className="interview-table-wrapper">
         <div className="scroll-container bg-white rounded p-2">
-          <div className="row align-items-center mb-3">
+          <div className="row align-items-center ">
             <div className="col-md-2">
               <h5 className="fw-bold mb-0 p-3">Approval</h5>
             </div>
@@ -204,10 +204,11 @@ const ApprovalScreen = () => {
               },
               headCells: {
                 style: {
-                  backgroundColor: "#e8edff",
-                  fontWeight: "600",
-                  fontSize: "14px",
-                  color: "#1d1d1f",
+                  backgroundColor:
+                  "linear-gradient(135deg, #0A3C38 0%, #0F4F4A 100%) !important",
+                fontWeight: "600",
+                fontSize: "14px",
+                color: "#ffffffff",
                   paddingTop: "20px",
                   paddingBottom: "20px",
                   whiteSpace: "nowrap",

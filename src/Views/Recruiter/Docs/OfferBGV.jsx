@@ -201,7 +201,7 @@ const OfferBGV = () => {
   return (
     <>
       <RecruiterHeader />
-      <div className="h-100 mt-5">
+      <div className="h-100 mb-0   px-2">
         <div className="row">
           <div className="card rounded-3 border-0 shadow-sm p-2">
             <div className="card-body p-0">
@@ -253,7 +253,7 @@ const OfferBGV = () => {
                       <tr>
                         {CandidateTableHeading &&
                           CandidateTableHeading.map((heading, idx) => (
-                            <th key={idx}>{heading}</th>
+                            <th className="table-header" key={idx}>{heading}</th>
                           ))}
                       </tr>
                     </thead>
