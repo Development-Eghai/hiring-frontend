@@ -266,11 +266,12 @@ const handleFormSubmit = async (e) => {
 
     setIsSubmitting(true);
 
-    const cleanedParameters = parameters.map((param) => ({
+    const cleanedParameters = parameters.map((param,index) => ({
       ...param,
       mode: "", 
       feedback: param.feedback || "",
       duration_metric: param.duration_metric || "",
+      roundno: index + 1,
     }));
 
     const formData = {
