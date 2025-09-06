@@ -321,12 +321,8 @@ const [formData, setFormData] = useState({
                 "label": "PixelREQ",
                 "value": "PixelREQ",
                 "email": "pixelreq@gmail.com"
-            },
-                        {
-                "label": "csdcsd",
-                "value": "cdwcw",
-                "email": "pixelreq@gmail.com"
             }
+            
         ],
         "Vendor": [
             {
@@ -415,7 +411,7 @@ const [formData, setFormData] = useState({
                 />
               </InputGroup>
 
-              {selectedReqId && <button className="btn btn-secondary" onClick={() => setShow(true)}>assign recruiter</button>}
+              {selectedReqId && <button className="btn btn-secondary" onClick={() => setShow(true)}>Assign Recruiter</button>}
 
               <Creatmodel show={showModal} onHide={() => setShowModal(false)} />
             </div>
