@@ -17,8 +17,8 @@ const OfferBGV = () => {
   //  states
 
   const CandidateTableHeading = [
+    "Select",
     "Req ID",
-    "Client Id",
     "Client Name",
     "Candidate Id",
     "Candidate First Name",
