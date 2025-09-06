@@ -1425,7 +1425,7 @@ useEffect(() => {
             ))} */}
 
             {/* <div className="card p-3"> */}
-            <h6 className=" mt-3">Communication Languages</h6>
+            <h6 className=" mt-3">Communication Languages <span className="text-danger">*</span></h6>
 
             {rows.map((row, index) => {
               // get all selected languages

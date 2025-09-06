@@ -124,24 +124,24 @@ const HiringManagerApproval = () => {
   };
 
   // Determine button visibility
-  const renderButtons = () => {
-    if (selectedRows.length === 1) {
-      return (
-        <>
-          <button className="btn btn-primary mx-2">Approve</button>
-          <button className="btn btn-danger">Cancel</button>
-        </>
-      );
-    } else if (selectedRows.length > 1) {
-      return (
-        <>
-          <button className="btn btn-primary mx-2">Approve All</button>
-          <button className="btn btn-danger">Cancel</button>
-        </>
-      );
-    }
-    return null;
-  };
+  // const renderButtons = () => {
+  //   if (selectedRows.length === 1) {
+  //     return (
+  //       <>
+  //         <button className="btn btn-primary mx-2">Approve</button>
+  //         <button className="btn btn-danger">Cancel</button>
+  //       </>
+  //     );
+  //   } else if (selectedRows.length > 1) {
+  //     return (
+  //       <>
+  //         <button className="btn btn-primary mx-2">Approve All</button>
+  //         <button className="btn btn-danger">Cancel</button>
+  //       </>
+  //     );
+  //   }
+  //   return null;
+  // };
 
   return (
     <>
@@ -153,9 +153,9 @@ const HiringManagerApproval = () => {
         <div className="col-md-2">
           <h5 className="fw-bold mb-0 p-3">Hiring Manager Approval</h5>
         </div>
-        <div className="col-md-10 text-center">
+        {/* <div className="col-md-10 text-center">
           {renderButtons()}
-        </div>
+        </div> */}
       </div>
 
         <DataTable
@@ -163,8 +163,8 @@ const HiringManagerApproval = () => {
           data={data}
           striped
           dense
-          selectableRows
-          onSelectedRowsChange={handleRowSelected}
+          // selectableRows
+          // onSelectedRowsChange={handleRowSelected}
           progressPending={loading}
           persistTableHead
           customStyles={{

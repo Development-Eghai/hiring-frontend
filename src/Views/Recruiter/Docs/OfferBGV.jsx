@@ -248,7 +248,7 @@ const OfferBGV = () => {
               {/* Table Section */}
               <div className="row">
                 <div className="table-responsive">
-                  <table className="table table-bordered mb-0">
+                  <table className="table table-striped mb-0">
                     <thead className="table-light">
                       <tr>
                         {CandidateTableHeading &&

@@ -197,7 +197,7 @@ const RecruiterScreeningDashboard = () => {
               <h5 className="fw-bold  p-3">Screening</h5>
 
               <table
-                className="table mb-0 table-bordered table-striped"
+                className="table mb-0 table-striped"
                 style={{ minWidth: "1200px" }}
               >
                 <thead className="table-light p-2">

@@ -594,8 +594,77 @@ table th,
 }
 
 .table-header{
-  background: linear-gradient(135deg, #0A3C38 0%, #0F4F4A 100%) !important;
+  background: linear-gradient(135deg, #0A3C38 ) !important;
   font-size: 16px !important;
   font-weight: 400 !important;
   color: #fff !important;
+}
+.table_head{
+  border-radius: 10px !important;
+}
+
+/* Table wrapper with rounded corners */
+.table-wrapper {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  border-radius: 8px;         /* Rounded corners */
+  overflow: hidden;           /* Keeps corners consistent */
+  border: 1px solid #dee2e6;  /* Light border around table */
+}
+
+/* Table header row */
+.table_head {
+  background: #0A3C38; /* Dark green */
+}
+
+/* Table header cells */
+.table-header {
+  font-weight: 600;
+  font-size: 14px;
+  color: #ffffff !important;
+  padding: 12px 16px;
+  white-space: nowrap;
+  border-right: none !important;
+}
+
+/* Apply rounded corners ONLY to first and last th in header */
+.table thead th:first-child {
+  border-top-left-radius: 8px;
+}
+
+.table thead th:last-child {
+  border-top-right-radius: 8px;
+}
+
+/* Table body cells */
+.table td,
+.table th {
+  font-size: 14px;
+  padding: 12px 16px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* Row hover effect */
+.table tbody tr:hover {
+  background-color: #eaf4f4 !important; /* Light teal hover */
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* Zebra striping for better readability */
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #ffffff;
+}
+
+.table-striped tbody tr:nth-of-type(even) {
+  background-color: #f9f9f9;
+}
+.table tbody tr:hover td,
+.table tbody tr:hover th {
+  background-color: #cecfd2 !important;  /* Light gray like your screenshot */
+  transition: background-color 0.2s ease-in-out;
+  cursor: pointer;
 }

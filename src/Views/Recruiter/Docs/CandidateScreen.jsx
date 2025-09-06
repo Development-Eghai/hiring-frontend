@@ -206,113 +206,108 @@ const [jdContent, setJdContent] = useState("");
               </div>
 
               {/* Table Section */}
-              <div className="overflow-hidden">
-                <div className="row p-2 overflow-hidden">
-                <div className="table-responsive">
-                  <table className="table table-bordered mb-0">
-                    <thead className="table-light">
-                      <tr>
-                        {CandidateTableHeading &&
-                          CandidateTableHeading.map((heading, idx) => (
-                            <th className="table-header" key={idx}>{heading}</th>
-                          ))}
-                      </tr>
-                    </thead>
-                    <tbody className="p-2">
-                      {candidateDetails.length > 0 ? (
-                        candidateDetails.map((data, idx) => (
-                          <tr key={idx}>
-                            <th>{data?.Req_ID}</th>
-                            <td>{data?.Candidate_Id}</td>
-                            <td>{data?.Candidate_First_Name}</td>
-                            <td>{data?.Candidate_Last_Name}</td>
-                            <td>{data?.Applied_Position}</td>
-                            <td>{data?.Time_in_Stage}</td>
-                            <td>{data?.JD_From_applied_Position &&   <Button
-                                        variant="outline-success"
-                                        size="sm"
-                                        onClick={() => {
-                                          setJdContent(data?.JD_From_applied_Position);
-                                          setJdViewModal(true);
-                                        }}
-                                      >
-                                        View JD
-                                      </Button>}</td>
-                            <td>
-                              {data?.CV_Resume && (
-                                <>
-                                  <a
-                                    href="#"
-                                    onClick={(e) =>
-                                      handleShow(e, data?.Candidate_Id, "jd")
-                                    }
-                                  >
-                                   JD,
-                                  </a>
-                                </>
-                              )}
-                              {data?.CV_Resume && (
-                                <>
-                                  <a
-                                    href="#!"
-                                    onClick={(e) =>
-                                      handleShow(e, data?.Candidate_Id, "cv")
-                                    }
-                                  >
-                                    CV,
-                                  </a>
-                                </>
-                              )}
-                              {data?.Cover_Letter && (
-                                <>
-                                  <a
-                                    href="#!"
-                                    onClick={(e) =>
-                                      handleShow(e, data?.Candidate_Id, "cl")
-                                    }
-                                  >
-                                   CL
-                                  </a>
-                                </>
-                              )}
-                            </td>
-                            <td>{data?.Candidate_current_stage}</td>
-                            <td>{data?.Candidate_Next_Stage}</td>
-                            <td>{data?.Overall_Stage}</td>
-                            <td>{data?.Final_stage}</td>
-                            <td>{data?.Source}</td>
-                            <td>{data?.Score}</td>
-
-                            <td>
-                              <div className="d-flex gap-2">
-                                <Button
-                                  size="sm"
-                                  variant="success"
-                                  onClick={() => handleEdit(data)}
-                                >
-                                  <FaEdit />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="danger"
-                                  onClick={() => handleDelete(data?.Candidate_Id)}
-                                >
-                                  <FaTrash />
-                                </Button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan={15} className="text-center text-muted py-3">No data found</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              </div>
+<div className="overflow-hidden">
+  <div className="row p-2 overflow-hidden">
+    <div className="table-responsive table-wrapper">
+      <table className="table mb-0 table-striped">
+        <thead>
+          <tr className="table_head">
+            {CandidateTableHeading &&
+              CandidateTableHeading.map((heading, idx) => (
+                <th className="table-header text-center" key={idx}>
+                  {heading}
+                </th>
+              ))}
+          </tr>
+        </thead>
+        <tbody>
+          {candidateDetails.length > 0 ? (
+            candidateDetails.map((data, idx) => (
+              <tr key={idx}>
+                <th>{data?.Req_ID}</th>
+                <td>{data?.Candidate_Id}</td>
+                <td>{data?.Candidate_First_Name}</td>
+                <td>{data?.Candidate_Last_Name}</td>
+                <td>{data?.Applied_Position}</td>
+                <td>{data?.Time_in_Stage}</td>
+                <td>
+                  {data?.JD_From_applied_Position && (
+                    <Button
+                      variant="outline-success"
+                      size="sm"
+                      onClick={() => {
+                        setJdContent(data?.JD_From_applied_Position);
+                        setJdViewModal(true);
+                      }}
+                    >
+                      View JD
+                    </Button>
+                  )}
+                </td>
+                <td>
+                  {data?.CV_Resume && (
+                    <a
+                      href="#"
+                      onClick={(e) => handleShow(e, data?.Candidate_Id, "jd")}
+                    >
+                      JD,
+                    </a>
+                  )}
+                  {data?.CV_Resume && (
+                    <a
+                      href="#!"
+                      onClick={(e) => handleShow(e, data?.Candidate_Id, "cv")}
+                    >
+                      CV,
+                    </a>
+                  )}
+                  {data?.Cover_Letter && (
+                    <a
+                      href="#!"
+                      onClick={(e) => handleShow(e, data?.Candidate_Id, "cl")}
+                    >
+                      CL
+                    </a>
+                  )}
+                </td>
+                <td>{data?.Candidate_current_stage}</td>
+                <td>{data?.Candidate_Next_Stage}</td>
+                <td>{data?.Overall_Stage}</td>
+                <td>{data?.Final_stage}</td>
+                <td>{data?.Source}</td>
+                <td>{data?.Score}</td>
+                <td>
+                  <div className="d-flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="success"
+                      onClick={() => handleEdit(data)}
+                    >
+                      <FaEdit />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="danger"
+                      onClick={() => handleDelete(data?.Candidate_Id)}
+                    >
+                      <FaTrash />
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={15} className="text-center text-muted py-3">
+                No data found
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
             </div>
           </div>
         </div>

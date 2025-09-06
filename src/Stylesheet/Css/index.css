@@ -402,11 +402,13 @@
   padding-bottom: 1rem;
 }
 
+.table-header {
+  background-color: red !important;
+}
 .parameter-header,
 .parameter-body {
   min-width: 1550px; 
 }
-
 .react-dropdown-select{
   border-radius: 6px !important;
   padding: .3rem !important;
