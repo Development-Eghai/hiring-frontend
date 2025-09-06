@@ -265,6 +265,7 @@ const OfferBGV = () => {
                               {
                                 <input
                                   type="radio"
+                                  name="options"
                                   onChange={() => setSelectedRadioRow(data)}
                                 />
                               }
