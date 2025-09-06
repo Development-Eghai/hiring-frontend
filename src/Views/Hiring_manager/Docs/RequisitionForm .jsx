@@ -43,14 +43,14 @@ const RequisitionForm = (handleNext) => {
   const [tempDetails, setTempDetails] = useState();
   const [reqtempid, setreqtempid] = useState("");
   const [dropdownOptions, setDropdownOptions] = useState([]);
-
   const routelocation = useLocation();
-
+  
   const createreqformData = routelocation?.state;
+  console.log(createreqformData,"dwqwq")
 
   useEffect(() => {
-    if (createreqformData?.requisition_template) {
-      setreqtempid(createreqformData?.requisition_template);
+    if (createreqformData) {
+      setreqtempid(createreqformData?.requisition_template || createreqformData?.reqid);
     }
   }, [createreqformData]);
 
@@ -307,7 +307,7 @@ const RequisitionForm = (handleNext) => {
 
       let gettempleteDetail;
 
-      if (reqtempid) {
+      if (reqtempid) {  
         gettempleteDetail = await axiosInstance.post(
           "/get_requisition_by_id/",
           {

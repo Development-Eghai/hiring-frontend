@@ -159,14 +159,7 @@ const Creatmodel = () => {
           type: "success",
           text: "Job requisition created successfully!",
         });
-        setFormData({
-          hiring_plan_id: "",
-          requisition_date: "",
-          due_requisition_date: "",
-          requisition_template: "",
-          client_name,
-          no_of_openings: "",
-        });
+
 
         navigate("/hiring_manager/job_requisition", {
           state: {
@@ -179,6 +172,14 @@ const Creatmodel = () => {
             requisition_template,
             reqid: requisitionIdFromAPI,
           },
+        });
+          setFormData({
+          hiring_plan_id: "",
+          requisition_date: "",
+          due_requisition_date: "",
+          requisition_template: "",
+          client_name,
+          no_of_openings: "",
         });
         // You can close modal after success if needed:
         // setTimeout(() => setShow(false), 1000);
