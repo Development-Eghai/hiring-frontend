@@ -118,7 +118,7 @@ const RecruiterNegotiation = () => {
     current_employer: "",
     current_location: "",
     last_ctc: "",
-    status: "",
+    status: "Declined",
     follow_up_date: "",
     notes: "",
     reason_not_selected: ""
@@ -872,17 +872,14 @@ const RecruiterNegotiation = () => {
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Status</Form.Label>
-                  <Form.Select
+                  <Form.Control
+                  type="text"
                     name="status"
                     value={formData.status}
                     onChange={handleChange}
-                  >
-                    <option value="">Select Status</option>
-                    <option value="Selected">Selected</option>
-                    <option value="Rejected">Rejected</option>
-                    <option value="Declined">Declined</option>
-                    <option value="On Hold">On Hold</option>
-                  </Form.Select>
+                    readOnly
+                  />
+                   
                 </Form.Group>
 
                 <Form.Group className="mb-3">

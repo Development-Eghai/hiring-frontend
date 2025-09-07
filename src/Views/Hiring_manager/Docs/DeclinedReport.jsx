@@ -1,67 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Table, Container, Card, Button, Modal, Form, Row, Col } from "react-bootstrap";
 import ReportHeader from "../Hiring_manager_utils/Navbar";
+import axios from "axios";
 
 
 const DeclinedReport = () => {
-  const [reportData] = useState([
-    {
-      clientName: "HCL Software",
-      candidateName: "John Doe",
-      position: "Software Engineer",
-      department: "IT",
-      recruiter: "Jane Smith",
-      offerDate: "2025-01-01",
-      declineDate: "2025-01-03",
-      assessmentScore: "****",
-      feedback: "Summarized details",
-      reason: "Better offer",
-      employer: "ABC Corp",
-      location: "Bangalore",
-      ctc: 1200000,
-    },
-    {
-      clientName: "HCL Software",
-      candidateName: "Priya Singh",
-      position: "HR Manager",
-      department: "HR",
-      recruiter: "Rohit Mehta",
-      offerDate: "2025-01-03",
-      declineDate: "2025-01-05",
-      assessmentScore: "***",
-      feedback: "Summarized details",
-      reason: "Personal reasons",
-      employer: "XYZ Ltd",
-      location: "Delhi",
-      ctc: 1500000,
-    },
-    {
-      clientName: "HCL Software",
-      candidateName: "Amit Kumar",
-      position: "Software Engineer",
-      department: "IT",
-      recruiter: "Jane Smith",
-      offerDate: "2025-01-05",
-      declineDate: "2025-01-07",
-      assessmentScore: "*****",
-      feedback: "Summarized details",
-      reason: "Better offer",
-      employer: "TechSoft",
-      location: "Bangalore",
-      ctc: 1250000,
-    },
-  ]);
+  const [reportData,setReportData] = useState([]);
 
-  const [showFilter, setShowFilter] = useState(false);
-  const [locationFilter, setLocationFilter] = useState("");
-  const [departmentFilter, setDepartmentFilter] = useState("");
+  const fetchData = async ()=>{
+  try {
+    const response = await axios.get("https://api.pixeladvant.com/api/declined-offer-report/");
 
-  const filteredData = reportData.filter((row) => {
-    return (
-      (locationFilter ? row.location === locationFilter : true) &&
-      (departmentFilter ? row.department === departmentFilter : true)
-    );
-  });
+    const {data,success,message} =response?.data;
+
+    if(success){
+      setReportData(data)
+    }
+  } catch (error) {
+    
+  }
+}
+
+useEffect(()=>{
+  fetchData()
+},[])
+
 
 //   const exportToExcel = () => {
 //     const worksheet = XLSX.utils.json_to_sheet(filteredData);
@@ -79,9 +42,6 @@ const DeclinedReport = () => {
         <Card.Header className="d-flex justify-content-between align-items-center rounded-top-4 bg-light">
           <h6 className="fw-bold mb-0 p-2 text-dark">Declined Report</h6>
           <div className="d-flex gap-2">
-            <Button variant="outline-primary" onClick={() => setShowFilter(true)}>
-              Filter
-            </Button>
             <Button variant="success" onClick={"exportToExcel"}>
               Export to Excel
             </Button>
@@ -108,23 +68,23 @@ const DeclinedReport = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredData.map((row, index) => (
+              {reportData?.length > 0 ? reportData.map((row, index) => (
                 <tr key={index}>
-                  <td>{row.clientName}</td>
-                  <td>{row.candidateName}</td>
-                  <td>{row.position}</td>
-                  <td>{row.department}</td>
-                  <td>{row.recruiter}</td>
-                  <td>{row.offerDate}</td>
-                  <td>{row.declineDate}</td>
-                  <td>{row.assessmentScore}</td>
-                  <td>{row.feedback}</td>
-                  <td>{row.reason}</td>
-                  <td>{row.employer}</td>
-                  <td>{row.location}</td>
-                  <td className="fw-bold text-danger">{row.ctc.toLocaleString()}</td>
+                  <td>{row?.["Client Name"]}</td>
+                  <td>{row?.["Candidate Name"]}</td>
+                  <td>{row?.["Position Offered"]}</td>
+                  <td>{row?.["Department"]}</td>
+                  <td>{row?.["Recruiter Nam"]}</td>
+                  <td>{row?.["Offer Date"]}</td>
+                  <td>{row?.["Decline Date"]}</td>
+                  <td>{row?.["Assessment Score / Rating"]}</td>
+                  <td>{row?.["Interviewer Feedback"]}</td>
+                  <td>{row?.["Reason for Decline"]}</td>
+                  <td>{row?.["Current Employer"]}</td>
+                  <td>{row?.["Location"]}</td>
+                  <td className="fw-bold text-danger">{row?.["CTC Offered"]?.toLocaleString()}</td>
                 </tr>
-              ))}
+              )): (<tr><td colSpan={13} className="text-center">No data found</td></tr>)}
             </tbody>
           </Table>
         </Card.Body>

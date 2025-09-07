@@ -1,64 +1,74 @@
 
-import React from "react";
-import { Table, Container, Card, Button } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Table, Container, Card } from "react-bootstrap";
 import ReportHeader from "../Hiring_manager_utils/Navbar";
+import axios from "axios";
+import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 
 const SilvermedelistReport = () => {
   // Example data (replace with API response)
-  const reportData = [
-    {
-      clientId: "C001",
-      clientName: "Acme Corp",
-      firstName: "John",
-      lastName: "Doe",
-      position: "React Developer",
-      hiringManager: "Michael Scott",
-      recruiter: "Sarah Connor",
-      interviewDate: "2025-08-25",
-      assessment: "Excellent",
-      interviewerFeedback: "Strong React knowledge, good problem solving",
-      recruiterFeedback: "Candidate accepted offer",
-      reasonNotSelected: "N/A",
-      skills: "React, Redux, JavaScript",
-      currentEmployer: "XYZ Pvt Ltd",
-      currentLocation: "Bangalore",
-      lastCTC: "12 LPA",
-      status: "Selected",
-      followUpDate: "2025-08-30",
-      notes: "Will join in September"
-    },
-    {
-      clientId: "C002",
-      clientName: "Tech Solutions",
-      firstName: "Jane",
-      lastName: "Smith",
-      position: "Node.js Developer",
-      hiringManager: "Dwight Schrute",
-      recruiter: "Tom Hardy",
-      interviewDate: "2025-08-28",
-      assessment: "Good",
-      interviewerFeedback: "Solid backend skills",
-      recruiterFeedback: "Candidate negotiating salary",
-      reasonNotSelected: "Location mismatch",
-      skills: "Node.js, Express, MongoDB",
-      currentEmployer: "ABC Tech",
-      currentLocation: "Chennai",
-      lastCTC: "10 LPA",
-      status: "Not Joined",
-      followUpDate: "2025-09-01",
-      notes: "Open to remote work"
-    }
-  ];
+  const [reportData,setReportData] = useState([]);
 
+  const [show,setshow] = useState(false);
+
+  const [filters, setFilters] = useState({
+    client_name: "",
+    position_considered_for: "",
+    recruiter_name: "",
+    start_date: "",
+    end_date: "",
+    skills_expertise: ""
+  });
+
+    const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const resetFilters = () => {
+    setFilters({
+      client_name: "",
+      position_considered_for: "",
+      recruiter_name: "",
+      start_date: "",
+      end_date: "",
+      skills_expertise: ""
+    });
+  };
+
+
+const fetchData = async ()=>{
+  try {
+    const response = await axios.post("https://api.pixeladvant.com/api/candidate-feedback/",filters);
+
+    const {data,success,message} =response?.data;
+
+    if(success){
+      setReportData(data)
+    }
+  } catch (error) {
+    
+  }
+}
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const onApply = () => {
+    fetchData();
+    setshow(false)
+  };
   return (
     <Container fluid className="">
-        <ReportHeader/>
+      <ReportHeader />
       <Card className="shadow-lg border-0 rounded-4">
         <Card.Header className=" text-white fw-bold fs-5 rounded-top-4 p-3">
           <div className="d-flex justify-content-between">
             <h6 className="fw-bold mb-0 p-2 text-dark">Silver medalist</h6>
             <div className="d-flex gap-3">
-              <Button variant="outline-secondary">Filter</Button>
+              <Button variant="outline-secondary" onClick={() => setshow(true)}>
+                Filter
+              </Button>
               <Button size="sm" className="me-2 btn btn-success">
                 Export excel
               </Button>
@@ -91,26 +101,26 @@ const SilvermedelistReport = () => {
               </tr>
             </thead>
             <tbody>
-              {reportData.map((row, index) => (
+              {reportData?.length > 0 ? reportData.map((row, index) => (
                 <tr key={index}>
-                  <td>{row.clientId}</td>
-                  <td>{row.clientName}</td>
-                  <td>{row.firstName}</td>
-                  <td>{row.lastName}</td>
-                  <td>{row.position}</td>
-                  <td>{row.hiringManager}</td>
-                  <td>{row.recruiter}</td>
-                  <td>{row.interviewDate}</td>
-                  <td>{row.assessment}</td>
-                  <td>{row.interviewerFeedback}</td>
-                  <td>{row.recruiterFeedback}</td>
+                  <td>{row.Client_ID}</td>
+                  <td>{row.Client_Name}</td>
+                  <td>{row.Candidate_First_Name}</td>
+                  <td>{row.Candidate_Last_Name}</td>
+                  <td>{row.Position_Considered_For}</td>
+                  <td>{row.Hiring_Manager}</td>
+                  <td>{row.recruiter_name}</td>
+                  <td>{row.interview_date}</td>
+                  <td>{row.assessment_score}</td>
+                  <td>{row.interviewer_feedback}</td>
+                  <td>{row.recruiter_feedback}</td>
                   <td className="text-danger fw-bold">
-                    {row.reasonNotSelected}
+                    {row.reason_not_selected}
                   </td>
                   <td>{row.skills}</td>
-                  <td>{row.currentEmployer}</td>
-                  <td>{row.currentLocation}</td>
-                  <td>{row.lastCTC}</td>
+                  <td>{row.current_employer}</td>
+                  <td>{row.current_location}</td>
+                  <td>{row.last_ctc}</td>
                   <td
                     className={
                       row.status === "Selected"
@@ -120,14 +130,108 @@ const SilvermedelistReport = () => {
                   >
                     {row.status}
                   </td>
-                  <td>{row.followUpDate}</td>
+                  <td>{row.follow_up_date}</td>
                   <td>{row.notes}</td>
                 </tr>
-              ))}
+              )): (<tr><td colSpan={12} className="text-center">No data found</td></tr>)}
             </tbody>
           </Table>
         </Card.Body>
       </Card>
+
+      <Modal
+        show={show}
+        onHide={() => setshow(false)}
+        size="lg"
+        backdrop="static"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Filter Candidates</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Row>
+              {/* Left Column */}
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Client Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="client_name"
+                    value={filters.client_name}
+                    onChange={handleChange}
+                    placeholder="Enter Client Name"
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Position Considered For</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="position_considered_for"
+                    value={filters.position_considered_for}
+                    onChange={handleChange}
+                    placeholder="Enter Position"
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Recruiter Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="recruiter_name"
+                    value={filters.recruiter_name}
+                    onChange={handleChange}
+                    placeholder="Enter Recruiter Name"
+                  />
+                </Form.Group>
+              </Col>
+
+              {/* Right Column */}
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Start Date</Form.Label>
+                  <Form.Control
+                    type="date"
+                    name="start_date"
+                    value={filters.start_date}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>End Date</Form.Label>
+                  <Form.Control
+                    type="date"
+                    name="end_date"
+                    value={filters.end_date}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Skills Expertise</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="skills_expertise"
+                    value={filters.skills_expertise}
+                    onChange={handleChange}
+                    placeholder="Enter Skills (e.g., Python)"
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={resetFilters}>
+            Reset
+          </Button>
+          <Button variant="primary" onClick={onApply}>
+            Apply
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };

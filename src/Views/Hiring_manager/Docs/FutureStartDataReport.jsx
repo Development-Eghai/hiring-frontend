@@ -1,55 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Table, Container, Card, Button, Modal, Form, Row, Col } from "react-bootstrap";
 // import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import ReportHeader from "../Hiring_manager_utils/Navbar";
+import axios from "axios";
 
 const FutureStartDataReport = () => {
-  const [reportData] = useState([
-    {
-      clientName: "HCL Software",
-      candidateName: "John Doe",
-      position: "Software Engineer",
-      department: "IT",
-      recruiter: "Jane Smith",
-      offerDate: "2025-01-01",
-      expectedJoining: "2025-01-11",
-      currentEmployer: "ABC Corp",
-      location: "Bangalore",
-      ctc: 1200000,
-      status: "Yet to Join",
-      assessmentScore: "****",
-      feedback: "Summarized details",
-      comments: "",
-    },
-    {
-      clientName: "HCL Software",
-      candidateName: "Priya Singh",
-      position: "HR Manager",
-      department: "HR",
-      recruiter: "Rohit Mehta",
-      offerDate: "2025-01-03",
-      expectedJoining: "2025-01-11",
-      currentEmployer: "XYZ Ltd",
-      location: "Delhi",
-      ctc: 1500000,
-      status: "Yet to Join",
-      assessmentScore: "***",
-      feedback: "Summarized details",
-      comments: "",
-    },
-  ]);
+  const [reportData,setReportData] = useState([]);
 
-  const [showFilter, setShowFilter] = useState(false);
-  const [locationFilter, setLocationFilter] = useState("");
-  const [departmentFilter, setDepartmentFilter] = useState("");
+    const fetchData = async ()=>{
+  try {
+    const response = await axios.get("https://api.pixeladvant.com/api/yet-to-join-report/");
 
-  const filteredData = reportData.filter((row) => {
-    return (
-      (locationFilter ? row.location === locationFilter : true) &&
-      (departmentFilter ? row.department === departmentFilter : true)
-    );
-  });
+    const {data,success,message} =response?.data;
+
+    if(success){
+      setReportData(data)
+    }
+  } catch (error) {
+    
+  }
+}
+
+useEffect(()=>{
+  fetchData();
+},[])
 
   // const exportToExcel = () => {
   //   const worksheet = XLSX.utils.json_to_sheet(filteredData);
@@ -67,9 +42,9 @@ const FutureStartDataReport = () => {
         <Card.Header className="d-flex justify-content-between align-items-center rounded-top-4 bg-light">
           <h6 className="fw-bold mb-0 p-2 text-dark">Future Start Data Report</h6>
           <div className="d-flex gap-2">
-            <Button variant="outline-primary" onClick={() => setShowFilter(true)}>
+            {/* <Button variant="outline-primary">
               Filter
-            </Button>
+            </Button> */}
             <Button variant="success" onClick={"exportToExcel"}>
               Export to Excel
             </Button>
@@ -97,24 +72,24 @@ const FutureStartDataReport = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredData.map((row, index) => (
+              {reportData?.length > 0 ? reportData.map((row, index) => (
                 <tr key={index}>
-                  <td>{row.clientName}</td>
-                  <td>{row.candidateName}</td>
-                  <td>{row.position}</td>
-                  <td>{row.department}</td>
-                  <td>{row.recruiter}</td>
-                  <td>{row.offerDate}</td>
-                  <td>{row.expectedJoining}</td>
-                  <td>{row.currentEmployer}</td>
-                  <td>{row.location}</td>
-                  <td className="fw-bold text-success">{row.ctc.toLocaleString()}</td>
-                  <td>{row.status}</td>
-                  <td>{row.assessmentScore}</td>
-                  <td>{row.feedback}</td>
-                  <td>{row.comments}</td>
+                  <td>{row?.["Client Name"]}</td>
+                  <td>{row?.["Candidate Name"]}</td>
+                  <td>{row?.["Position Offered"]}</td>
+                  <td>{row?.["Department"]}</td>
+                  <td>{row?.["Recruiter Name"]}</td>
+                  <td>{row?.["Offer Date"]}</td>
+                  <td>{row?.["Expected Date Of Joining"]}</td>
+                  <td>{row?.["Current Employer"]}</td>
+                  <td>{row?.["Location"]}</td>
+                  <td className="fw-bold text-success">{row?.["CTC Offered"].toLocaleString()}</td>
+                  <td>{row?.["Status"]}</td>
+                  <td>{row?.["Assessment Score / Rating"]}</td>
+                  <td>{row?.["Interviewer Feedback"]}</td>
+                  <td>{row?.["Recruiter Comments"]}</td>
                 </tr>
-              ))}
+              )): (<tr><td colSpan={12} className="text-center">No data found</td></tr>)}
             </tbody>
           </Table>
         </Card.Body>
