@@ -366,7 +366,12 @@ const [formData, setFormData] = useState({
 
     const { success, data, message } = response?.data;
     if (success) {
-      // handle success
+      setFormData({
+        type: "",
+        recruiter: [],
+        vendor: [],
+      });
+      setShow(false);
     }
   } catch (error) {
     console.log(error);
