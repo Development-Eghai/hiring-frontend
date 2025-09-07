@@ -1256,6 +1256,7 @@ const RequisitionForm = (handleNext) => {
                 render={({ field }) => (
                   <CreatableSelect
                     {...field}
+                    isMulti
                     options={dropdownOptions["Working Model"]}
                     classNamePrefix="react-select"
                     placeholder="Select Working Model"

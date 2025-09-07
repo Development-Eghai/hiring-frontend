@@ -167,6 +167,7 @@ const InterviewDesignDashboard = () => {
       );
 
       toast.success("Deleted successfully!");
+       window.location.reload();
     } catch (error) {
       toast.error("Delete failed. Please try again.");
       console.error(error);

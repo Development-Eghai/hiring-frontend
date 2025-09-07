@@ -114,6 +114,7 @@ const [selectedMode, setSelectedMode] = useState("");
       );
       if (response?.data?.success) {
         setShowEditModal(false);
+        window.location.reload();
       }
     } catch (err) {
       console.error("Error update calender table data", err);
@@ -208,6 +209,37 @@ const [selectedMode, setSelectedMode] = useState("");
     setEditSlots(updatedSlots);
   };
 
+  // Add two new states
+const [editSelectedStage, setEditSelectedStage] = useState("");
+const [editSelectedMode, setEditSelectedMode] = useState("");
+
+// When opening Edit Modal, initialize values
+
+
+// Reuse functions for edit modal but update edit states
+const handleEditStageChange = (stage) => {
+  setEditSelectedStage(stage);
+
+  const found = selectedEditDate?.interview_design?.find(
+    (d) => d.interviewer_stage === stage
+  );
+  if (found) {
+    setEditSelectedMode(found.interview_mode);
+  }
+};
+
+const handleEditModeChange = (mode) => {
+  setEditSelectedMode(mode);
+
+  const found = selectedEditDate?.interview_design?.find(
+    (d) => d.interview_mode === mode
+  );
+  if (found) {
+    setEditSelectedStage(found.interviewer_stage);
+  }
+};
+
+
   const handleEdit = async (item) => {
   setShowEditModal(true);
 
@@ -226,6 +258,9 @@ const [selectedMode, setSelectedMode] = useState("");
 
   setSelectedEditData(enrichedItem);
   setEditSlots(item?.slots || []);
+    // initialize mode & stage from existing record
+  setEditSelectedMode(item?.interview_mode || "");
+  setEditSelectedStage(item?.interviewer_stage || "");
 };
 
 
@@ -247,6 +282,7 @@ const [selectedMode, setSelectedMode] = useState("");
       
       if(response?.data?.success){
         setShowUploadModal(false)
+         window.location.reload();
       }
     } catch (error) {
       console.error('Upload failed:', error);
@@ -613,7 +649,7 @@ const handleModeChange = (mode) => {
       {/* edit modal */}
       <Modal
         show={showEditModal}
-        onHide={() => setShowEditModal(false)}
+        onHide={() => {setShowEditModal(false); setSelectedEditData({})}}
         size="lg"
         backdrop="static"
         keyboard={false}
@@ -630,7 +666,7 @@ const handleModeChange = (mode) => {
                 <input
                   className="form-control"
                   name="plan_id"
-                  defaultValue={selectedEditDate?.plan_id}
+                  defaultValue={selectedEditDate?.planning_id}
                   readOnly
                 />
               </div>
@@ -676,22 +712,22 @@ const handleModeChange = (mode) => {
                   defaultValue={selectedEditDate?.job_title}
                 />
               </div>
-              <div className="col">
-                <label>Interview Mode</label>
-                 <select
+<div className="col">
+  <label>Interview Mode</label>
+  <select
     className="form-control"
     name="interview_mode"
-    defaultValue={selectedEditDate?.interview_mode || ""}
+    value={editSelectedMode}
+    onChange={(e) => handleEditModeChange(e.target.value)}
   >
     <option value="">Select Mode</option>
-    {[...new Set(selectedEditDate?.interview_design?.map(row => row.interview_mode))].map((mode, idx) => (
-      <option key={idx} value={mode}>
-        {mode}
+    {selectedEditDate?.interview_design?.map((row, idx) => (
+      <option key={idx} value={row.interview_mode}>
+        {row.interview_mode}
       </option>
     ))}
   </select>
-
-              </div>
+</div>
 
             <div className="row mb-2 d-flex gap-3">
               <div className="col">
@@ -712,23 +748,22 @@ const handleModeChange = (mode) => {
               </div>
             </div>
 
-            <div className="col">
-                  <label>Interview Stage</label>
-                  <select
+<div className="col">
+  <label>Interview Stage</label>
+  <select
     className="form-control"
     name="interviewer_stage"
-    defaultValue={selectedEditDate?.interviewer_stage || ""}
+    value={editSelectedStage}
+    onChange={(e) => handleEditStageChange(e.target.value)}
   >
     <option value="">Select Stage</option>
-    {[...new Set(selectedEditDate?.interview_design?.map(row => row.interviewer_stage))].map((stage, idx) => (
-      <option key={idx} value={stage}>
-        {stage}
+    {selectedEditDate?.interview_design?.map((row, idx) => (
+      <option key={idx} value={row.interviewer_stage}>
+        {row.interviewer_stage}
       </option>
     ))}
   </select>
-
-
-              </div>
+</div>
               <div className="col">
                 <label>Email</label>
                 <input
@@ -815,7 +850,7 @@ const handleModeChange = (mode) => {
           <button
             type="button"
             className="btn btn-secondary"
-            onClick={() => setShowEditModal(false)}
+            onClick={() => {setShowEditModal(false); setSelectedEditData({})}}
           >
             Close
           </button>

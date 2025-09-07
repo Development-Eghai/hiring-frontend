@@ -114,6 +114,7 @@ const InterviewBandwidthDashboard = () => {
         data.filter((row) => row.requisition_id !== requisition_id)
       );
       toast.success("Deleted successfully!");
+       window.location.reload();
     } catch (error) {
       toast.error("Delete failed. Please try again.");
       console.error(error);
