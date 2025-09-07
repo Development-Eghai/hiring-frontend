@@ -23,7 +23,8 @@ const negotiationStatuses = [
 const RecruiterNegotiation = () => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const [showfeedbackmodal,setshowfeedbackmodal] = useState(false);
+  const [currentFeedbackid,setcurrentfeedbackid] = useState("");
   const [editModal, setEditModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -33,7 +34,7 @@ const RecruiterNegotiation = () => {
   const [selectedRowDetails, setSelectedRowDetails] = useState([]);
   const [showViewModal, setShowViewModal] = useState(false);
   const navigate = useNavigate();
-
+  console.log(selectedRadioRow,"adsadqweQW")
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -96,6 +97,63 @@ const RecruiterNegotiation = () => {
   const handleDelete = (row) => {
     setSelectedRow(row);
     setDeleteModal(true);
+  };
+
+  useEffect(() => {
+  if (selectedRadioRow) {
+    setFormData((prev) => ({
+      ...prev,
+      candidate: selectedRadioRow?.["Candidate ID"] || ""
+    }));
+  }
+}, [selectedRadioRow]);
+
+
+
+  // feedback modal
+
+    const [formData, setFormData] = useState({
+    candidate: selectedRadioRow?.["Candidate ID"] || "",
+    skills: "",
+    current_employer: "",
+    current_location: "",
+    last_ctc: "",
+    status: "",
+    follow_up_date: "",
+    notes: "",
+    reason_not_selected: ""
+  });
+
+    const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+    const onSubmit = async() => {
+    try {
+      const response = await axios.post(
+        "https://api.pixeladvant.com/api/candidate-feedback/add/",
+        formData
+      );
+      console.log(response, "sdewdewdew");
+
+      const { success, message, data } = response?.data;
+      if (success) {
+        setshowfeedbackmodal(false);
+        setSelectedRadioRow({});
+        setFormData({
+          candidate: selectedRadioRow?.["Candidate ID"] || "",
+          skills: "",
+          current_employer: "",
+          current_location: "",
+          last_ctc: "",
+          status: "",
+          follow_up_date: "",
+          notes: "",
+          reason_not_selected: "",
+        });
+      }
+    } catch (error) {}
   };
 
   // Confirm Delete
@@ -200,7 +258,7 @@ const RecruiterNegotiation = () => {
           </Button>
           <Button
             size="sm"
-            variant="warning"
+            variant="success"
             title="Edit"
             onClick={() => handleEdit(row)}
           >
@@ -370,7 +428,7 @@ const RecruiterNegotiation = () => {
         <div className="d-flex gap-2">
           <Button
             size="sm"
-            variant="warning"
+            variant="success"
             title="Edit"
             onClick={() => handleEdit(row)}
           >
@@ -399,7 +457,6 @@ const RecruiterNegotiation = () => {
         <div className="row align-items-center  mb-3">
           <div className="col-md-4">
             <h5 className="fw-bold mb-0">Recruiter Negotiation</h5>
-
           </div>
           <div className="col-md-8 text-end d-flex justify-content-end gap-3">
             {/* <Button
@@ -421,7 +478,14 @@ const RecruiterNegotiation = () => {
             >
               Initiate BGV
             </Button> */}
-
+            {selectedRadioRow && (
+              <Button
+                variant="secondary"
+                onClick={() => setshowfeedbackmodal(true)}
+              >
+                Candidate feedback
+              </Button>
+            )}
             <Button variant="success" onClick={() => setShowModal(true)}>
               Schedule Meeting
             </Button>
@@ -451,11 +515,11 @@ const RecruiterNegotiation = () => {
             customStyles={{
               headCells: {
                 style: {
-                   backgroundColor:
-                  "linear-gradient(135deg, #0A3C38 0%, #0F4F4A 100%) !important",
-                fontWeight: "600",
-                fontSize: "14px",
-                color: "#ffffffff",
+                  backgroundColor:
+                    "linear-gradient(135deg, #0A3C38 0%, #0F4F4A 100%) !important",
+                  fontWeight: "600",
+                  fontSize: "14px",
+                  color: "#ffffffff",
                   paddingTop: "20px",
                   paddingBottom: "20px",
                 },
@@ -732,6 +796,138 @@ const RecruiterNegotiation = () => {
           </Button>
           <Button variant="danger" onClick={confirmDelete}>
             Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* feedback modal */}
+
+      <Modal
+        show={showfeedbackmodal}
+        onHide={() => setshowfeedbackmodal(false)}
+        size="lg"
+        backdrop="static"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Candidate Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Row>
+              {/* Left Side (5 fields) */}
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Candidate ID</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="candidate"
+                    value={formData.candidate}
+                    onChange={handleChange}
+                    readOnly
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Skills</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="skills"
+                    value={formData.skills}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Current Employer</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="current_employer"
+                    value={formData.current_employer}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Current Location</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="current_location"
+                    value={formData.current_location}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Last CTC</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="last_ctc"
+                    value={formData.last_ctc}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+
+              {/* Right Side (5 fields) */}
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Status</Form.Label>
+                  <Form.Select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select Status</option>
+                    <option value="Selected">Selected</option>
+                    <option value="Rejected">Rejected</option>
+                    <option value="Declined">Declined</option>
+                    <option value="On Hold">On Hold</option>
+                  </Form.Select>
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Follow Up Date</Form.Label>
+                  <Form.Control
+                    type="date"
+                    name="follow_up_date"
+                    value={formData.follow_up_date}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Notes</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    name="notes"
+                    value={formData.notes}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Reason Not Selected</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="reason_not_selected"
+                    value={formData.reason_not_selected}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setshowfeedbackmodal(false)}
+          >
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={onSubmit}>
+            Save
           </Button>
         </Modal.Footer>
       </Modal>

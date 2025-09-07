@@ -27,7 +27,7 @@ const OfferBGV = () => {
     "HM Approver",
     "Generate Offer",
     "Status",
-    "action",
+    // "action",
   ];
   const [viewApproversData, setViewApproversData] = useState([]);
   const [showViewModal, setShowViewModal] = useState(false);
@@ -303,11 +303,11 @@ const OfferBGV = () => {
                             </td>
                             <td>{data?.Status}</td>
 
-                            <td>
+                            {/* <td>
                               <div className="d-flex gap-2">
                                 <Button
                                   size="sm"
-                                  variant="secondary"
+                                  variant="success"
                                   onClick={() => handleEdit(data)}
                                 >
                                   <FaEdit />
@@ -322,7 +322,7 @@ const OfferBGV = () => {
                                   <FaTrash />
                                 </Button>
                               </div>
-                            </td>
+                            </td> */}
                           </tr>
                         ))
                       ) : (

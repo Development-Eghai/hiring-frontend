@@ -42,7 +42,11 @@ const [jdContent, setJdContent] = useState("");
   // effects
 
   useEffect(() => {
-    const fetchData = async () => {
+    fetchData();
+  }, [candidateDeleted,showModal]);
+
+
+      const fetchData = async () => {
       try {
         const response = await axiosInstance.get(
           "https://api.pixeladvant.com/api/candidates/all-details/"
@@ -55,10 +59,6 @@ const [jdContent, setJdContent] = useState("");
         console.error("Error fetching recruiter table data", err);
       }
     };
-
-    fetchData();
-  }, [candidateDeleted,showModal]);
-
   //functions
 
   const handleEdit = (candidate) => {
@@ -79,6 +79,7 @@ const [jdContent, setJdContent] = useState("");
       if (response?.data?.success) {
         setCandidateDeleted(!candidateDeleted)
         setShowModal(false);
+        fetchData()
       }
     } catch (err) {
       console.error("Error fetching recruiter table data", err);
@@ -99,6 +100,7 @@ const [jdContent, setJdContent] = useState("");
       );
       if (response?.data?.success) {
         setShowModal(false);
+        fetchData()
       }
     } catch (err) {
       console.error("Error fetching recruiter table data", err);
