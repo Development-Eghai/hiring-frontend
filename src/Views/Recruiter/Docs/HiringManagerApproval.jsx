@@ -108,7 +108,7 @@ const HiringManagerApproval = () => {
       button: true,
     },
       {
-        name: "overall_status",
+        name: "Overall Status",
         selector: (row) => row.overall_status,
         wrap: true,
       },

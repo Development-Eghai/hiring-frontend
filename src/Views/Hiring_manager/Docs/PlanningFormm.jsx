@@ -1711,7 +1711,7 @@ useEffect(() => {
           {/* Submit Button */}
           <div className="col text-end">
             <button className="btn btn-primary mt-3" type="submit">
-              {edit_id ? "update" : "Submit"}
+              {edit_id ? "Update" : "Submit"}
             </button>
           </div>
         </div>

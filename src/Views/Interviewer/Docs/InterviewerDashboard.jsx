@@ -67,6 +67,29 @@ const ALL_FIELDS = [
   "meet_link",
 ];
 
+const FIELD_LABELS = {
+  req_id: "Requisition ID",
+  client_id: "Client ID",
+  first_name: "Interviewer First Name",
+  last_name: "Interviewer Last Name",
+  job_title: "Job Title",
+  interview_mode: "Interview Mode",
+  interviewer_stage: "Interviewer Stage",
+  email_id: "Email ID",
+  candidate_id: "Candidate ID",
+  candidate_first_name: "Candidate First Name",
+  candidate_last_name: "Candidate Last Name",
+  role: "Role",
+  feedback: "Feedback",
+  interview_results: "Interview Results",
+  contact_number: "Contact Number",
+  round_name: "Round Name",
+  interview_date: "Interview Date",
+  start_time: "Start Time",
+  end_time: "End Time",
+  meet_link: "Meet Link",
+};
+
 const tableStyles = {
   headCells: {
     style: {
@@ -151,14 +174,15 @@ export const InterviewerDashboard = () => {
   };
 
   const columns = [
-    checkboxColumn,
-    ...DEFAULT_FIELDS.map((field) => ({
-      name: field,
-      selector: (row) => row[field] ?? "-",
-      sortable: true,
-    })),
-    actionColumn,
-  ];
+  checkboxColumn,
+  ...DEFAULT_FIELDS.map((field) => ({
+    name: FIELD_LABELS[field] || field, // 👈 use display label
+    selector: (row) => row[field] ?? "-",
+    sortable: true,
+  })),
+  actionColumn,
+];
+
 
   const filteredData = tableData.map((item) => {
     const filteredItem = {};

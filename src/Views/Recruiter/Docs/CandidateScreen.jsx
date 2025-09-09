@@ -24,10 +24,10 @@ const CandidateScreen = () => {
     "Candidate current stage",
     "Candidate Next Stage",
     "Overall Stage",
-    "final stage",
+    "Final Stage",
     "Source",
     "Score",
-    "action",
+    "Action",
   ];
 
   const [candidateDetails, setCandidateDetails] = useState([]);

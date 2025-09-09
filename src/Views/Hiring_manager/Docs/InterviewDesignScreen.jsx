@@ -479,10 +479,10 @@ const handleFormSubmit = async (e) => {
           <Row className="mb-4 d-flex gap-3">
             <Col md={3} className="mb-3">
               <Form.Group>
-                <Form.Label>Tech Stacks</Form.Label>
+                <Form.Label>Tech Stack</Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="Enter tech stacks"
+                  placeholder="Enter tech stack"
                   value={techStacks}
                   onChange={(e) => {
                     toast.dismiss(); 
@@ -620,7 +620,14 @@ const handleFormSubmit = async (e) => {
             {/* Screen Type */}
             <Form.Select
               value={param.screen_type || ""}
-              onChange={(e) => handleChange(index, "screen_type", e.target.value)}
+              onChange={(e) => {
+                const selectedValue = e.target.value;
+                const selectedLabel = e.target.options[e.target.selectedIndex].text;
+
+                // Save both value & label
+                handleChange(index, "screen_type", selectedValue);       // for backend/API
+                handleChange(index, "screen_type_label", selectedLabel); // for display in table
+              }}
             >
               <option value="">Select</option>
               <option value="telephonic_interview">Telephonic Interview</option>

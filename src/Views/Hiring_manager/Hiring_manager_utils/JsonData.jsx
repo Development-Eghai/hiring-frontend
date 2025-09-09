@@ -58,12 +58,12 @@ const JsonData = () => {
           },
 
           {
-            name: "Stage alert and responsibility settings",
+            name: "Stage Alert and Responsibility Settings",
             route: "planning/stage_alert_and_responsibility_settings",
             icon: Icons.Planning,
           },
           {
-            name: "Customised column and settings",
+            name: "Customised Column and Settings",
             route: "planning/customised_column_and_settings",
             icon: Icons.Planning,
           },
