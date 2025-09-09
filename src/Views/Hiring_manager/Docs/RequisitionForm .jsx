@@ -1541,7 +1541,7 @@ const RequisitionForm = (handleNext) => {
                     isMulti
                     options={dropdownOptions["Experience"]}
                     classNamePrefix="react-select"
-                    placeholder="Select experience"
+                    placeholder="Select Experience"
                     onChange={(val) => field.onChange(val)}
                     className={errors.experience ? "is-invalid" : ""}
                   />
@@ -1888,7 +1888,7 @@ const RequisitionForm = (handleNext) => {
                   errors.laptop_type ? "is-invalid" : ""
                 }`}
               >
-                <option value="">Select type</option>
+                <option value="">Select Type</option>
                 <option value="Windows">Windows</option>
                 <option value="Mac">Mac</option>
                 <option value="Other">Other</option>

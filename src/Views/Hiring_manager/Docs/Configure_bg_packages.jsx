@@ -319,7 +319,7 @@ const Configure_bg_packages = () => {
                   <Form.Label>Vendor Name</Form.Label>
                   <Form.Control
                     name="vendor_name"
-                    placeholder="Enter vendor name"
+                    placeholder="Enter Vendor Name"
                     value={formState?.vendor_name}
                     onChange={handleMainChange}
                   />
@@ -331,7 +331,7 @@ const Configure_bg_packages = () => {
                   <Form.Control
                     name="vendor_email"
                     value={formState?.vendor_email}
-                    placeholder="Enter email"
+                    placeholder="Enter Email"
                     onChange={handleMainChange}
                   />
                 </Form.Group>
@@ -342,7 +342,7 @@ const Configure_bg_packages = () => {
                   <Form.Control
                     name="vendor_address"
                     value={formState?.vendor_address}
-                    placeholder="Enter address"
+                    placeholder="Enter Address"
                     onChange={handleMainChange}
                   />
                 </Form.Group>
@@ -353,7 +353,7 @@ const Configure_bg_packages = () => {
                   <Form.Control
                     name="mobile_no"
                     value={formState?.mobile_no}
-                    placeholder="Enter mobile number"
+                    placeholder="Enter Mobile Number"
                     onChange={handleMainChange}
                   />
                 </Form.Group>
@@ -387,7 +387,7 @@ const Configure_bg_packages = () => {
                     <td>
                       <Form.Control
                         value={row.package_name}
-                        placeholder="Enter package name"
+                        placeholder="Enter Package Name"
                         onChange={(e) =>
                           handlePackageRowChange(
                             index,
@@ -400,7 +400,7 @@ const Configure_bg_packages = () => {
                     <td>
                       <Form.Control
                         value={row.package_description}
-                        placeholder="Enter description"
+                        placeholder="Enter Description"
                         onChange={(e) =>
                           handlePackageRowChange(
                             index,
@@ -460,7 +460,7 @@ const Configure_bg_packages = () => {
                     <td>
                       <Form.Control
                         value={row.package_rate}
-                        placeholder="Enter package rate"
+                        placeholder="Enter Package Rate"
                         onChange={(e) =>
                           handlePackageRowChange(
                             index,
@@ -518,7 +518,7 @@ const Configure_bg_packages = () => {
                     <td>
                       <Form.Control
                         value={row.add_on_check_title}
-                        placeholder="Enter title"
+                        placeholder="Enter Title"
                         onChange={(e) =>
                           handleRowChange(
                             index,
@@ -531,7 +531,7 @@ const Configure_bg_packages = () => {
                     <td>
                       <Form.Control
                         value={row.add_on_check_desc}
-                        placeholder="Enter description"
+                        placeholder="Enter Description"
                         onChange={(e) =>
                           handleRowChange(
                             index,
@@ -544,7 +544,7 @@ const Configure_bg_packages = () => {
                     <td>
                       <Form.Control
                         value={row.add_on_check_rate}
-                        placeholder="Enter rate"
+                        placeholder="Enter Rate"
                         onChange={(e) =>
                           handleRowChange(
                             index,
@@ -733,7 +733,7 @@ const Configure_bg_packages = () => {
                   <Form.Label>Vendor Name</Form.Label>
                   <Form.Control
                     name="vendor_name"
-                    placeholder="Enter vendor name"
+                    placeholder="Enter Vendor Name"
                     value={formState?.vendor_name}
                     onChange={handleMainChange}
                   />
@@ -745,7 +745,7 @@ const Configure_bg_packages = () => {
                   <Form.Control
                     name="vendor_email"
                     value={formState?.vendor_email}
-                    placeholder="Enter email"
+                    placeholder="Enter Email"
                     onChange={handleMainChange}
                   />
                 </Form.Group>
@@ -756,7 +756,7 @@ const Configure_bg_packages = () => {
                   <Form.Control
                     name="vendor_address"
                     value={formState?.vendor_address}
-                    placeholder="Enter address"
+                    placeholder="Enter Address"
                     onChange={handleMainChange}
                   />
                 </Form.Group>
@@ -767,7 +767,7 @@ const Configure_bg_packages = () => {
                   <Form.Control
                     name="mobile_no"
                     value={formState?.mobile_no}
-                    placeholder="Enter mobile number"
+                    placeholder="Enter Mobile Number"
                     onChange={handleMainChange}
                   />
                 </Form.Group>
@@ -801,7 +801,7 @@ const Configure_bg_packages = () => {
                     <td>
                       <Form.Control
                         value={row.package_name}
-                        placeholder="Enter package name"
+                        placeholder="Enter Package Name"
                         onChange={(e) =>
                           handlePackageRowChange(
                             index,
@@ -814,7 +814,7 @@ const Configure_bg_packages = () => {
                     <td>
                       <Form.Control
                         value={row.package_description}
-                        placeholder="Enter description"
+                        placeholder="Enter Description"
                         onChange={(e) =>
                           handlePackageRowChange(
                             index,
@@ -874,7 +874,7 @@ const Configure_bg_packages = () => {
                     <td>
                       <Form.Control
                         value={row.package_rate}
-                        placeholder="Enter package rate"
+                        placeholder="Enter Package Rate"
                         onChange={(e) =>
                           handlePackageRowChange(
                             index,
@@ -923,7 +923,7 @@ const Configure_bg_packages = () => {
                     <td>
                       <Form.Control
                         value={row.add_on_check_title}
-                        placeholder="Enter title"
+                        placeholder="Enter Title"
                         onChange={(e) =>
                           handleRowChange(
                             index,
@@ -936,7 +936,7 @@ const Configure_bg_packages = () => {
                     <td>
                       <Form.Control
                         value={row.add_on_check_desc}
-                        placeholder="Enter description"
+                        placeholder="Enter Description"
                         onChange={(e) =>
                           handleRowChange(
                             index,
@@ -949,7 +949,7 @@ const Configure_bg_packages = () => {
                     <td>
                       <Form.Control
                         value={row.add_on_check_rate}
-                        placeholder="Enter rate"
+                        placeholder="Enter Rate"
                         onChange={(e) =>
                           handleRowChange(
                             index,

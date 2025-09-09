@@ -25,6 +25,7 @@ import Select from "react-select";
 
 const DEFAULT_FIELDS = [
   "id",
+  "Planning_id",
   "Requisition_id",
   "Client_name",
   // "Planning_id",
@@ -36,6 +37,19 @@ const DEFAULT_FIELDS = [
   "location",
   "status",
 ];
+
+const FIELD_LABELS = {
+  id: "S.No",
+  Planning_id: "Planning ID",
+  Requisition_id: "Requisition ID",
+  Client_name: "Client Name",
+  job_position: "Job Position",
+  Recruiter: "Recruiter",
+  No_of_positions: "Openings",
+  location: "Location",
+  status: "Status",
+};
+
 
 const ALL_FIELDS = [
   "job_position",
@@ -174,64 +188,65 @@ export const Home = () => {
   }, [selectedFields]);
 
   useEffect(() => {
-    const dynamicColumns = selectedFields.map((field) => {
-      if (field === "id") {
-        return {
-          name: "s_no",
-          selector: (row) => row["s_no"] || "-",
-          sortable: true,
-        };
-      } else {
-        return {
-          name: field,
-          selector: (row) => row[field] || "-",
-          sortable: true,
-        };
-      }
-    });
-    dynamicColumns.push({
-      name: "Action",
-      cell: (row) => (
-        <td className="d-flex p-2 gap-2 justify-content-center">
-          <Button
-            variant="outline-secondary"
-            className="btn-bran-edit-color"
-            size="sm"
-            onClick={() => handleEdit(row)}
-          >
-            <BsPencilSquare className="me-1" />
-          </Button>
-          <Button
-            variant="outline-danger"
-            size="sm"
-            onClick={() => confirmDelete(row)}
-          >
-            <BsTrash className="me-1" />
-          </Button>
-        </td>
-      ),
-      ignoreRowClick: true,
-      allowOverflow: true,
-      button: true,
-    });
+  const dynamicColumns = selectedFields.map((field) => {
+    if (field === "id") {
+      return {
+        name: FIELD_LABELS[field] || "S.No",
+        selector: (row) => row["s_no"] || "-",
+        sortable: true,
+      };
+    } else {
+      return {
+        name: FIELD_LABELS[field] || field,
+        selector: (row) => row[field] || "-",
+        sortable: true,
+      };
+    }
+  });
 
-    dynamicColumns.unshift({
-  name: "Select",
-  cell: (row) => (
-    <input
-      type="radio"
-      name="selectedRow" // all radios in the table share the same name
-      onChange={() => handleRadioSelect(row)}
-    />
-  ),
-  ignoreRowClick: true,
-  allowOverflow: true,
-  button: true,
-});
+  dynamicColumns.unshift({
+    name: "Select",
+    cell: (row) => (
+      <input
+        type="radio"
+        name="selectedRow"
+        onChange={() => handleRadioSelect(row)}
+      />
+    ),
+    ignoreRowClick: true,
+    allowOverflow: true,
+    button: true,
+  });
 
+  dynamicColumns.push({
+    name: "Action",
+    cell: (row) => (
+      <td className="d-flex p-2 gap-2 justify-content-center">
+        <Button
+          variant="outline-secondary"
+          className="btn-bran-edit-color"
+          size="sm"
+          onClick={() => handleEdit(row)}
+        >
+          <BsPencilSquare className="me-1" />
+        </Button>
+        <Button
+          variant="outline-danger"
+          size="sm"
+          onClick={() => confirmDelete(row)}
+        >
+          <BsTrash className="me-1" />
+        </Button>
+      </td>
+    ),
+    ignoreRowClick: true,
+    allowOverflow: true,
+    button: true,
+  });
 
-    setColumns(dynamicColumns);
-  }, [selectedFields]);
+  setColumns(dynamicColumns);
+}, [selectedFields]);
+
 
 
   const handleRadioSelect = (row) => {

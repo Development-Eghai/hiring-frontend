@@ -479,3 +479,9 @@
 .ql-editor s {
   text-decoration: line-through !important;
 }
+
+::placeholder {
+
+  text-transform: capitalize;
+
+}

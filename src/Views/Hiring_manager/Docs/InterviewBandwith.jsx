@@ -361,14 +361,14 @@ const InterviewBandwidth = () => {
           <Row className="mb-4 d-flex gap-3">
             <Col md={3} className="mb-3">
               <Form.Group>
-                <Form.Label>Planning Id</Form.Label>
+                <Form.Label>Planning ID</Form.Label>
                 <Form.Select
                   value={planIds}
                   onChange={(e) => setPlanIds(e.target.value)}
                   name="planning_id"
                   disabled={!!editId}
                 >
-                  <option value="">Select Planning Id</option>
+                  <option value="">Select Planning ID</option>
                   {planIdsList.map((id, idx) => (
                     <option key={idx} value={id}>
                       {id}

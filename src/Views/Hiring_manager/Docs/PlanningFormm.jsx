@@ -597,7 +597,7 @@ useEffect(() => {
               {...register("planning_template")}
               className={`form-select ${errors.planning_template ? "is-invalid" : ""}`}
             >
-              <option value="">Select planning_template</option>
+              <option value="">Select Planning Template</option>
               {dropdownOptions["planning_templates"]?.map((val, ind) => (
                 <option value={val.value} key={ind}>
                   {val.label}
@@ -653,7 +653,7 @@ useEffect(() => {
                 className={`form-control ${
                   errors.no_of_openings ? "is-invalid" : ""
                 }`}
-                placeholder="Enter No of openings"
+                placeholder="Enter No of Openings"
                 onInput={(e) => {
                   let value = e.target.value;
                   if (value < 1) e.target.value = 1;
@@ -681,7 +681,7 @@ useEffect(() => {
                     isMulti
                     options={dropdownOptions["Tech Stack"]}
                     classNamePrefix="react-select"
-                    placeholder="Select tech stack"
+                    placeholder="Select Tech Stack"
                   />
                 )}
               />
@@ -728,7 +728,7 @@ useEffect(() => {
                     isMulti
                     options={dropdownOptions["Experience"]}
                     classNamePrefix="react-select"
-                    placeholder="Select Experience range "
+                    placeholder="Select Experience Range "
                     onChange={(val) => field.onChange(val)}
                     className={errors.experience_range ? "is-invalid" : ""}
                   />
@@ -757,7 +757,7 @@ useEffect(() => {
                     isMulti
                     options={dropdownOptions["Designation"]}
                     classNamePrefix="react-select"
-                    placeholder="Select designation"
+                    placeholder="Select Designation"
                   />
                 )}
               />
@@ -789,7 +789,7 @@ useEffect(() => {
                     isMulti
                     options={dropdownOptions["Target Companies"]}
                     classNamePrefix="react-select"
-                    placeholder="Select target companies"
+                    placeholder="Select Target Companies"
                     onChange={(val) => field.onChange(val)}
                     className={errors.target_companies ? "is-invalid" : ""}
                   />
@@ -829,7 +829,7 @@ useEffect(() => {
                       }
                     }}
                     classNamePrefix="react-select"
-                    placeholder="Enter or create range (e.g., 1-2, 5)"
+                    placeholder="Enter or Create Range (e.g., 1-2, 5)"
                   />
                 )}
               />
@@ -849,7 +849,7 @@ useEffect(() => {
                   errors.currency_type ? "is-invalid" : ""
                 }`}
               >
-                <option value="">Select currency_type</option>
+                <option value="">Select Currency Type</option>
                 <option value={"INR"}>INR</option>
                 <option value={"USA"}>USA</option>
               </select>
@@ -873,7 +873,7 @@ useEffect(() => {
                     isMulti
                     options={dropdownOptions["Location"]}
                     classNamePrefix="react-select"
-                    placeholder="Select location"
+                    placeholder="Select Location"
                   />
                 )}
               />
@@ -899,7 +899,7 @@ useEffect(() => {
                     isMulti
                     options={dropdownOptions["Job Type"]}
                     classNamePrefix="react-select"
-                    placeholder="Select job type"
+                    placeholder="Select Job Type"
                   />
                 )}
               />
@@ -925,7 +925,7 @@ useEffect(() => {
                     isMulti
                     options={dropdownOptions["Role Type"]}
                     classNamePrefix="react-select"
-                    placeholder="Select role type"
+                    placeholder="Select Role Type"
                   />
                 )}
               />
@@ -972,7 +972,7 @@ useEffect(() => {
                     className={`form-control ${
                       errors.relocation_amount ? "is-invalid" : ""
                     }`}
-                    placeholder="Enter relocation amount"
+                    placeholder="Enter Relocation Amount"
                   />
                   {errors.relocation_amount && (
                     <div className="invalid-feedback">
@@ -989,7 +989,7 @@ useEffect(() => {
                       errors.relocation_currency_type ? "is-invalid" : ""
                     }`}
                   >
-                    <option value="">Select currency_type</option>
+                    <option value="">Select Currency Type</option>
                     <option value={"INR"}>INR</option>
                     <option value={"USA"}>USA</option>
                   </select>
@@ -1013,7 +1013,7 @@ useEffect(() => {
                   errors.has_domain ? "is-invalid" : ""
                 }`}
               >
-                <option value="">Select domain </option>
+                <option value="">Select Domain </option>
                 <option value={"Yes"}>Yes</option>
                 <option value={"No"}>No</option>
                 <option value={"Decide Later"}>Decide Later</option>
@@ -1040,7 +1040,7 @@ useEffect(() => {
                               ? "is-invalid"
                               : ""
                           }`}
-                          placeholder="Enter domain name"
+                          placeholder="Enter Domain Name"
                           onChange={(e) =>
                             handleDomainChange(
                               index,
@@ -1068,7 +1068,7 @@ useEffect(() => {
                               ? "is-invalid"
                               : ""
                           }`}
-                          placeholder="Enter sub domain name"
+                          placeholder="Enter Sub Domain Name"
                           onChange={(e) =>
                             handleDomainChange(
                               index,
@@ -1128,7 +1128,7 @@ useEffect(() => {
                     isMulti
                     options={dropdownOptions["Shift Timings"]}
                     classNamePrefix="react-select"
-                    placeholder="Select shift timing"
+                    placeholder="Select Shift Timing"
                   />
                 )}
               />
@@ -1153,7 +1153,7 @@ useEffect(() => {
                     isMulti
                     options={dropdownOptions["Working Model"]}
                     classNamePrefix="react-select"
-                    placeholder="Select working modal"
+                    placeholder="Select Working Model"
                   />
                 )}
               />
@@ -1192,7 +1192,7 @@ useEffect(() => {
                     isMulti
                     options={dropdownOptions["Education Qualification"]}
                     classNamePrefix="react-select"
-                    placeholder="Select education qualification"
+                    placeholder="Select Education Qualification"
                   />
                 )}
               />
@@ -1221,7 +1221,7 @@ useEffect(() => {
                 className={`form-control ${
                   errors.travel_opportunities ? "is-invalid" : ""
                 }`}
-                placeholder="Enter travel opportunities"
+                placeholder="Enter Travel Opportunities"
                 onInput={(e) => {
                   let value = e.target.value;
                   if (value < 0) e.target.value = 0;
@@ -1333,7 +1333,7 @@ useEffect(() => {
                   errors.background_verfication ? "is-invalid" : ""
                 }`}
               >
-                <option value="">Select background verfication</option>
+                <option value="">Select Background Verfication</option>
                 <option value={"Yes"}>{"Yes"}</option>
                 <option value={"No"}>{"No"}</option>
                 <option value={"Decide Later"}>{"Decide Later"}</option>
@@ -1348,7 +1348,7 @@ useEffect(() => {
             {hasBgVerfication === "Yes" && (
               <div className="col-md-3">
                 <label className="form-label">
-                  BG Verification Type <span className="text-danger">*</span>
+                  Background Verification Type <span className="text-danger">*</span>
                 </label>
 
                 <Controller
@@ -1366,7 +1366,7 @@ useEffect(() => {
                       isMulti
                       options={bgdropDown}
                       classNamePrefix="react-select"
-                      placeholder="SelectBG Verification Type"
+                      placeholder="Select Background Verification Type"
                       onChange={(val) => field.onChange(val)}
                       className={
                         errors.bg_verification_type ? "is-invalid" : ""
@@ -1522,7 +1522,7 @@ useEffect(() => {
                 }`}
                 // onChange={(e) => setHasCitizenRequirement(e.target.value)}
               >
-                <option value="">Select requirement</option>
+                <option value="">Select Requirement</option>
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
                 <option value="Decide Later">Decide Later</option>
@@ -1548,7 +1548,7 @@ useEffect(() => {
                       <input
                         {...register(`citizen_countries.${index}`)}
                         className="form-control"
-                        placeholder="Enter Citizen Country name"
+                        placeholder="Enter Citizen Country Name"
                         defaultValue={country}
                       />
                     </div>
@@ -1618,7 +1618,7 @@ useEffect(() => {
                   errors.career_gap ? "is-invalid" : ""
                 }`}
               >
-                <option value="">Select requirement</option>
+                <option value="">Select Requirement</option>
                 <option value={"Yes"}>Yes</option>
                 <option value={"No"}>No</option>
                 <option value={"Decide Later"}>Decide Later</option>
@@ -1641,7 +1641,7 @@ useEffect(() => {
                   errors.social_media_link ? "is-invalid" : ""
                 }`}
               >
-                <option value="">Select requirement</option>
+                <option value="">Select Requirement</option>
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
                 <option value="Decide Later">Decide Later</option>
@@ -1696,7 +1696,7 @@ useEffect(() => {
               <div className="col-md-3 mb-3">
                 <button
                   type="button"
-                  className="btn btn-secondary"
+                  className="btn btn-primary btn-sm"
                   onClick={() => append({ media_type: "", media_link: "" })}
                 >
                   + Add Social Media

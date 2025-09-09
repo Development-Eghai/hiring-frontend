@@ -452,7 +452,7 @@ const SetApproveScreen = () => {
                       <Form.Label>Client Name</Form.Label>
                       <Form.Control
                         name="client_name"
-                        placeholder="Enter client name"
+                        placeholder="Enter Client Name"
                         value={formState.client_name}
                         onChange={handleMainChange}
                         disabled
@@ -464,7 +464,7 @@ const SetApproveScreen = () => {
                       <Form.Label>Client ID</Form.Label>
                       <Form.Control
                         name="client_id"
-                        placeholder="Enter client ID"
+                        placeholder="Enter Client ID"
                         value={formState.client_id}
                         onChange={handleMainChange}
                         disabled
@@ -506,7 +506,7 @@ const SetApproveScreen = () => {
                 <td>
                   <Form.Control
                     name="job_title"
-                    placeholder="Enter job title"
+                    placeholder="Enter Job Title"
                     value={approver.job_title}
                     onChange={(e) => handleApproverChange(index, e)}
                   />
