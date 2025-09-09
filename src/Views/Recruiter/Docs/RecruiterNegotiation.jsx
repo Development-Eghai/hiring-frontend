@@ -28,13 +28,13 @@ const RecruiterNegotiation = () => {
   const [editModal, setEditModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
-
+  const [selectedDeclineCandidateID,setSelectedDeclineCandidateID] = useState(null);
+  console.log(selectedDeclineCandidateID,"dadasdas")
   const [showModal, setShowModal] = useState(false);
   const [selectedRadioRow, setSelectedRadioRow] = useState(null);
   const [selectedRowDetails, setSelectedRowDetails] = useState([]);
   const [showViewModal, setShowViewModal] = useState(false);
   const navigate = useNavigate();
-  console.log(selectedRadioRow,"adsadqweQW")
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -53,6 +53,7 @@ const RecruiterNegotiation = () => {
   }, [showModal]);
 
   const handleEdit = (row) => {
+    setSelectedDeclineCandidateID({candidate_id:row?.["Candidate ID"]})
     setSelectedRow({
       ...row,
       benefits: row.benefit_details || [],
@@ -85,9 +86,15 @@ const RecruiterNegotiation = () => {
         benefits: selectedRow.benefits || [],
       };
 
-      await axiosInstance.post(API_URL, payload);
-      setEditModal(false);
-      fetchData();
+      const response = await axiosInstance.post(API_URL, payload);
+      const { success } = response?.data;
+      if (success) {
+        setEditModal(false);
+        fetchData();
+        if (selectedRow.negotiation_status === "Failed") {
+          setshowfeedbackmodal(true);
+        }
+      }
     } catch (error) {
       console.error("Error updating data", error);
     }
@@ -100,20 +107,20 @@ const RecruiterNegotiation = () => {
   };
 
   useEffect(() => {
-  if (selectedRadioRow) {
+  if (selectedDeclineCandidateID) {
     setFormData((prev) => ({
       ...prev,
-      candidate: selectedRadioRow?.["Candidate ID"] || ""
+      candidate: selectedDeclineCandidateID?.candidate_id || ""
     }));
   }
-}, [selectedRadioRow]);
+}, [selectedDeclineCandidateID]);
 
 
 
   // feedback modal
 
     const [formData, setFormData] = useState({
-    candidate: selectedRadioRow?.["Candidate ID"] || "",
+    candidate: selectedDeclineCandidateID?.candidate_id || "",
     skills: "",
     current_employer: "",
     current_location: "",
@@ -478,14 +485,6 @@ const RecruiterNegotiation = () => {
             >
               Initiate BGV
             </Button> */}
-            {selectedRadioRow && (
-              <Button
-                variant="secondary"
-                onClick={() => setshowfeedbackmodal(true)}
-              >
-                Candidate feedback
-              </Button>
-            )}
             <Button variant="success" onClick={() => setShowModal(true)}>
               Schedule Meeting
             </Button>
@@ -493,6 +492,7 @@ const RecruiterNegotiation = () => {
             <ScheduleMeetModal
               show={showModal}
               handleClose={() => setShowModal(false)}
+              handleShowFeedback = {() => setshowfeedbackmodal(true)}
             />
           </div>
         </div>
@@ -804,7 +804,9 @@ const RecruiterNegotiation = () => {
 
       <Modal
         show={showfeedbackmodal}
-        onHide={() => setshowfeedbackmodal(false)}
+        onHide={() => {setshowfeedbackmodal(false);
+          setSelectedDeclineCandidateID(null)
+        }}
         size="lg"
         backdrop="static"
       >
@@ -919,7 +921,9 @@ const RecruiterNegotiation = () => {
         <Modal.Footer>
           <Button
             variant="secondary"
-            onClick={() => setshowfeedbackmodal(false)}
+            onClick={() => {setshowfeedbackmodal(false);
+          setSelectedDeclineCandidateID(null)
+        }}
           >
             Cancel
           </Button>

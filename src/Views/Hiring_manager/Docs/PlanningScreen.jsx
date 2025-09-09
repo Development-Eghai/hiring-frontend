@@ -13,13 +13,52 @@ import {
 import { HandleGetPlanningScreen } from "../Actions/HiringManagerAction";
 import axiosInstance from "Services/axiosInstance";
 
-const tableStyles = {
+ const tableStyles = {
+  header: {
+    style: {
+      fontSize: '18px',
+      fontWeight: '600',
+      padding: '16px',
+    },
+  },
+  headRow: {
+    style: {
+      backgroundColor: "linear-gradient(135deg, #0F172A 0%, #374151 100%)", // dark slate header
+      borderBottomWidth: '2px',
+      borderBottomColor: '#CBD5E1',
+      borderBottomStyle: 'solid',
+    },
+  },
   headCells: {
     style: {
-      backgroundColor: "#DEE5FF",
-      color: "#000",
-      fontWeight: "bold",
-      fontSize: "14px",
+      fontSize: '15px',
+      fontWeight: '700',
+      color: '#F9FAFB', // light text
+      padding: '14px 12px',
+      letterSpacing: '0.3px',
+      whiteSpace: 'normal',   // 👈 prevents cutting off
+      wordBreak: 'break-word' // 👈 wraps long text
+    },
+  },
+  rows: {
+    style: {
+      minHeight: '52px',
+      fontSize: '14px',
+      fontWeight: '500',
+      '&:nth-of-type(odd)': {
+        backgroundColor: '#F9FAFB', // zebra striping
+      },
+      '&:hover': {
+        backgroundColor: '#E0F2FE  ', // light hover
+        cursor: 'pointer',
+      },
+    },
+  },
+  cells: {
+    style: {
+      padding: '12px',
+      whiteSpace: 'normal',
+      wordBreak: 'break-word',
     },
   },
 };
@@ -186,7 +225,7 @@ const columns = [
     cell: (row) => (
       <div className="d-flex gap-2">
         <Button
-          variant="outline-primary"
+          variant="outline-secondary"
           size="sm"
           onClick={() =>
             navigate(

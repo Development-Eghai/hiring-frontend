@@ -13,6 +13,7 @@ import {
 import { BsPencilSquare, BsTrash } from "react-icons/bs";
 import { toast, ToastContainer } from "react-toastify";
 import Select from "react-select";
+import DataTable from "react-data-table-component";
 
 const Configure_bg_packages = () => {
   const [showPackageModal, setShowPackageModal] = useState(false);
@@ -209,6 +210,120 @@ const Configure_bg_packages = () => {
       console.log(error, "Cdscds");
     }
   };
+  const columns = [
+    {
+      name: "S.no",
+      selector: (row, index) => index + 1,
+      sortable: true,
+      width: "80px",
+    },
+    {
+      name: "Vendor Name",
+      selector: (row) => row.vendor_name,
+      sortable: true,
+    },
+    {
+      name: "Package Name",
+      selector: (row) => row.package_name,
+      sortable: true,
+    },
+    {
+      name: "Package Rate",
+      selector: (row) => row.package_rate,
+      sortable: true,
+    },
+    {
+      name: "Details",
+      cell: (row) =>
+        row.details ? (
+          <Button
+            size="sm"
+            variant="outline-primary"
+            onClick={() => handleViewDetails(row)}
+          >
+            View
+          </Button>
+        ) : null,
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+    },
+    {
+      name: "Action",
+      cell: (row) => (
+        <div className="d-flex gap-2">
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            onClick={() => handleEdit(row)}
+          >
+            <BsPencilSquare className="me-1" />
+          </Button>
+          <Button
+            variant="outline-danger"
+            size="sm"
+            onClick={() => handleDelete(row.vendor_id)}
+          >
+            <BsTrash className="me-1" />
+          </Button>
+        </div>
+      ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+    },
+  ];
+
+     const tableStyles = {
+  header: {
+    style: {
+      fontSize: '18px',
+      fontWeight: '600',
+      padding: '16px',
+    },
+  },
+  headRow: {
+    style: {
+      backgroundColor: "linear-gradient(135deg, #0F172A 0%, #374151 100%)", // dark slate header
+      borderBottomWidth: '2px',
+      borderBottomColor: '#CBD5E1',
+      borderBottomStyle: 'solid',
+    },
+  },
+  headCells: {
+    style: {
+      fontSize: '15px',
+      fontWeight: '700',
+      color: '#F9FAFB', // light text
+      padding: '14px 12px',
+      letterSpacing: '0.3px',
+      whiteSpace: 'normal',   // 👈 prevents cutting off
+      wordBreak: 'break-word' // 👈 wraps long text
+    },
+  },
+  rows: {
+    style: {
+      minHeight: '52px',
+      fontSize: '14px',
+      fontWeight: '500',
+      '&:nth-of-type(odd)': {
+        backgroundColor: '#F9FAFB', // zebra striping
+      },
+      '&:hover': {
+        backgroundColor: '#E0F2FE  ', // light hover
+        cursor: 'pointer',
+      },
+    },
+  },
+  cells: {
+    style: {
+      padding: '12px',
+      whiteSpace: 'normal',
+      wordBreak: 'break-word',
+    },
+  },
+};
+
 
   return (
     <div>
@@ -235,7 +350,7 @@ const Configure_bg_packages = () => {
 
             {/* <CandidateApprovalStatus /> */}
           </div>
-          <div className="table-responsive" style={{ maxHeight: "60vh", overflowY: "auto" }}>
+          {/* <div className="table-responsive" style={{ maxHeight: "60vh", overflowY: "auto" }}>
             <Table
               striped
               bordered
@@ -291,7 +406,16 @@ const Configure_bg_packages = () => {
                 ))}
               </tbody>
             </Table>
-          </div>
+          </div> */}
+          <DataTable
+          columns={columns}
+          data={details}
+          striped
+          dense
+          persistTableHead
+          // progressPending={loading}
+          customStyles={tableStyles}
+          />
         </Card>
         {/* <hr /> */}
 

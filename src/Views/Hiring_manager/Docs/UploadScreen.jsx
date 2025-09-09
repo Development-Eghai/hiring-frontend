@@ -6,6 +6,8 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
+import DataTable from "react-data-table-component";
+import { BsPencilSquare, BsTrash } from "react-icons/bs";
 
 const UploadScreen = () => {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -330,6 +332,158 @@ const handleModeChange = (mode) => {
   }
 };
 
+ const columns = [
+   {
+     name: "S.No",
+     selector: (row, index) => index + 1,
+     sortable: true,
+     width: "70px",
+     center: true,
+   },
+   {
+     name: "Req ID",
+     selector: (row) => row.req_id,
+     sortable: true,
+     center: true,
+   },
+   {
+     name: "Client ID",
+     selector: (row) => row.client_id,
+     sortable: true,
+     center: true,
+   },
+   {
+     name: "First Name",
+     selector: (row) => row.first_name,
+     sortable: true,
+   },
+   {
+     name: "Last Name",
+     selector: (row) => row.last_name,
+     sortable: true,
+   },
+   {
+     name: "Job Title",
+     selector: (row) => row.job_title,
+     sortable: true,
+   },
+   {
+     name: "Interview Mode",
+     selector: (row) => row.interview_mode,
+     sortable: true,
+   },
+   {
+     name: "Interviewer Stages",
+     selector: (row) => row.interviewer_stage,
+     sortable: true,
+   },
+   {
+     name: "Email ID",
+     selector: (row) => row.email,
+     cell: (row) => <a href={`mailto:${row.email}`}>{row.email}</a>,
+     sortable: true,
+   },
+{
+  name: "Slots",
+  cell: row => {
+    const visibleSlots = row.slots?.slice(0, 2) || []; // show first 2
+    const hiddenCount = row.slots?.length > 2 ? row.slots.length - 2 : 0;
+
+    return (
+      <div>
+        {visibleSlots.map((slot, i) => (
+          <span key={i} className="badge bg-primary me-1 mb-1">
+            {slot.date} ({slot.start_time}-{slot.end_time})
+          </span>
+        ))}
+        {hiddenCount > 0 && (
+          <span className="badge bg-secondary">+{hiddenCount} more</span>
+        )}
+      </div>
+    );
+  },
+  grow: 2,
+},
+
+ {
+  name: "Action",
+  cell: row => (
+    <div className="d-flex justify-content-center align-items-center gap-2">
+      <Button
+        variant="outline-secondary"
+        size="sm"
+        onClick={() => handleEdit(row)}
+      >
+        <BsPencilSquare />
+      </Button>
+
+      <Button
+        variant="outline-danger"
+        size="sm"
+        onClick={() => handleDelete(row.interviewer_id)}
+      >
+        <BsTrash />
+      </Button>
+    </div>
+  ),
+  ignoreRowClick: true,
+  allowOverflow: true,
+  button: true,
+  center: true,
+}
+
+ ];
+
+         const tableStyles = {
+  header: {
+    style: {
+      fontSize: '18px',
+      fontWeight: '600',
+      padding: '16px',
+    },
+  },
+  headRow: {
+    style: {
+      backgroundColor: "linear-gradient(135deg, #0F172A 0%, #374151 100%)", // dark slate header
+      borderBottomWidth: '2px',
+      borderBottomColor: '#CBD5E1',
+      borderBottomStyle: 'solid',
+    },
+  },
+  headCells: {
+    style: {
+      fontSize: '15px',
+      fontWeight: '700',
+      color: '#F9FAFB', // light text
+      padding: '14px 12px',
+      letterSpacing: '0.3px',
+      whiteSpace: 'normal',   // 👈 prevents cutting off
+      wordBreak: 'break-word' // 👈 wraps long text
+    },
+  },
+  rows: {
+    style: {
+      minHeight: '52px',
+      fontSize: '14px',
+      fontWeight: '500',
+      '&:nth-of-type(odd)': {
+        backgroundColor: '#F9FAFB', // zebra striping
+      },
+      '&:hover': {
+        backgroundColor: '#E0F2FE  ', // light hover
+        cursor: 'pointer',
+      },
+    },
+  },
+  cells: {
+    style: {
+      padding: '12px',
+      whiteSpace: 'normal',
+      wordBreak: 'break-word',
+    },
+  },
+};
+
 
   return (
     <Container fluid className="p-4 bg-light rounded">
@@ -357,7 +511,7 @@ const handleModeChange = (mode) => {
           </Button>
         </div>
       </div>
-      <Table
+      {/* <Table
         responsive
         bordered
         hover
@@ -374,7 +528,6 @@ const handleModeChange = (mode) => {
             <th>Interview Mode</th>
             <th>Interviewer Stages</th>
             <th>Email ID</th>
-            {/* <th>Contact Number</th> */}
             <th>Slots</th>
             <th>Action</th>
           </tr>
@@ -393,7 +546,6 @@ const handleModeChange = (mode) => {
               <td>
                 <a href={`mailto:${item.email}`}>{item.email}</a>
               </td>
-              {/* <td>{item.contact}</td> */}
               <td>
                 {item?.slots?.map((row, index) => (
                   <span key={index} className="badge bg-primary me-1 mb-1">
@@ -423,7 +575,21 @@ const handleModeChange = (mode) => {
             </tr>
           )):<tr className="text-center"><td colSpan={12}>No Data Found</td></tr>}
         </tbody>
-      </Table>
+      </Table> */}
+
+      <DataTable
+        title="Interview Calendar"
+        columns={columns}
+        data={calenderList || []}
+        striped
+        fixedHeader
+        dense
+        persistTableHead
+        customStyles={tableStyles}
+        responsive
+        defaultSortField="req_id"
+        noDataComponent="No Data Found"
+      />
 
       {/* create modal */}
       <Modal
@@ -440,7 +606,6 @@ const handleModeChange = (mode) => {
           <form id="calenderForm">
             {/* Existing Fields */}
             <div className="row mb-2 d-flex gap-3">
-
               <div className="col">
                 <label>Planning ID</label>
                 <select
@@ -454,7 +619,7 @@ const handleModeChange = (mode) => {
                   ))}
                 </select>
               </div>
-                            <div className="col">
+              <div className="col">
                 <label>Req ID</label>
                 <select
                   className="form-select"
@@ -500,22 +665,22 @@ const handleModeChange = (mode) => {
                   defaultValue={getinterviewdetails?.job_position}
                 />
               </div>
-             <div className="col">
-    <label>Interview Mode</label>
-    <select
-      className="form-control"
-      name="interview_mode"
-      value={selectedMode}
-      onChange={(e) => handleModeChange(e.target.value)}
-    >
-      <option value="">Select Mode</option>
-      {getinterviewdetails?.interview_design?.map((row, idx) => (
-        <option key={idx} value={row.interview_mode}>
-          {row.interview_mode}
-        </option>
-      ))}
-    </select>
-  </div>
+              <div className="col">
+                <label>Interview Mode</label>
+                <select
+                  className="form-control"
+                  name="interview_mode"
+                  value={selectedMode}
+                  onChange={(e) => handleModeChange(e.target.value)}
+                >
+                  <option value="">Select Mode</option>
+                  {getinterviewdetails?.interview_design?.map((row, idx) => (
+                    <option key={idx} value={row.interview_mode}>
+                      {row.interview_mode}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div className="row mb-2 d-flex gap-3">
@@ -530,22 +695,22 @@ const handleModeChange = (mode) => {
             </div>
 
             <div className="row mb-2 d-flex gap-3">
-             <div className="col">
-    <label>Interview Stage</label>
-    <select
-      className="form-control"
-      name="interviewer_stage"
-      value={selectedStage}
-      onChange={(e) => handleStageChange(e.target.value)}
-    >
-      <option value="">Select Stage</option>
-      {getinterviewdetails?.interview_design?.map((row, idx) => (
-        <option key={idx} value={row.interviewer_stage}>
-          {row.interviewer_stage}
-        </option>
-      ))}
-    </select>
-  </div>
+              <div className="col">
+                <label>Interview Stage</label>
+                <select
+                  className="form-control"
+                  name="interviewer_stage"
+                  value={selectedStage}
+                  onChange={(e) => handleStageChange(e.target.value)}
+                >
+                  <option value="">Select Stage</option>
+                  {getinterviewdetails?.interview_design?.map((row, idx) => (
+                    <option key={idx} value={row.interviewer_stage}>
+                      {row.interviewer_stage}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div className="col">
                 <label>Email</label>
                 <input className="form-control" name="email" />
@@ -649,7 +814,10 @@ const handleModeChange = (mode) => {
       {/* edit modal */}
       <Modal
         show={showEditModal}
-        onHide={() => {setShowEditModal(false); setSelectedEditData({})}}
+        onHide={() => {
+          setShowEditModal(false);
+          setSelectedEditData({});
+        }}
         size="lg"
         backdrop="static"
         keyboard={false}
@@ -660,7 +828,6 @@ const handleModeChange = (mode) => {
         <Modal.Body>
           <form id="calenderForm">
             <div className="row mb-2 d-flex gap-3">
-
               <div className="col">
                 <label>Planning ID</label>
                 <input
@@ -712,58 +879,58 @@ const handleModeChange = (mode) => {
                   defaultValue={selectedEditDate?.job_title}
                 />
               </div>
-<div className="col">
-  <label>Interview Mode</label>
-  <select
-    className="form-control"
-    name="interview_mode"
-    value={editSelectedMode}
-    onChange={(e) => handleEditModeChange(e.target.value)}
-  >
-    <option value="">Select Mode</option>
-    {selectedEditDate?.interview_design?.map((row, idx) => (
-      <option key={idx} value={row.interview_mode}>
-        {row.interview_mode}
-      </option>
-    ))}
-  </select>
-</div>
-
-            <div className="row mb-2 d-flex gap-3">
               <div className="col">
-                <label>First Name</label>
-                <input
+                <label>Interview Mode</label>
+                <select
                   className="form-control"
-                  name="first_name"
-                  defaultValue={selectedEditDate?.first_name}
-                />
+                  name="interview_mode"
+                  value={editSelectedMode}
+                  onChange={(e) => handleEditModeChange(e.target.value)}
+                >
+                  <option value="">Select Mode</option>
+                  {selectedEditDate?.interview_design?.map((row, idx) => (
+                    <option key={idx} value={row.interview_mode}>
+                      {row.interview_mode}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <div className="col">
-                <label>Last Name</label>
-                <input
-                  className="form-control"
-                  name="last_name"
-                  defaultValue={selectedEditDate?.last_name}
-                />
-              </div>
-            </div>
 
-<div className="col">
-  <label>Interview Stage</label>
-  <select
-    className="form-control"
-    name="interviewer_stage"
-    value={editSelectedStage}
-    onChange={(e) => handleEditStageChange(e.target.value)}
-  >
-    <option value="">Select Stage</option>
-    {selectedEditDate?.interview_design?.map((row, idx) => (
-      <option key={idx} value={row.interviewer_stage}>
-        {row.interviewer_stage}
-      </option>
-    ))}
-  </select>
-</div>
+              <div className="row mb-2 d-flex gap-3">
+                <div className="col">
+                  <label>First Name</label>
+                  <input
+                    className="form-control"
+                    name="first_name"
+                    defaultValue={selectedEditDate?.first_name}
+                  />
+                </div>
+                <div className="col">
+                  <label>Last Name</label>
+                  <input
+                    className="form-control"
+                    name="last_name"
+                    defaultValue={selectedEditDate?.last_name}
+                  />
+                </div>
+              </div>
+
+              <div className="col">
+                <label>Interview Stage</label>
+                <select
+                  className="form-control"
+                  name="interviewer_stage"
+                  value={editSelectedStage}
+                  onChange={(e) => handleEditStageChange(e.target.value)}
+                >
+                  <option value="">Select Stage</option>
+                  {selectedEditDate?.interview_design?.map((row, idx) => (
+                    <option key={idx} value={row.interviewer_stage}>
+                      {row.interviewer_stage}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div className="col">
                 <label>Email</label>
                 <input
@@ -850,7 +1017,10 @@ const handleModeChange = (mode) => {
           <button
             type="button"
             className="btn btn-secondary"
-            onClick={() => {setShowEditModal(false); setSelectedEditData({})}}
+            onClick={() => {
+              setShowEditModal(false);
+              setSelectedEditData({});
+            }}
           >
             Close
           </button>
