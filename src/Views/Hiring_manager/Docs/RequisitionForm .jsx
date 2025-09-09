@@ -1924,7 +1924,7 @@ const RequisitionForm = (handleNext) => {
           {/* Submit Button */}
           <div className="col text-end">
             <button className="btn btn-primary mt-3" type="submit">
-              {reqtempid ? "update" : "Submit"}
+              {reqtempid ? "Update" : "Submit"}
             </button>
           </div>
         </div>
