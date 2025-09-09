@@ -58,14 +58,29 @@ useEffect(()=>{
 },[])
 
 
-//   const exportToExcel = () => {
-//     const worksheet = XLSX.utils.json_to_sheet(filteredData);
-//     const workbook = XLSX.utils.book_new();
-//     XLSX.utils.book_append_sheet(workbook, worksheet, "Offer Report");
-//     const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-//     const data = new Blob([excelBuffer], { type: "application/octet-stream" });
-//     saveAs(data, "Offer_Report.xlsx");
-//   };
+  const exportToExcel = async() => {
+    try  {
+      const response = await axios.get(
+        "https://api.pixeladvant.com/report/export-offer/",
+        {
+          responseType: "blob",
+        }
+      );
+
+      const contentDisposition = response.headers["content-disposition"];
+      const fileName = contentDisposition
+        ? contentDisposition.split("filename=")[1].replace(/"/g, "")
+        : "compension report.xlsx";
+
+      const blob = new Blob([response.data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      saveAs(blob, fileName);
+    } catch (err) {
+      console.error("Error downloading Excel file:", err);
+    }
+  };
 
   return (
     
@@ -78,7 +93,7 @@ useEffect(()=>{
             <Button variant="outline-primary" onClick={()=>setshow(true)}>
               Filter
             </Button>
-            <Button variant="success" onClick={"exportToExcel"}>
+            <Button variant="success" onClick={exportToExcel}>
               Export to Excel
             </Button>
           </div>

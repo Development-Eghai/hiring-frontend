@@ -4,6 +4,7 @@ import { Table, Container, Card } from "react-bootstrap";
 import ReportHeader from "../Hiring_manager_utils/Navbar";
 import axios from "axios";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
+import { saveAs } from "file-saver";
 
 const SilvermedelistReport = () => {
   // Example data (replace with API response)
@@ -58,6 +59,30 @@ const fetchData = async ()=>{
     fetchData();
     setshow(false)
   };
+
+    const exportToExcel = async() => {
+    try  {
+      const response = await axios.get(
+        "https://api.pixeladvant.com/api/candidate-feedback/export/",
+        {
+          responseType: "blob",
+        }
+      );
+
+      const contentDisposition = response.headers["content-disposition"];
+      const fileName = contentDisposition
+        ? contentDisposition.split("filename=")[1].replace(/"/g, "")
+        : "feedback report.xlsx";
+
+      const blob = new Blob([response.data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      saveAs(blob, fileName);
+    } catch (err) {
+      console.error("Error downloading Excel file:", err);
+    }
+  };
   return (
     <Container fluid className="">
       <ReportHeader />
@@ -69,7 +94,7 @@ const fetchData = async ()=>{
               <Button variant="outline-secondary" onClick={() => setshow(true)}>
                 Filter
               </Button>
-              <Button size="sm" className="me-2 btn btn-success">
+              <Button size="sm" className="me-2 btn btn-success" onClick={exportToExcel}>
                 Export excel
               </Button>
             </div>

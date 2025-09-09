@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Table, Container, Card, Button, Modal, Form, Row, Col } from "react-bootstrap";
 import ReportHeader from "../Hiring_manager_utils/Navbar";
 import axios from "axios";
+import { saveAs } from "file-saver";
 
 
 const DeclinedReport = () => {
@@ -26,14 +27,29 @@ useEffect(()=>{
 },[])
 
 
-//   const exportToExcel = () => {
-//     const worksheet = XLSX.utils.json_to_sheet(filteredData);
-//     const workbook = XLSX.utils.book_new();
-//     XLSX.utils.book_append_sheet(workbook, worksheet, "Declined Report");
-//     const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-//     const data = new Blob([excelBuffer], { type: "application/octet-stream" });
-//     saveAs(data, "Declined_Report.xlsx");
-//   };
+  const exportToExcel = async() => {
+    try  {
+      const response = await axios.get(
+        "https://api.pixeladvant.com/report/export-declined/",
+        {
+          responseType: "blob",
+        }
+      );
+
+      const contentDisposition = response.headers["content-disposition"];
+      const fileName = contentDisposition
+        ? contentDisposition.split("filename=")[1].replace(/"/g, "")
+        : "declined report.xlsx";
+
+      const blob = new Blob([response.data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      saveAs(blob, fileName);
+    } catch (err) {
+      console.error("Error downloading Excel file:", err);
+    }
+  };
 
   return (
     <Container fluid className="">
@@ -42,7 +58,7 @@ useEffect(()=>{
         <Card.Header className="d-flex justify-content-between align-items-center rounded-top-4 bg-light">
           <h6 className="fw-bold mb-0 p-2 text-dark">Declined Report</h6>
           <div className="d-flex gap-2">
-            <Button variant="success" onClick={"exportToExcel"}>
+            <Button variant="success" onClick={exportToExcel}>
               Export to Excel
             </Button>
           </div>
