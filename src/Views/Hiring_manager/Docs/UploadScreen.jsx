@@ -337,7 +337,7 @@ const handleModeChange = (mode) => {
      name: "S.No",
      selector: (row, index) => index + 1,
      sortable: true,
-     width: "70px",
+     width: "90px",
      center: true,
    },
    {
@@ -489,7 +489,7 @@ const handleModeChange = (mode) => {
     <Container fluid className="p-4 bg-light rounded">
       <div className="row d-flex justify-content-between">
         <div className="col-2">
-          <h4 className="mb-4 text-primary">Interview Calendar</h4>
+          <h4 className="mb-4 fw-bold">Interview Calendar</h4>
         </div>
 
         <div className="col-2">
@@ -578,7 +578,7 @@ const handleModeChange = (mode) => {
       </Table> */}
 
       <DataTable
-        title="Interview Calendar"
+        // title="Interview Calendar"
         columns={columns}
         data={calenderList || []}
         striped

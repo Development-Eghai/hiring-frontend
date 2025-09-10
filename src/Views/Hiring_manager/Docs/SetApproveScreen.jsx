@@ -339,7 +339,7 @@ const SetApproveScreen = () => {
     {
       name: "Action",
       cell: row => (
-        <div className="d-flex gap-2 justify-content-center">
+        <div className="d-flex gap-1 justify-content-center">
           <Button
             size="sm"
             variant="outline-primary"
@@ -481,7 +481,7 @@ const SetApproveScreen = () => {
             </Table>
           </div> */}
           <DataTable
-            title="Approvers List"
+            // title="Approvers List"
             columns={columns}
             data={approvers || []}
             striped

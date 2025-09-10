@@ -630,7 +630,7 @@ const handleFormSubmit = async (e) => {
               }}
             >
               <option value="">Select</option>
-              <option value="telephonic_interview">Telephonic Interview</option>
+              <option value="Telephonic Interview">Telephonic Interview</option>
               <option value="Video Interview">Video Interview</option>
               <option value="Offline Review">Offline Review</option>
               <option value="Face to face">Face to face</option>
