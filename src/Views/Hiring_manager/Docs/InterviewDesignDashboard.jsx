@@ -35,6 +35,12 @@ const InterviewDesignDashboard = () => {
             grow: 2,
           },
           {
+            name: "Req ID",
+            selector: (row) => row.req_id || "-" ,
+            wrap: true,
+            grow: 2,
+          },
+          {
             name: "Position / Role",
             selector: (row) => row.label || "-",
             wrap: true,
@@ -135,6 +141,7 @@ const InterviewDesignDashboard = () => {
 
         const formattedData = rawData.map((item) => ({
           id: item.plan_id,
+          req_id: item.requisition_id,
           interview_design_id: item.interview_design_id,
           label: item.position_role,
           techStack: item.tech_stacks,
