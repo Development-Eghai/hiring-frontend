@@ -9,7 +9,7 @@ import { saveAs } from "file-saver";
 const SilvermedelistReport = () => {
   // Example data (replace with API response)
   const [reportData,setReportData] = useState([]);
-
+  const [dropdowns,setdropdowns] = useState([]);
   const [show,setshow] = useState(false);
 
   const [filters, setFilters] = useState({
@@ -36,6 +36,25 @@ const SilvermedelistReport = () => {
       skills_expertise: ""
     });
   };
+
+  
+    const fetchDropdownData = async() => {
+  try {
+    const response = await axios.get("https://api.pixeladvant.com/report/dropdowns/");
+  
+    const {success,data} = response?.data;
+  
+    if(success){
+      setdropdowns(data);
+    }
+  } catch (error) {
+    
+  }
+    }
+  
+    useEffect(()=>{
+  fetchDropdownData()
+    },[])
 
 
 const fetchData = async ()=>{
@@ -94,7 +113,11 @@ const fetchData = async ()=>{
               <Button variant="outline-secondary" onClick={() => setshow(true)}>
                 Filter
               </Button>
-              <Button size="sm" className="me-2 btn btn-success" onClick={exportToExcel}>
+              <Button
+                size="sm"
+                className="me-2 btn btn-success"
+                onClick={exportToExcel}
+              >
                 Export excel
               </Button>
             </div>
@@ -126,39 +149,47 @@ const fetchData = async ()=>{
               </tr>
             </thead>
             <tbody>
-              {reportData?.length > 0 ? reportData.map((row, index) => (
-                <tr key={index}>
-                  <td>{row.Client_ID}</td>
-                  <td>{row.Client_Name}</td>
-                  <td>{row.Candidate_First_Name}</td>
-                  <td>{row.Candidate_Last_Name}</td>
-                  <td>{row.Position_Considered_For}</td>
-                  <td>{row.Hiring_Manager}</td>
-                  <td>{row.recruiter_name}</td>
-                  <td>{row.interview_date}</td>
-                  <td>{row.assessment_score}</td>
-                  <td>{row.interviewer_feedback}</td>
-                  <td>{row.recruiter_feedback}</td>
-                  <td className="text-danger fw-bold">
-                    {row.reason_not_selected}
+              {reportData?.length > 0 ? (
+                reportData.map((row, index) => (
+                  <tr key={index}>
+                    <td>{row.Client_ID}</td>
+                    <td>{row.Client_Name}</td>
+                    <td>{row.Candidate_First_Name}</td>
+                    <td>{row.Candidate_Last_Name}</td>
+                    <td>{row.Position_Considered_For}</td>
+                    <td>{row.Hiring_Manager}</td>
+                    <td>{row.recruiter_name}</td>
+                    <td>{row.interview_date}</td>
+                    <td>{row.assessment_score}</td>
+                    <td>{row.interviewer_feedback}</td>
+                    <td>{row.recruiter_feedback}</td>
+                    <td className="text-danger fw-bold">
+                      {row.reason_not_selected}
+                    </td>
+                    <td>{row.skills}</td>
+                    <td>{row.current_employer}</td>
+                    <td>{row.current_location}</td>
+                    <td>{row.last_ctc}</td>
+                    <td
+                      className={
+                        row.status === "Selected"
+                          ? "text-success fw-bold"
+                          : "text-danger fw-bold"
+                      }
+                    >
+                      {row.status}
+                    </td>
+                    <td>{row.follow_up_date}</td>
+                    <td>{row.notes}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={12} className="text-center">
+                    No data found
                   </td>
-                  <td>{row.skills}</td>
-                  <td>{row.current_employer}</td>
-                  <td>{row.current_location}</td>
-                  <td>{row.last_ctc}</td>
-                  <td
-                    className={
-                      row.status === "Selected"
-                        ? "text-success fw-bold"
-                        : "text-danger fw-bold"
-                    }
-                  >
-                    {row.status}
-                  </td>
-                  <td>{row.follow_up_date}</td>
-                  <td>{row.notes}</td>
                 </tr>
-              )): (<tr><td colSpan={12} className="text-center">No data found</td></tr>)}
+              )}
             </tbody>
           </Table>
         </Card.Body>
@@ -180,35 +211,54 @@ const fetchData = async ()=>{
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Client Name</Form.Label>
-                  <Form.Control
-                    type="text"
+                  <Form.Select
                     name="client_name"
                     value={filters.client_name}
                     onChange={handleChange}
-                    placeholder="Enter Client Name"
-                  />
+                  >
+                    <option value="">-- Select Client Name --</option>
+                    {dropdowns?.client_name?.map((val, ind) => (
+                      <option key={ind} value={val.value}>
+                        {val.label}
+                      </option>
+                    ))}
+                  </Form.Select>
                 </Form.Group>
 
                 <Form.Group className="mb-3">
                   <Form.Label>Position Considered For</Form.Label>
-                  <Form.Control
+                  <Form.Select
                     type="text"
                     name="position_considered_for"
                     value={filters.position_considered_for}
                     onChange={handleChange}
                     placeholder="Enter Position"
-                  />
+                  >
+                    <option value="">-- Select Position --</option>
+                    {dropdowns?.position_offered?.map((val, ind) => (
+                      <option key={ind} value={val.value}>
+                        {val.label}
+                      </option>
+                    ))}
+                  </Form.Select>
                 </Form.Group>
 
                 <Form.Group className="mb-3">
                   <Form.Label>Recruiter Name</Form.Label>
-                  <Form.Control
+                  <Form.Select
                     type="text"
                     name="recruiter_name"
                     value={filters.recruiter_name}
                     onChange={handleChange}
                     placeholder="Enter Recruiter Name"
-                  />
+                  >
+                    <option value="">-- Select Recruiter --</option>
+                    {dropdowns?.recruiter_name?.map((val, ind) => (
+                      <option key={ind} value={val.value}>
+                        {val.label}
+                      </option>
+                    ))}
+                  </Form.Select>
                 </Form.Group>
               </Col>
 

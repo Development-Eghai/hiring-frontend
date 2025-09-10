@@ -1,63 +1,102 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Modal, Button, Form } from "react-bootstrap";
+import DataTable from "react-data-table-component";
 import { useCommonState } from "Components/CustomHooks";
 
 export const VendorDashboard = () => {
   const [tableData, setTableData] = useState([]);
   const [candidateData, setCandidateData] = useState([]);
-  const {commonState} = useCommonState();
+  const { commonState } = useCommonState();
 
-  console.log(candidateData,"hv")
-  console.log(tableData, "uyi");
-  const RecuiterTableHeadings = [
-    "S.no",
-    "Planning ID",
-    "Req ID",
-    // "Client ID",
-    "Client Name",
-    "Job Title",
-    "Hiring Manager",
-    "Job Posting",
-    "Start Date",
-    "Due Date",
-    "Hiring Status",
-    "Age (Days)",
-    "Action",
+  const [showModal, setShowModal] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [modalSourceinput, setModalSourceinput] = useState("");
+  const [cvFiles, setCvFiles] = useState([]);
+
+  // ================= Recruiter Columns =================
+  const recruiterColumns = [
+    { name: "S.no", selector: (row) => row.sno, sortable: true, width: "70px" },
+    { name: "Planning ID", selector: (row) => row.planningId, sortable: true },
+    { name: "Req ID", selector: (row) => row.reqId, sortable: true },
+    { name: "Client Name", selector: (row) => row.clientName, sortable: true },
+    {
+      name: "Job Title",
+      selector: (row) => row.jobTitle,
+      sortable: true,
+      cell: (row) => <a href="#!">{row.jobTitle}</a>,
+    },
+    { name: "Hiring Manager", selector: (row) => row.hiringManager },
+    { name: "Job Posting", selector: (row) => row.jobPosting },
+    { name: "Start Date", selector: (row) => row.startDate },
+    { name: "Due Date", selector: (row) => row.dueDate },
+    { name: "Hiring Status", selector: (row) => row.hiringStatus },
+    { name: "Age (Days)", selector: (row) => row.ageDays },
+    {
+      name: "Action",
+      cell: (row) => (
+        <button
+          className="btn btn-sm btn-success"
+          onClick={() => handleUploadClick(row)}
+        >
+          Upload CV
+        </button>
+      ),
+    },
   ];
 
-  const CandidateTableHeading = [
-    "Req ID",
-    "Candidate Id",
-    "Candidate First Name",
-    "Candidate Second Name",
-    "Applied Postion",
-    "Time in Stage",
-    "JD From applied Position",
-    "CV/Resume",
-    "Cover Letter",
-    "Candidate current stage",
-    "Candidate Next Stage",
-    "Overall Stage",
-    "final stage",
-    "Source",
-    "action",
+  // ================= Candidate Columns =================
+  const candidateColumns = [
+    { name: "Req ID", selector: (row) => row["Req ID"], sortable: true },
+    { name: "Candidate Id", selector: (row) => row["Candidate Id"] },
+    { name: "First Name", selector: (row) => row["Candidate First Name"] },
+    { name: "Second Name", selector: (row) => row["Candidate Second Name"] },
+    { name: "Applied Postion", selector: (row) => row["Applied Postion"] },
+    { name: "Time in Stage", selector: (row) => row["Time in Stage"] },
+    { name: "JD From applied Position", selector: (row) => row["JD From applied Position"] },
+    {
+      name: "CV/Resume",
+      selector: (row) => row["CV/Resume"],
+      cell: (row) => (
+        <a href={row["CV/Resume"]} target="_blank" rel="noreferrer">
+          CV
+        </a>
+      ),
+    },
+    {
+      name: "Cover Letter",
+      selector: (row) => row["Cover Letter"],
+      cell: (row) =>
+        row["Cover Letter"] ? (
+          <a href={row["Cover Letter"]} target="_blank" rel="noreferrer">
+            Cover
+          </a>
+        ) : (
+          "N/A"
+        ),
+    },
+    { name: "Current Stage", selector: (row) => row["Candidate current stage"] },
+    { name: "Next Stage", selector: (row) => row["Candidate Next Stage"] },
+    { name: "Overall Stage", selector: (row) => row["Overall Stage"] },
+    { name: "Final stage", selector: (row) => row["final stage"] },
+    { name: "Source", selector: (row) => row["Source"] },
+    { name: "Action", selector: (row) => row["action"] },
   ];
 
+  // ================= API Fetch =================
   const fetchCandidateData = async (reqId) => {
     try {
       const response = await axios.post(
         "https://api.pixeladvant.com/api/candidates/interview-details/",
         { req_id: reqId }
       );
-      console.log(response,"uygiu")
 
       if (response.data.success && Array.isArray(response.data.data)) {
         const formatted = response.data.data.map((item) => ({
           "Req ID": item.Req_ID,
           "Candidate Id": item.Candidate_Id,
-          "Candidate First Name":item?.Candidate_First_Name,
-          "Candidate Second Name":item?.Candidate_Last_Name,
+          "Candidate First Name": item?.Candidate_First_Name,
+          "Candidate Second Name": item?.Candidate_Last_Name,
           "Applied Postion": item.Applied_Position,
           "Time in Stage": item.Time_in_Stage,
           "JD From applied Position": item.JD_From_applied_Position,
@@ -86,11 +125,11 @@ export const VendorDashboard = () => {
         const userInfo = JSON.parse(localStorage.getItem("userInfo"));
         const response = await axios.post(
           "https://api.pixeladvant.com/api/jobrequisition/list-requisitions/",
-          { user_role: userInfo?.user_id,
-          username: userInfo?.Name,
-           }    );
-
-        console.log(response?.data?.data, "caa");
+          {
+            user_role: userInfo?.user_id,
+            username: userInfo?.Name,
+          }
+        );
 
         if (response?.data?.success && Array.isArray(response.data.data)) {
           const formatted = response.data.data.map((item, index) => ({
@@ -112,15 +151,10 @@ export const VendorDashboard = () => {
         console.error("Error fetching recruiter table data", err);
       }
     };
-
     fetchData();
   }, []);
 
-  const [showModal, setShowModal] = useState(false);
-  const [selectedRow, setSelectedRow] = useState(null);
-  const [modalSourceinput, setModalSourceinput] = useState("");
-  const [cvFiles, setCvFiles] = useState([]);
-
+  // ================= File Handling =================
   const handleFileChange = (e) => {
     const newFiles = Array.from(e.target.files);
     setCvFiles((prev) => [...prev, ...newFiles]);
@@ -136,26 +170,20 @@ export const VendorDashboard = () => {
       return;
     }
 
-    // Create FormData
     const formData = new FormData();
-    cvFiles.forEach((file, i) => {
+    cvFiles.forEach((file) => {
       formData.append("files", file);
     });
     formData.append("req_id", selectedRow?.reqId);
     formData.append("Source", modalSourceinput);
-    console.log(formData, "dca");
-    cvFiles.forEach((f) => console.log("File:", f.name));
 
     const uploadcvresponse = await axios.post(
       "https://api.pixeladvant.com/api/upload-resumes/",
       formData,
       {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       }
     );
-    console.log(uploadcvresponse, "ascas");
 
     if (uploadcvresponse?.data?.success) {
       handleCloseModal();
@@ -170,190 +198,117 @@ export const VendorDashboard = () => {
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedRow(null);
-    // setCvFile(null);
+    setCvFiles([]);
   };
 
+  // ================= RENDER =================
   return (
     <div className="h-100">
-      <div className="row">
-        <div className="card rounded-3 border-0 shadow-sm p-2 mt-5">
-          <div className="card-body p-0 card overflow-auto">
-            <table
-              className="table mb-0 table-bordered table-striped"
-              style={{ minWidth: "1200px" }}
-            >
-              <thead className="table-light p-2">
-                <tr>
-                  {RecuiterTableHeadings.map((heading, idx) => (
-                    <th key={idx}>{heading}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="p-2">
-                {tableData.length > 0 ? (
-                  tableData.map((data, idx) => (
-                    <tr
-                      key={idx}
-                      onClick={() => fetchCandidateData(data?.reqId)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <th scope="row">{data?.sno}</th>
-                      <td>{data?.planningId}</td>
-                      <td>{data?.reqId}</td>
-                      <td>{data?.clientName}</td>
-                      <td>
-                        <a href="#!">{data?.jobTitle}</a>
-                      </td>
-                      <td>{data?.hiringManager}</td>
-                      <td>{data?.jobPosting}</td>
-                      <td>{data?.startDate}</td>
-                      <td>{data?.dueDate}</td>
-                      <td>{data?.hiringStatus}</td>
-                      <td>{data?.ageDays}</td>
-                      <td>
-                        <button
-                          className="btn btn-sm btn-success"
-                          onClick={() => handleUploadClick(data)}
-                        >
-                          Upload CV
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td
-                      colSpan={RecuiterTableHeadings.length}
-                      className="text-center"
-                    >
-                      No data found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Upload modal */}
-        <Modal
-          show={showModal}
-          onHide={handleCloseModal}
-          centered
-          size="lg"
-          backdrop="static"
-          keyboard={false}
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>Upload CVs</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form>
-              <Form.Group controlId="formFileMultiple">
-                <Form.Label>Select One or More CV Files</Form.Label>
-                <Form.Control
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  multiple
-                  onChange={handleFileChange}
-                />
-              </Form.Group>
-
-              {cvFiles.length > 0 && (
-                <div className="mt-4">
-                  <h6>Selected Files:</h6>
-                  <ul className="list-group">
-                    {cvFiles.map((file, index) => (
-                      <li
-                        key={index}
-                        className="list-group-item d-flex justify-content-between align-items-center"
-                      >
-                        {file.name}
-                        <button
-                          className="btn btn-sm btn-outline-danger"
-                          onClick={() => handleRemoveFile(index)}
-                        >
-                          Remove
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              <Form.Group className="col-5">
-                <Form.Label> Source</Form.Label>
-                <Form.Control
-                  type="text"
-                  onChange={(e) => setModalSourceinput(e.target.value)}
-                />
-              </Form.Group>
-
-              {selectedRow && (
-                <div className="mt-4">
-                  <strong>Requisition Details:</strong>
-                  <br />
-                  <span className="text-muted">Job Title:</span>{" "}
-                  {selectedRow.jobTitle}
-                  <br />
-                  <span className="text-muted">Req ID:</span>{" "}
-                  {selectedRow.reqId}
-                </div>
-              )}
-            </Form>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>
-              Cancel
-            </Button>
-            <Button variant="primary" onClick={handleCVSubmit}>
-              Upload {cvFiles.length > 0 ? `(${cvFiles.length})` : ""}
-            </Button>
-          </Modal.Footer>
-        </Modal>
-
-        <div className="card rounded-3 border-0 shadow-sm p-2 mt-5">
-          <div className="card-body p-0 card overflow-auto">
-            <h5 className="p-3">Candidate List</h5>
-
-            <table
-              className="table mb-0 table-bordered table-striped"
-              style={{ minWidth: "1200px" }}
-            >
-              <thead className="table-light p-2">
-                <tr>
-                  {CandidateTableHeading.map((heading, idx) => (
-                    <th key={idx}>{heading}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="p-2">
-                {candidateData.length > 0 ? (
-                  candidateData.map((data, idx) => (
-                    <tr key={idx}>
-                      {CandidateTableHeading.map((col, i) => (
-                        <td key={i}>{data[col]}</td>
-                      ))}
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td
-                      colSpan={CandidateTableHeading.length}
-                      className="text-center"
-                    >
-                      No data found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+      {/* Recruiter Table */}
+      <div className="card rounded-3 border-0 shadow-sm p-2 mt-5">
+        <div className="card-body">
+          <DataTable
+            title="Recruiter Table"
+            columns={recruiterColumns}
+            data={tableData}
+            highlightOnHover
+            pagination
+            striped
+            onRowClicked={(row) => fetchCandidateData(row.reqId)}
+          />
         </div>
       </div>
 
-      {/* <div className="row">
-        <PaginationWithLimit totalItems={50} options={[10, 25, 50]} />
-      </div> */}
+      {/* Candidate Table */}
+      <div className="card rounded-3 border-0 shadow-sm p-2 mt-5">
+        <div className="card-body">
+          <DataTable
+            title="Candidate List"
+            columns={candidateColumns}
+            data={candidateData}
+            highlightOnHover
+            pagination
+            striped
+          />
+        </div>
+      </div>
+
+      {/* Upload Modal */}
+      <Modal
+        show={showModal}
+        onHide={handleCloseModal}
+        centered
+        size="lg"
+        backdrop="static"
+        keyboard={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Upload CVs</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="formFileMultiple">
+              <Form.Label>Select One or More CV Files</Form.Label>
+              <Form.Control
+                type="file"
+                accept=".pdf,.doc,.docx"
+                multiple
+                onChange={handleFileChange}
+              />
+            </Form.Group>
+
+            {cvFiles.length > 0 && (
+              <div className="mt-4">
+                <h6>Selected Files:</h6>
+                <ul className="list-group">
+                  {cvFiles.map((file, index) => (
+                    <li
+                      key={index}
+                      className="list-group-item d-flex justify-content-between align-items-center"
+                    >
+                      {file.name}
+                      <button
+                        className="btn btn-sm btn-outline-danger"
+                        onClick={() => handleRemoveFile(index)}
+                      >
+                        Remove
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <Form.Group className="col-5 mt-3">
+              <Form.Label> Source</Form.Label>
+              <Form.Control
+                type="text"
+                value={modalSourceinput}
+                onChange={(e) => setModalSourceinput(e.target.value)}
+              />
+            </Form.Group>
+
+            {selectedRow && (
+              <div className="mt-4">
+                <strong>Requisition Details:</strong>
+                <br />
+                <span className="text-muted">Job Title:</span>{" "}
+                {selectedRow.jobTitle}
+                <br />
+                <span className="text-muted">Req ID:</span> {selectedRow.reqId}
+              </div>
+            )}
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleCVSubmit}>
+            Upload {cvFiles.length > 0 ? `(${cvFiles.length})` : ""}
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

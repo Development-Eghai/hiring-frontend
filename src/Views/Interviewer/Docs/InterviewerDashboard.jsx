@@ -90,18 +90,52 @@ const FIELD_LABELS = {
   meet_link: "Meet Link",
 };
 
-const tableStyles = {
+   const tableStyles = {
+  header: {
+    style: {
+      fontSize: '18px',
+      fontWeight: '600',
+      padding: '16px',
+    },
+  },
+  headRow: {
+    style: {
+      backgroundColor: "linear-gradient(135deg, #0F172A 0%, #374151 100%)",
+      borderBottomWidth: '2px',
+      borderBottomColor: '#CBD5E1',
+      borderBottomStyle: 'solid',
+    },
+  },
   headCells: {
     style: {
-      backgroundColor: "#DEE5FF",
-      color: "#000",
-      fontWeight: "bold",
-      fontSize: "14px",
+      fontSize: '15px',
+      fontWeight: '700',
+      color: '#F9FAFB',
+      padding: '14px 12px',
+      letterSpacing: '0.3px',
+      whiteSpace: 'normal', 
+      wordBreak: 'break-word'
     },
   },
   rows: {
     style: {
-      cursor: "pointer",
+      minHeight: '52px',
+      fontSize: '14px',
+      fontWeight: '500',
+      '&:nth-of-type(odd)': {
+        backgroundColor: '#F9FAFB',
+      },
+      '&:hover': {
+        backgroundColor: '#E0F2FE  ',
+        cursor: 'pointer',
+      },
+    },
+  },
+  cells: {
+    style: {
+      padding: '12px',
+      whiteSpace: 'normal',
+      wordBreak: 'break-word',
     },
   },
 };

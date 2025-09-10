@@ -8,6 +8,7 @@ import axios from "axios";
 const CompensationDetailsReport = () => {
   const [reportData,setReportData] = useState([]);
   const [show,setshow] = useState(false);
+  const [dropdowns,setdropdowns] = useState([]);
   const [filters, setFilters] = useState({
     client_name: "",
     location: "",
@@ -52,6 +53,24 @@ const CompensationDetailsReport = () => {
     
   }
 }
+    const fetchDropdownData = async() => {
+  try {
+    const response = await axios.get("https://api.pixeladvant.com/report/dropdowns/");
+  
+    const {success,data} = response?.data;
+  
+    if(success){
+      setdropdowns(data);
+    }
+  } catch (error) {
+    
+  }
+    }
+  
+    useEffect(()=>{
+  fetchDropdownData()
+    },[])
+
 
 useEffect(()=>{
   fetchData()
@@ -83,14 +102,13 @@ useEffect(()=>{
   };
 
   return (
-    
     <Container fluid className="">
-        <ReportHeader/>
+      <ReportHeader />
       <Card className="border-0 rounded-4">
         <Card.Header className=" text-white fw-bold fs-5 rounded-top-4 d-flex justify-content-between">
           <h6 className="fw-bold mb-0 p-2 text-dark">Compensation Report</h6>
           <div className="d-flex gap-2">
-            <Button variant="outline-primary" onClick={()=>setshow(true)}>
+            <Button variant="outline-primary" onClick={() => setshow(true)}>
               Filter
             </Button>
             <Button variant="success" onClick={exportToExcel}>
@@ -114,112 +132,138 @@ useEffect(()=>{
               </tr>
             </thead>
             <tbody>
-              {reportData?.length > 0 ? reportData.map((row, index) => (
-                <tr key={index}>
-                  <td>{row.Client_Name}</td>
-                  <td>{row.Candidate_Name}</td>
-                  <td>{row.Position_Offered}</td>
-                  <td>{row.Department}</td>
-                  <td>{row.Recruiter_Name}</td>
-                  <td>{row.Location}</td>
-                  <td>{row.Offer_Date}</td>
-                  <td className="fw-bold text-success">{row.Offered_Salary.toLocaleString()}</td>
+              {reportData?.length > 0 ? (
+                reportData.map((row, index) => (
+                  <tr key={index}>
+                    <td>{row.Client_Name}</td>
+                    <td>{row.Candidate_Name}</td>
+                    <td>{row.Position_Offered}</td>
+                    <td>{row.Department}</td>
+                    <td>{row.Recruiter_Name}</td>
+                    <td>{row.Location}</td>
+                    <td>{row.Offer_Date}</td>
+                    <td className="fw-bold text-success">
+                      {row.Offered_Salary.toLocaleString()}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={12} className="text-center">
+                    No data found
+                  </td>
                 </tr>
-              )) : (<tr><td colSpan={12} className="text-center">No data found</td></tr>)}
+              )}
             </tbody>
           </Table>
         </Card.Body>
       </Card>
 
-      <Modal show={show} onHide={()=>setshow(false)} size="lg" backdrop="static">
-      <Modal.Header closeButton>
-        <Modal.Title>Filter Jobs</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form>
-          <Row>
-            {/* Left Column */}
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label>Client Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="client_name"
-                  value={filters.client_name}
-                  onChange={handleChange}
-                  placeholder="Enter Client Name"
-                />
-              </Form.Group>
+      <Modal
+        show={show}
+        onHide={() => setshow(false)}
+        size="lg"
+        backdrop="static"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Filter Jobs</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Row>
+              {/* Left Column */}
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Client Name</Form.Label>
+                  <Form.Select
+                    name="client_name"
+                    value={filters.client_name}
+                    onChange={handleChange}
+                  >
+                    <option value="">-- Select Client Name --</option>
+                    {dropdowns?.client_name?.map((val, ind) => (
+                      <option key={ind} value={val.value}>
+                        {val.label}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
 
-              <Form.Group className="mb-3">
-                <Form.Label>Location</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="location"
-                  value={filters.location}
-                  onChange={handleChange}
-                  placeholder="Enter Location"
-                />
-              </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Location</Form.Label>
+                  <Form.Select
+                    type="text"
+                    name="location"
+                    value={filters.location}
+                    onChange={handleChange}
+                    placeholder="Enter Location"
+                  >
+                    <option value="">-- Select location --</option>
+                    {dropdowns?.location?.map((val, ind) => (
+                      <option key={ind} value={val.value}>
+                        {val.label}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
 
-              <Form.Group className="mb-3">
-                <Form.Label>Minimum Salary</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="min_salary"
-                  value={filters.min_salary}
-                  onChange={handleChange}
-                  placeholder="Enter Minimum Salary"
-                />
-              </Form.Group>
-            </Col>
+                <Form.Group className="mb-3">
+                  <Form.Label>Minimum Salary</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="min_salary"
+                    value={filters.min_salary}
+                    onChange={handleChange}
+                    placeholder="Enter Minimum Salary"
+                  />
+                </Form.Group>
+              </Col>
 
-            {/* Right Column */}
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label>Maximum Salary</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="max_salary"
-                  value={filters.max_salary}
-                  onChange={handleChange}
-                  placeholder="Enter Maximum Salary"
-                />
-              </Form.Group>
+              {/* Right Column */}
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Maximum Salary</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="max_salary"
+                    value={filters.max_salary}
+                    onChange={handleChange}
+                    placeholder="Enter Maximum Salary"
+                  />
+                </Form.Group>
 
-              <Form.Group className="mb-3">
-                <Form.Label>Start Date</Form.Label>
-                <Form.Control
-                  type="date"
-                  name="start_date"
-                  value={filters.start_date}
-                  onChange={handleChange}
-                />
-              </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Start Date</Form.Label>
+                  <Form.Control
+                    type="date"
+                    name="start_date"
+                    value={filters.start_date}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
 
-              <Form.Group className="mb-3">
-                <Form.Label>End Date</Form.Label>
-                <Form.Control
-                  type="date"
-                  name="end_date"
-                  value={filters.end_date}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-        </Form>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={resetFilters}>
-          Reset
-        </Button>
-        <Button variant="primary" onClick={onApply}>
-          Apply
-        </Button>
-      </Modal.Footer>
-    </Modal>
-
+                <Form.Group className="mb-3">
+                  <Form.Label>End Date</Form.Label>
+                  <Form.Control
+                    type="date"
+                    name="end_date"
+                    value={filters.end_date}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={resetFilters}>
+            Reset
+          </Button>
+          <Button variant="primary" onClick={onApply}>
+            Apply
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
       {/* 🔹 Filter Modal */}
       {/* <Modal show={showFilter} onHide={() => setShowFilter(false)} centered>
