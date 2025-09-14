@@ -531,9 +531,23 @@ const OfferBGV = () => {
                   <option>Select city</option>
                   <option>chennai</option>
                   <option>coimbatore</option>
+                  <option>Tokyo</option>
+                  <option>Berlin</option>
+                  <option>London</option>
+                  <option>San Francisco</option>
+                  <option>Pune</option>
+                  <option>New York</option>
+                  <option>Singapore</option>
+                  <option>Dubai</option>
+                  <option>Sydney</option>
+                  <option>Gurgaon</option>
+                  <option>Bangalore</option>
+                  <option>Delhi</option>
+                  <option>Mumbai</option>
+                  <option>Mangalore</option>
                 </select>
               </div>
-              <div className="col">
+              {/* <div className="col">
                 <label>Job Country</label>
                 <select
                   className="form-select"
@@ -548,9 +562,8 @@ const OfferBGV = () => {
                   <option>India</option>
                   <option>China</option>
                 </select>
-              </div>
-            </div>
-            <div className="col-6">
+              </div> */}
+              <div className="col-6">
               <label>Currency</label>
               <select
                 className="form-select"
@@ -566,6 +579,8 @@ const OfferBGV = () => {
                 <option>INR</option>
               </select>
             </div>
+            </div>
+            
 
             <hr />
             <Modal.Title>Salary</Modal.Title>

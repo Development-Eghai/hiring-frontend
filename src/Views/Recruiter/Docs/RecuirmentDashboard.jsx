@@ -501,6 +501,14 @@ export const RecruiterDashboard = () => {
                   defaultValue={
                     selectedCandidate?.["Candidate First Name"] || ""
                   }
+                  onKeyDown={(e) => {
+                    if (e.key === " ") {
+                      e.preventDefault(); // Block spacebar
+                    }
+                  }}
+                  onChange={(e) => {
+                    e.target.value = e.target.value.replace(/\s/g, ""); // Remove pasted spaces
+                  }}
                 />
               </div>
               <div className="col">
@@ -511,6 +519,14 @@ export const RecruiterDashboard = () => {
                   defaultValue={
                     selectedCandidate?.["Candidate Second Name"] || ""
                   }
+                  onKeyDown={(e) => {
+                    if (e.key === " ") {
+                      e.preventDefault(); // Block spacebar
+                    }
+                  }}
+                  onChange={(e) => {
+                    e.target.value = e.target.value.replace(/\s/g, ""); // Remove pasted spaces
+                  }}
                 />
               </div>
             </div>

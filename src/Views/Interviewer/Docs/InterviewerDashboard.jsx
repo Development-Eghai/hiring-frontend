@@ -214,7 +214,7 @@ export const InterviewerDashboard = () => {
     selector: (row) => row[field] ?? "-",
     sortable: true,
   })),
-  actionColumn,
+  // actionColumn,
 ];
 
 

@@ -374,6 +374,15 @@ const [jdContent, setJdContent] = useState("");
                   className="form-control"
                   name="Candidate_First_Name"
                   defaultValue={selectedCandidate?.Candidate_First_Name || ""}
+                  onKeyDown={(e) => {
+                  if (e.key === " ") {
+                    e.preventDefault(); // Block spacebar
+                  }
+                }}
+                onChange={(e) => {
+                  e.target.value = e.target.value.replace(/\s/g, ""); // Remove pasted spaces
+                }}
+
                 />
               </div>
               <div className="col">
@@ -382,6 +391,15 @@ const [jdContent, setJdContent] = useState("");
                   className="form-control"
                   name="Candidate_Last_Name"
                   defaultValue={selectedCandidate?.Candidate_Last_Name || ""}
+                  onKeyDown={(e) => {
+                    if (e.key === " ") {
+                      e.preventDefault(); // Block spacebar
+                    }
+                  }}
+                  onChange={(e) => {
+                    e.target.value = e.target.value.replace(/\s/g, ""); // Remove pasted spaces
+                  }}
+
                 />
               </div>
               <div className="col">
