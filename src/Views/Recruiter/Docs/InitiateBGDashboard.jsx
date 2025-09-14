@@ -414,9 +414,9 @@ const InitiateBG = () => {
                   <option value="">-- Select BG status --</option>
 
                   <option value={"In progress"}>In progress</option>
-                  <option value={"In progress"}>Expired </option>
-                  <option value={"In progress"}>Completed </option>
-                  <option value={"In progress"}>Failed</option>
+                  <option value={"Expired"}>Expired </option>
+                  <option value={"Completed"}>Completed </option>
+                  <option value={"Failed"}>Failed</option>
                 </Form.Select>
               </Form.Group>
             </Col>
