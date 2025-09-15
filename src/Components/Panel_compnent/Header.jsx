@@ -56,8 +56,8 @@ const Header = ({ offcanvasOn, offcanvasOnButton }) => {
             <FaBars />
           </div>
           <div className="col">
-            {commonState?.app_data?.user_role &&
-              commonState?.app_data?.user_role}{" "}
+{/*             {commonState?.app_data?.user_role &&
+              commonState?.app_data?.user_role}{" "} */}
             {formattedPathName}
           </div>
           <div className="col">{commonState?.currentMenuName}</div>
